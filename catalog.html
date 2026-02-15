@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RealiSimHQ Content Catalog</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg: #0a0a1a;
+  --surface: #12122a;
+  --surface2: #1a1a3e;
+  --surface3: #222255;
+  --cyan: #00f0ff;
+  --pink: #ff2d75;
+  --gold: #ffd700;
+  --orange: #ff8c00;
+  --green: #00ff88;
+  --purple: #b44dff;
+  --red: #ff4444;
+  --text: #e8e8f0;
+  --text2: #8888aa;
+  --border: #2a2a55;
+  --glow: 0 0 20px rgba(0, 240, 255, 0.15);
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: 
+    radial-gradient(ellipse at 20% 50%, rgba(0, 240, 255, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255, 45, 117, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(180, 77, 255, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 40px 0 30px;
+}
+.hero-logo {
+  max-width: 320px;
+  height: auto;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  filter: drop-shadow(0 0 30px rgba(0, 240, 255, 0.2));
+}
+.hero h1 {
+  font-size: 3.2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--cyan), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.hero .sub {
+  font-size: 1.1rem;
+  color: var(--text2);
+  font-weight: 300;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* STATS BAR */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: 30px 0 40px;
+  flex-wrap: wrap;
+}
+.stat {
+  text-align: center;
+  padding: 20px 30px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  min-width: 150px;
+  transition: all 0.3s;
+}
+.stat:hover {
+  border-color: var(--cyan);
+  box-shadow: var(--glow);
+  transform: translateY(-2px);
+}
+.stat .num {
+  font-size: 2.4rem;
+  font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+}
+.stat:nth-child(1) .num { color: var(--cyan); }
+.stat:nth-child(2) .num { color: var(--pink); }
+.stat:nth-child(3) .num { color: var(--gold); }
+.stat:nth-child(4) .num { color: var(--green); }
+.stat .label { color: var(--text2); font-size: 0.85rem; margin-top: 4px; text-transform: uppercase; letter-spacing: 2px; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+.tab {
+  padding: 12px 28px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text2);
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  user-select: none;
+  letter-spacing: 0.5px;
+}
+.tab:hover { color: var(--text); }
+.tab.active {
+  color: var(--cyan);
+  border-bottom-color: var(--cyan);
+}
+.tab .count {
+  font-size: 0.75rem;
+  background: var(--surface2);
+  padding: 2px 8px;
+  border-radius: 10px;
+  margin-left: 8px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.tab.active .count { background: rgba(0,240,255,0.15); color: var(--cyan); }
+
+/* FILTERS */
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.search {
+  flex: 1;
+  min-width: 250px;
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: all 0.2s;
+}
+.search:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,240,255,0.1);
+}
+.search::placeholder { color: var(--text2); }
+
+select {
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+  transition: all 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%238888aa'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+select:focus { border-color: var(--cyan); }
+
+.filter-count {
+  color: var(--text2);
+  font-size: 0.85rem;
+  font-family: 'JetBrains Mono', monospace;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-radius: 10px;
+}
+
+/* REQUIRED DOWNLOAD BANNER */
+.required-download {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.08));
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  padding: 20px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.08);
+}
+.required-download .req-icon {
+  font-size: 2rem;
+}
+.required-download .req-info {
+  flex: 1;
+}
+.required-download .req-info h3 {
+  color: var(--gold);
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.required-download .req-info p {
+  color: var(--text2);
+  font-size: 0.9rem;
+}
+.required-download .req-badge {
+  background: var(--gold);
+  color: var(--bg);
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-left: 8px;
+}
+.dl-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, var(--gold), var(--orange));
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.dl-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* TABLE */
+.table-wrap {
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 60px;
+}
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text2);
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+thead th:hover { color: var(--cyan); }
+thead th .arrow { margin-left: 4px; opacity: 0.5; }
+thead th.sorted .arrow { opacity: 1; color: var(--cyan); }
+
+tbody tr {
+  border-bottom: 1px solid rgba(42, 42, 85, 0.5);
+  transition: background 0.15s;
+}
+tbody tr:hover { background: rgba(0, 240, 255, 0.04); }
+tbody tr:nth-child(even) { background: rgba(26, 26, 62, 0.3); }
+tbody tr:nth-child(even):hover { background: rgba(0, 240, 255, 0.06); }
+
+td {
+  padding: 12px 16px;
+  font-size: 0.92rem;
+}
+td.make {
+  font-weight: 600;
+  color: var(--cyan);
+}
+td.model {
+  color: var(--text);
+  text-align: right;
+}
+td.pack {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+}
+.pack-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.pack-X10DD { background: rgba(0,240,255,0.12); color: var(--cyan); }
+.pack-LEVEL { background: rgba(0,255,136,0.12); color: var(--green); }
+.pack-TANDEM { background: rgba(255,45,117,0.12); color: var(--pink); }
+.pack-RallyCross { background: rgba(255,140,0,0.12); color: var(--orange); }
+.pack-TAP { background: rgba(255,215,0,0.12); color: var(--gold); }
+.pack-ADL { background: rgba(180,77,255,0.12); color: var(--purple); }
+.pack-InitialD { background: rgba(255,45,117,0.12); color: var(--pink); }
+.pack-JDAM { background: rgba(255,140,0,0.12); color: var(--orange); }
+.pack-default { background: rgba(136,136,170,0.12); color: var(--text2); }
+
+.sfx-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: rgba(0, 240, 255, 0.15);
+  color: var(--cyan);
+  margin-left: 6px;
+  letter-spacing: 0.5px;
+}
+
+td.physics {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+td.size {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text2);
+  text-align: right;
+}
+td.model a:hover {
+  color: var(--cyan) !important;
+  border-bottom-color: var(--cyan) !important;
+}
+td.model a::after {
+  content: ' ↗';
+  font-size: 0.7rem;
+  opacity: 0.4;
+}
+td.model a:hover::after {
+  opacity: 1;
+  color: var(--cyan);
+}
+
+/* SERVERS */
+.servers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.server-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.server-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.server-card:nth-child(1)::before { background: linear-gradient(90deg, var(--cyan), var(--purple)); }
+.server-card:nth-child(2)::before { background: linear-gradient(90deg, var(--orange), var(--gold)); }
+.server-card:nth-child(3)::before { background: linear-gradient(90deg, var(--pink), var(--orange)); }
+.server-card:nth-child(4)::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+
+.server-card:hover {
+  border-color: var(--cyan);
+  box-shadow: var(--glow);
+  transform: translateY(-3px);
+}
+.server-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+.server-card .theme {
+  color: var(--text2);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+.server-card .meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.server-card .meta span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  background: var(--surface2);
+  border-radius: 8px;
+  color: var(--text2);
+}
+.server-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+.server-live .live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+.server-live.offline .live-dot {
+  background: var(--text2);
+  animation: none;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.server-live .player-count {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--green);
+  font-weight: 600;
+}
+.server-live .current-track {
+  color: var(--text2);
+  font-size: 0.8rem;
+  margin-left: auto;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.server-card .features {
+  font-size: 0.85rem;
+  color: var(--text2);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.join-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: var(--bg);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.join-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+/* PACK CARDS - uniform blocks with expandable car lists */
+.packs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+  margin-bottom: 60px;
+}
+.pack-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.pack-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+.pack-card .pack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.pack-card h4 { font-size: 1.05rem; }
+.pack-card .pack-stats { display: flex; gap: 16px; margin-bottom: 12px; }
+.pack-card .pack-stats span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--text2);
+}
+.pack-card .pack-stats .n { color: var(--cyan); font-weight: 600; }
+.pack-expand-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
+}
+.pack-expand-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+.pack-car-list {
+  display: none;
+  margin-top: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.pack-car-list.open { display: block; }
+.pack-car-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(42, 42, 85, 0.3);
+  font-size: 0.85rem;
+}
+.pack-car-item:last-child { border-bottom: none; }
+.pack-car-item .car-name { color: var(--text); }
+.pack-car-item .car-dl {
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 0.8rem;
+  padding: 2px 10px;
+  border: 1px solid var(--cyan);
+  border-radius: 6px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.pack-car-item .car-dl:hover {
+  background: rgba(0, 240, 255, 0.1);
+}
+
+/* Panels */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 2rem; }
+  .hero-logo { max-width: 200px; }
+  .stats { gap: 12px; }
+  .stat { min-width: 120px; padding: 14px 18px; }
+  .stat .num { font-size: 1.6rem; }
+  .filters { flex-direction: column; }
+  .search { min-width: unset; }
+  td { padding: 8px 10px; font-size: 0.82rem; }
+  .required-download { flex-direction: column; text-align: center; }
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--surface3); }
+
+.hidden { display: none !important; }
+
+footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text2);
+  font-size: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+footer a { color: var(--cyan); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="hero">
+    <img src="realisimhq-ad.jpg" alt="RealiSimHQ" class="hero-logo" />
+    <h1>RealiSimHQ</h1>
+    <div class="sub">Assetto Corsa Content Catalog</div>
+  </div>
+  
+  <div class="stats">
+    <div class="stat"><div class="num">362</div><div class="label">Cars</div></div>
+    <div class="stat"><div class="num">140</div><div class="label">Tracks</div></div>
+    <div class="stat"><div class="num">13</div><div class="label">Car Packs</div></div>
+    <div class="stat"><div class="num">92 GB</div><div class="label">Total Content</div></div>
+  </div>
+  
+  <div class="tabs">
+    <div class="tab active" data-tab="cars">🏎️ Cars <span class="count">362</span></div>
+    <div class="tab" data-tab="tracks">🏁 Tracks <span class="count">140</span></div>
+    <div class="tab" data-tab="packs">📦 Packs <span class="count">13</span></div>
+    <div class="tab" data-tab="servers">🖥️ Servers <span class="count">4</span></div>
+  </div>
+  
+  <!-- CARS -->
+  <div class="panel active" id="panel-cars">
+    <div class="required-download">
+      <div class="req-icon">⚡</div>
+      <div class="req-info">
+        <h3>RealiSimHQ Rims and Parts <span class="req-badge">Required</span></h3>
+        <p>This parts pack is required for all cars to display correctly. Download and install before adding cars.</p>
+      </div>
+      <a href="https://drive.google.com/file/d/18ANV36_ou6NvN0ucN0r4Kv3B-xSaJzsF/view?usp=drive_link" target="_blank" class="dl-btn">⬇ DOWNLOAD PARTS PACK</a>
+    </div>
+    <div class="filters">
+      <input type="text" class="search" id="car-search" placeholder="Search cars..." />
+      <select id="filter-make"><option value="">All Makes</option><option value="BMW">BMW</option><option value="Buick">Buick</option><option value="Cadillac">Cadillac</option><option value="Chevrolet">Chevrolet</option><option value="Dodge">Dodge</option><option value="Ford">Ford</option><option value="GMC">GMC</option><option value="Harley-Davidson">Harley-Davidson</option><option value="Honda">Honda</option><option value="Hyundai">Hyundai</option><option value="Infiniti">Infiniti</option><option value="Kawasaki">Kawasaki</option><option value="Lada">Lada</option><option value="Lancia">Lancia</option><option value="Lexus">Lexus</option><option value="MG">MG</option><option value="Mazda">Mazda</option><option value="Mercedes">Mercedes</option><option value="Mercury">Mercury</option><option value="Mitsubishi">Mitsubishi</option><option value="Nissan">Nissan</option><option value="Other">Other</option><option value="Plymouth">Plymouth</option><option value="Pontiac">Pontiac</option><option value="Porsche">Porsche</option><option value="Scion">Scion</option><option value="Subaru">Subaru</option><option value="Suzuki">Suzuki</option><option value="Toyota">Toyota</option><option value="Volkswagen">Volkswagen</option><option value="Yamaha">Yamaha</option></select>
+      <select id="filter-pack"><option value="">All Packs</option><option value="ADL-RealiSim HQ">ADL-RealiSim HQ</option><option value="Initial D">Initial D</option><option value="Initial U$D">Initial U$D</option><option value="JDAM">JDAM</option><option value="L.E.V.E.L.">L.E.V.E.L.</option><option value="Police">Police</option><option value="RallyCross">RallyCross</option><option value="T.A.N.D.E.M.">T.A.N.D.E.M.</option><option value="TAP">TAP</option><option value="Traffic">Traffic</option><option value="U$D v2">U$D v2</option><option value="X10DD">X10DD</option><option value="Zipped Carpacks">Zipped Carpacks</option></select>
+      <select id="filter-physics"><option value="">All Physics</option><option value="00.Arch.X10DD">00.Arch.X10DD</option><option value="01.) X10DD.Grassroots">01.) X10DD.Grassroots</option><option value="01.) X10DD.Grassroots/001.Server Exclusives">01.) X10DD.Grassroots/001.Server Exclusives</option><option value="02.) X10DD.Street">02.) X10DD.Street</option><option value="02.) X10DD.Street/Street+">02.) X10DD.Street/Street+</option><option value="03.) X10DD.Muscle">03.) X10DD.Muscle</option><option value="04.) X10DD.ProSpec">04.) X10DD.ProSpec</option><option value="240HP／55Deg">240HP／55Deg</option><option value="420HP／70Deg">420HP／70Deg</option><option value="Busa Trucks">Busa Trucks</option><option value="COSMIC">COSMIC</option><option value="Commisioned">Commisioned</option><option value="Extended">Extended</option><option value="Extra Cars">Extra Cars</option><option value="Fast and Furious">Fast and Furious</option><option value="LVL-GR8">LVL-GR8</option><option value="LVL-RX">LVL-RX</option><option value="Motorcycle Touge Traffic">Motorcycle Touge Traffic</option><option value="Pack">Pack</option><option value="RX Style Fun Cars">RX Style Fun Cars</option><option value="TAProots">TAProots</option></select>
+      <span class="filter-count" id="car-count">362 cars</span>
+    </div>
+    <div class="table-wrap">
+      <table id="car-table">
+        <thead><tr>
+          <th data-sort="make">Make <span class="arrow">↕</span></th>
+          <th data-sort="model" style="text-align:right">Model <span class="arrow">↕</span></th>
+          <th data-sort="pack">Pack <span class="arrow">↕</span></th>
+          <th data-sort="physics">Physics <span class="arrow">↕</span></th>
+          <th data-sort="size" style="text-align:right">Size <span class="arrow">↕</span></th>
+        </tr></thead>
+        <tbody id="car-body"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- TRACKS -->
+  <div class="panel" id="panel-tracks">
+    <div class="filters">
+      <input type="text" class="search" id="track-search" placeholder="Search tracks..." />
+      <select id="filter-track-type"><option value="">All Types</option><option value="Freeroam">Freeroam</option><option value="Touge">Touge</option><option value="Circuit">Circuit</option><option value="Competition">Competition</option></select>
+      <select id="filter-track-cat"><option value="">All Sources</option><option value="Free Versions RD">Free Versions RD</option><option value="Initial D">Initial D</option><option value="Original">Original</option><option value="Patreon Free">Patreon Free</option><option value="Patreon Only">Patreon Only</option><option value="Patreon Touge">Patreon Touge</option><option value="Patreon Weekly">Patreon Weekly</option><option value="RallyCross">RallyCross</option><option value="RealSim HQ">RealSim HQ</option><option value="The Great Smokey Mountain Touge Project">The Great Smokey Mountain Touge Project</option><option value="X10DD Editions">X10DD Editions</option><option value="Zen Track Packs">Zen Track Packs</option></select>
+      <span class="filter-count" id="track-count">140 tracks</span>
+    </div>
+    <div class="table-wrap">
+      <table id="track-table">
+        <thead><tr>
+          <th data-sort="name">Track Name <span class="arrow">↕</span></th>
+          <th data-sort="type">Type <span class="arrow">↕</span></th>
+          <th data-sort="category">Source <span class="arrow">↕</span></th>
+          <th data-sort="size" style="text-align:right">Size (MB) <span class="arrow">↕</span></th>
+        </tr></thead>
+        <tbody id="track-body"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <!-- PACKS -->
+  <div class="panel" id="panel-packs">
+    <div class="packs" id="packs-grid"></div>
+  </div>
+  
+  <!-- SERVERS -->
+  <div class="panel" id="panel-servers">
+    <div class="servers" id="servers-grid"></div>
+  </div>
+  
+  <footer>
+    RealiSimHQ · Extended Physics · COSMIC Suspension · Built with 🐘
+  </footer>
+</div>
+
+<script>
+const CARS = [{"name": "adl_proam_1m_RealiSimHQ", "make": "BMW", "model": "1m RealiSimHQ", "pack": "ADL-RealiSim HQ", "physics": "Extended", "size": 107.6, "file": "adl_proam_1m_RealiSimHQ.7z", "link": "https://drive.google.com/file/d/1X2rGddGzO8N2-jEbt6jBBm4qZURGqoWG/view?usp=drive_link"}, {"name": "adl_proam_1m_extended", "make": "BMW", "model": "1m extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 99.9, "file": "adl_proam_1m_extended.7z", "link": "https://drive.google.com/file/d/1M3zZCH7ynxczkjHJSeJCPtzLDHOEbwjS/view?usp=drive_link"}, {"name": "LVL-ADL-BMW_Eurofighter_E36", "make": "BMW", "model": "ADL BMW Eurofighter E36", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 206.7, "file": "LVL-ADL-BMW_Eurofighter_E36.7z", "link": "https://drive.google.com/file/d/1Yw04skzbQMe3TGh2KXl8zOUSxmgFYFym/view?usp=drive_link"}, {"name": "X10DD.Street+BMW_Chaser", "make": "BMW", "model": "BMW Chaser", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 66.1, "file": "X10DD.Street+BMW_Chaser.7z", "link": "https://drive.google.com/file/d/1-bY2JleZIEJp_zMSX61jtbyfn1WZ1Ijz/view?usp=drive_link"}, {"name": "TANDEM-BMW_E30", "make": "BMW", "model": "BMW E30", "pack": "T.A.N.D.E.M.", "physics": "", "size": 116.2, "file": "TANDEM-BMW_E30.7z", "link": "https://drive.google.com/file/d/1EP6z112dk7QjaeGTrSJsC8Q9MZ3lYe0A/view?usp=drive_link"}, {"name": "X10DD.Grassroots-BMW E30 325i", "make": "BMW", "model": "BMW E30 325i", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 101.6, "file": "X10DD.Grassroots-BMW E30 325i.7z", "link": "https://drive.google.com/file/d/14wc8jc8m1esgEQuiF-NcYHkqT3Vy3jHi/view?usp=drive_link"}, {"name": "LVL-240_55Deg-BMW_E30_M3", "make": "BMW", "model": "BMW E30 M3", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 97.9, "file": "LVL-240_55Deg-BMW_E30_M3.7z", "link": "https://drive.google.com/file/d/1q4RUT0UeXw4G9WsjAZeRHvimUM_4ZWA4/view?usp=drive_link"}, {"name": "X10DD.Street-BMW_E30_Tuned", "make": "BMW", "model": "BMW E30 Tuned", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 54.8, "file": "X10DD.Street-BMW_E30_Tuned.7z", "link": "https://drive.google.com/file/d/1HeysaeRe7cVEZq2x54_e7Kyhohazs-DH/view?usp=drive_link"}, {"name": "JDAM-BMW_E36_Compact", "make": "BMW", "model": "BMW E36 Compact", "pack": "JDAM", "physics": "", "size": 65.7, "file": "JDAM-BMW_E36_Compact.7z", "link": "https://drive.google.com/file/d/1IVCZFKMa0x4zRzQppi2RpmhJO68C780X/view?usp=drive_link"}, {"name": "LVL-240_55Deg-BMW_E36_Compact", "make": "BMW", "model": "BMW E36 Compact", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 363.5, "file": "LVL-240_55Deg-BMW_E36_Compact.7z", "link": "https://drive.google.com/file/d/1zaRNTf5MkhHa8g4iQqdte4zyrXnKJoQ8/view?usp=drive_link"}, {"name": "TAP-BMW_E36_Compact", "make": "BMW", "model": "BMW E36 Compact", "pack": "TAP", "physics": "", "size": 61.5, "file": "TAP-BMW_E36_Compact.7z", "link": "https://drive.google.com/file/d/1Ar2KbmjxCnaAPkyZPCTdQOAK6rFC1sUD/view?usp=drive_link"}, {"name": "X10DD.Arch+BMW_E36_Compact", "make": "BMW", "model": "BMW E36 Compact", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 88.3, "file": "X10DD.Arch+BMW_E36_Compact.7z", "link": "https://drive.google.com/file/d/1blAr6r4xK_LENfiHZ1PRYFPltoTUVXTt/view?usp=drive_link"}, {"name": "LVL-BMW E36 M3", "make": "BMW", "model": "BMW E36 M3", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 131.3, "file": "LVL-BMW E36 M3.7z", "link": "https://drive.google.com/file/d/10JS3AXWSnaoLC1LORBaL5dH_WRJRmmIp/view?usp=drive_link"}, {"name": "TANDEM-BMW_E36_M3", "make": "BMW", "model": "BMW E36 M3", "pack": "T.A.N.D.E.M.", "physics": "", "size": 134.6, "file": "TANDEM-BMW_E36_M3.7z", "link": "https://drive.google.com/file/d/1_hi3S6E5DU3zGwGNH8qf51yzPdVQB2Rk/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW E36 M3", "make": "BMW", "model": "BMW E36 M3", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 86.2, "file": "X10DD.ProSpec-BMW E36 M3.7z", "link": "https://drive.google.com/file/d/1xStj195Cj32M_LNIJlIDxkSuzSZrX0Aa/view?usp=drive_link"}, {"name": "TANDEM-BMW_E36_Sm", "make": "BMW", "model": "BMW E36 Sm", "pack": "T.A.N.D.E.M.", "physics": "", "size": 165.7, "file": "TANDEM-BMW_E36_Sm.7z", "link": "https://drive.google.com/file/d/1UO86TdUE5dzCqcl2OcQdtV5vEqkL6WOW/view?usp=drive_link"}, {"name": "LVL-BMW_E46", "make": "BMW", "model": "BMW E46", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 166.1, "file": "LVL-BMW_E46.7z", "link": "https://drive.google.com/file/d/10XoalPmzNHpxK2uE55jvq2PfY-1EiaLy/view?usp=drive_link"}, {"name": "TAP-BMW_E46", "make": "BMW", "model": "BMW E46", "pack": "TAP", "physics": "", "size": 124.6, "file": "TAP-BMW_E46.7z", "link": "https://drive.google.com/file/d/1vRuM0v-TXX3cYKfd6BcdSoxjy2FgIKoI/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW_E46_LS7", "make": "BMW", "model": "BMW E46 LS7", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 85.6, "file": "X10DD.ProSpec-BMW_E46_LS7.7z", "link": "https://drive.google.com/file/d/1WUZgef633uiawqmL2vvIEURwlOj0_WGD/view?usp=drive_link"}, {"name": "LVL-240_55Deg-BMW_E46_M3", "make": "BMW", "model": "BMW E46 M3", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 110.4, "file": "LVL-240_55Deg-BMW_E46_M3.7z", "link": "https://drive.google.com/file/d/1Yv-vc8TbHgCBHqPQPnxCodCKgFW9Q0TK/view?usp=drive_link"}, {"name": "TANDEM-BMW_E46_M3", "make": "BMW", "model": "BMW E46 M3", "pack": "T.A.N.D.E.M.", "physics": "", "size": 191.2, "file": "TANDEM-BMW_E46_M3.7z", "link": "https://drive.google.com/file/d/1pdzL1CFcoibI57RcfStVbJejV-T1P9RU/view?usp=drive_link"}, {"name": "TAProot-BMW E46 M3", "make": "BMW", "model": "BMW E46 M3", "pack": "TAP", "physics": "TAProots", "size": 73.1, "file": "TAProot-BMW E46 M3.7z", "link": "https://drive.google.com/file/d/1adH4S71CS0SY4gmENN61YNr_h2EPqnod/view?usp=drive_link"}, {"name": "X10DD.Arch+BMW_E46_M3", "make": "BMW", "model": "BMW E46 M3", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 110.1, "file": "X10DD.Arch+BMW_E46_M3.7z", "link": "https://drive.google.com/file/d/1YWzxpjhr0Wrvm9HsL5NJJj7x1qiJgVNI/view?usp=drive_link"}, {"name": "TAP-BMW_E46_Wagon", "make": "BMW", "model": "BMW E46 Wagon", "pack": "TAP", "physics": "", "size": 124.1, "file": "TAP-BMW_E46_Wagon.7z", "link": "https://drive.google.com/file/d/1nO7f5l9idi6J37YNxH2lPRNZNnSU1bkL/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW_E92", "make": "BMW", "model": "BMW E92", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 96.6, "file": "X10DD.ProSpec-BMW_E92.7z", "link": "https://drive.google.com/file/d/1H9tw-B-VQ3UlVReGIMkXmsTOOU-OT6Wy/view?usp=drive_link"}, {"name": "LVL-BMW_M2_F22", "make": "BMW", "model": "BMW M2 F22", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 160.2, "file": "LVL-BMW_M2_F22.7z", "link": "https://drive.google.com/file/d/1wS-JbUHF8YHF8Lfb1E56_tuOZ123CR2D/view?usp=drive_link"}, {"name": "adl-proam-BMW_M2_F22_extended", "make": "BMW", "model": "BMW M2 F22 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 108.6, "file": "adl-proam-BMW_M2_F22_extended.7z", "link": "https://drive.google.com/file/d/1EGmYgeAti_8Nf7Ux5jhXi0lUF-VDGMaJ/view?usp=drive_link"}, {"name": "X10DD.ProSpec+BMW_M2_G87", "make": "BMW", "model": "BMW M2 G87", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 71.7, "file": "X10DD.ProSpec+BMW_M2_G87.7z", "link": "https://drive.google.com/file/d/1uYwUQjxr5gKvdBeqquHS4O96hENWZz10/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW M3", "make": "BMW", "model": "BMW M3", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 124.8, "file": "X10DD.ProSpec-BMW M3.7z", "link": "https://drive.google.com/file/d/1UdTDJ4bsvptfYmtL7qVur-e17ZK1Dqm0/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW M3 E30", "make": "BMW", "model": "BMW M3 E30", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 51.6, "file": "X10DD.ProSpec-BMW M3 E30.7z", "link": "https://drive.google.com/file/d/1tu0IzS3firw4XRtZDHFmWEZRdDXJuy58/view?usp=drive_link"}, {"name": "LVL-240_55Deg-BMW_M3_E36", "make": "BMW", "model": "BMW M3 E36", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 108.3, "file": "LVL-240_55Deg-BMW_M3_E36.7z", "link": "https://drive.google.com/file/d/1Ot6klNr6bSR0A7Idr6DRHCzVAC-wsP85/view?usp=drive_link"}, {"name": "X10DD.Street-BMW M3 E36", "make": "BMW", "model": "BMW M3 E36", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 115.9, "file": "X10DD.Street-BMW M3 E36.7z", "link": "https://drive.google.com/file/d/17EsM7Z1-MjJ5XWVpMtU8oD2JeYm0X9MO/view?usp=drive_link"}, {"name": "X10DD.Street-BMW_M3_E46", "make": "BMW", "model": "BMW M3 E46", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 121.9, "file": "X10DD.Street-BMW_M3_E46.7z", "link": "https://drive.google.com/file/d/14WH3ShJq6FvVOAyMNcDlgY8_ZSGFVPkY/view?usp=drive_link"}, {"name": "X10DD.ProSpec-BMW M4 G82", "make": "BMW", "model": "BMW M4 G82", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 88.9, "file": "X10DD.ProSpec-BMW M4 G82.7z", "link": "https://drive.google.com/file/d/1liHPefBWirSN5-nACd4XTFsWFqApFQ89/view?usp=drive_link"}, {"name": "bmw_s_1000_rr_by_bodysut_swapped_spec", "make": "BMW", "model": "bmw s 1000 rr by bodysut swapped spec", "pack": "Traffic", "physics": "", "size": 82.1, "file": "bmw_s_1000_rr_by_bodysut_swapped_spec.7z", "link": "https://drive.google.com/file/d/1R5-uDnK4n-FxbdFfVVEoEuO-an5-XBCt/view?usp=drive_link"}, {"name": "adl_proam_e36_RealiSimHQ", "make": "BMW", "model": "e36 RealiSimHQ", "pack": "ADL-RealiSim HQ", "physics": "Extended", "size": 103.8, "file": "adl_proam_e36_RealiSimHQ.7z", "link": "https://drive.google.com/file/d/1l9nFKNeQzVj_BPlZmr1UvzNNpZGsrsaP/view?usp=drive_link"}, {"name": "adl_proam_e36_extended", "make": "BMW", "model": "e36 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 102.9, "file": "adl_proam_e36_extended.7z", "link": "https://drive.google.com/file/d/1CcrJ19sNU3cbx3Rh0kHx293hwYBZaLc6/view?usp=drive_link"}, {"name": "adl_proam_e36_extended", "make": "BMW", "model": "e36 extended", "pack": "ADL-RealiSim HQ", "physics": "Extended", "size": 42.4, "file": "adl_proam_e36_extended.7z", "link": "https://drive.google.com/file/d/1CcrJ19sNU3cbx3Rh0kHx293hwYBZaLc6/view?usp=drive_link"}, {"name": "adl_proam_e46_extended", "make": "BMW", "model": "e46 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 147.1, "file": "adl_proam_e46_extended.7z", "link": "https://drive.google.com/file/d/1VZ6ZTUXrYXfu20kkgyBRepxROmqP5dAO/view?usp=drive_link"}, {"name": "X10DD.Muscle-Buick GNX", "make": "Buick", "model": "Buick GNX", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 100.3, "file": "X10DD.Muscle-Buick GNX.7z", "link": "https://drive.google.com/file/d/1e-jSMpTIwXsdR2qhUyCZJ4VsXh8kWU5H/view?usp=drive_link"}, {"name": "LVL-Cadillac_XLR", "make": "Cadillac", "model": "Cadillac XLR", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 135.0, "file": "LVL-Cadillac_XLR.7z", "link": "https://drive.google.com/file/d/1yPSkJHnTlvc6-NeCB84H8bK5Rs05AxfB/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevrolet Corvette 67", "make": "Chevrolet", "model": "Chevrolet Corvette 67", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 100.3, "file": "X10DD.Muscle-Chevrolet Corvette 67.7z", "link": "https://drive.google.com/file/d/1LmUBMkGqWuM2Ee18oNNBO1VrwX9VEb9q/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Chevrolet_Corvette_C6", "make": "Chevrolet", "model": "Chevrolet Corvette C6", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 237.5, "file": "LVL-240_55Deg-Chevrolet_Corvette_C6.7z", "link": "https://drive.google.com/file/d/1exq-KWeJaHOP5wmR0jdzpKW9qz1E5iuY/view?usp=drive_link"}, {"name": "TANDEM-Chevrolet_Corvette_C6", "make": "Chevrolet", "model": "Chevrolet Corvette C6", "pack": "T.A.N.D.E.M.", "physics": "", "size": 224.6, "file": "TANDEM-Chevrolet_Corvette_C6.7z", "link": "https://drive.google.com/file/d/1Z-wHVBgpV5OnXnJ3NPK2yM9vVWrti42i/view?usp=drive_link"}, {"name": "X10DD.Street-Chevrolet_Corvette_C6", "make": "Chevrolet", "model": "Chevrolet Corvette C6", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 140.5, "file": "X10DD.Street-Chevrolet_Corvette_C6.7z", "link": "https://drive.google.com/file/d/1Ox-Hta1sFpXeHgBXQp_y8BphI-MI8tIl/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevrolet Impala 67", "make": "Chevrolet", "model": "Chevrolet Impala 67", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 104.6, "file": "X10DD.Muscle-Chevrolet Impala 67.7z", "link": "https://drive.google.com/file/d/1-5kot6T5ROHu9eZPF0ESlxJhj5BgLj9z/view?usp=drive_link"}, {"name": "TAProot-Chevy C6 Z06", "make": "Chevrolet", "model": "Chevy C6 Z06", "pack": "TAP", "physics": "TAProots", "size": 98.9, "file": "TAProot-Chevy C6 Z06.7z", "link": "https://drive.google.com/file/d/1LEILrUEyy2hPOvHw3p4o2Hnml7rTtjbF/view?usp=drive_link"}, {"name": "TANDEM-Chevy Camaro", "make": "Chevrolet", "model": "Chevy Camaro", "pack": "T.A.N.D.E.M.", "physics": "", "size": 120.6, "file": "TANDEM-Chevy Camaro.7z", "link": "https://drive.google.com/file/d/1nJaEdVVr0cRcU4MIp8i3QZS3cYmpERjj/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevy_Camaro 1967", "make": "Chevrolet", "model": "Chevy Camaro 1967", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 60.8, "file": "X10DD.Muscle-Chevy_Camaro 1967.7z", "link": "https://drive.google.com/file/d/190RJx-d-rsaTNTdESTNBxn8EB3ei5mXi/view?usp=drive_link"}, {"name": "X10DD.ProSpec+Chevy_Camaro_SS", "make": "Chevrolet", "model": "Chevy Camaro SS", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 35.4, "file": "X10DD.ProSpec+Chevy_Camaro_SS.7z", "link": "https://drive.google.com/file/d/1yr-v8l6qBYglPUJ9mzavn0Jwc25Tt_KJ/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevy Camaro Transam", "make": "Chevrolet", "model": "Chevy Camaro Transam", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 91.4, "file": "X10DD.Muscle-Chevy Camaro Transam.7z", "link": "https://drive.google.com/file/d/1LUSU62cerNgs3-a-MAMiu2gCCDGxvGJi/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevy_Camaro__zl1", "make": "Chevrolet", "model": "Chevy Camaro zl1", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 76.9, "file": "X10DD.Muscle-Chevy_Camaro__zl1.7z", "link": "https://drive.google.com/file/d/1jApZ_no-_34e21K_RJEkjfh8Hfjd4deM/view?usp=drive_link"}, {"name": "USD-Chevy_Chevelle_SS", "make": "Chevrolet", "model": "Chevy Chevelle SS", "pack": "U$D v2", "physics": "", "size": 33.1, "file": "USD-Chevy_Chevelle_SS.7z", "link": "https://drive.google.com/file/d/1PKNjXu2i2X0FZNKpD_OOtT6pvG63-6If/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Chevy_Corvette_C4", "make": "Chevrolet", "model": "Chevy Corvette C4", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 107.0, "file": "LVL-240_55Deg-Chevy_Corvette_C4.7z", "link": "https://drive.google.com/file/d/1Ll8t0qGkipuHKd5IIVAZB0NazaOzQRCp/view?usp=drive_link"}, {"name": "X10DD.Street-Chevy_Corvette_C4", "make": "Chevrolet", "model": "Chevy Corvette C4", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 82.8, "file": "X10DD.Street-Chevy_Corvette_C4.7z", "link": "https://drive.google.com/file/d/1o7WyJVYIDxZ-hGvve-MHgtSfKA-ppYiJ/view?usp=drive_link"}, {"name": "TANDEM-Chevy_Corvette_C5", "make": "Chevrolet", "model": "Chevy Corvette C5", "pack": "T.A.N.D.E.M.", "physics": "", "size": 164.8, "file": "TANDEM-Chevy_Corvette_C5.7z", "link": "https://drive.google.com/file/d/1UFeo3NZ8A0EqzOBaXKX595Hayf3Al76_/view?usp=drive_link"}, {"name": "X10DD.Street-Chevy_Corvette_C5", "make": "Chevrolet", "model": "Chevy Corvette C5", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 150.0, "file": "X10DD.Street-Chevy_Corvette_C5.7z", "link": "https://drive.google.com/file/d/1jSCXkXtOzzYT9tKZPyo1dohsDl2q1X8U/view?usp=drive_link"}, {"name": "X10DD.ProSpec+Chevy_Corvette_C5", "make": "Chevrolet", "model": "Chevy Corvette C5", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 107.5, "file": "X10DD.ProSpec+Chevy_Corvette_C5.7z", "link": "https://drive.google.com/file/d/1vrP1C0OLznhHpd3rEj43EMeiZgQtUHN2/view?usp=drive_link"}, {"name": "LVL420-Chevy Corvette C6", "make": "Chevrolet", "model": "Chevy Corvette C6", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 121.4, "file": "LVL420-Chevy Corvette C6.7z", "link": "https://drive.google.com/file/d/1qGCfsFiud4opnlejtGpJgxKVkCDPg5W2/view?usp=drive_link"}, {"name": "TAP-Chevy_Corvette_C6", "make": "Chevrolet", "model": "Chevy Corvette C6", "pack": "TAP", "physics": "", "size": 112.7, "file": "TAP-Chevy_Corvette_C6.7z", "link": "https://drive.google.com/file/d/1JV4Nm8OrPSj8V-b0V7HwnWb5TcrQPM5y/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Chevy Corvette C6", "make": "Chevrolet", "model": "Chevy Corvette C6", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 51.0, "file": "X10DD.ProSpec-Chevy Corvette C6.7z", "link": "https://drive.google.com/file/d/1Z5qkNqPfUkPRbwz_ACbqjxdMh2s41OCb/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Chevy Corvette C6.1", "make": "Chevrolet", "model": "Chevy Corvette C6.1", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 76.1, "file": "X10DD.ProSpec-Chevy Corvette C6.1.7z", "link": "https://drive.google.com/file/d/1IRZCPrfu1aXDmLB2XrZHRVyq0lF2yQaF/view?usp=drive_link"}, {"name": "LVL-Chevy Corvette C7", "make": "Chevrolet", "model": "Chevy Corvette C7", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 149.5, "file": "LVL-Chevy Corvette C7.7z", "link": "https://drive.google.com/file/d/1SgUXiXdawQLOOiLKdeYE77sfZt9QRo-T/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Chevy Corvette C7", "make": "Chevrolet", "model": "Chevy Corvette C7", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 77.7, "file": "X10DD.ProSpec-Chevy Corvette C7.7z", "link": "https://drive.google.com/file/d/1CvNaqSr8PEKSl9osJMomWYhlUZi-cBXY/view?usp=drive_link"}, {"name": "USD-Chevy_Corvette_C8", "make": "Chevrolet", "model": "Chevy Corvette C8", "pack": "U$D v2", "physics": "", "size": 73.1, "file": "USD-Chevy_Corvette_C8.7z", "link": "https://drive.google.com/file/d/1yYjg00gvkwYgq5zTAGperylWKDqfMJd7/view?usp=drive_link"}, {"name": "X10DD.Muscle-Chevy_Nova69", "make": "Chevrolet", "model": "Chevy Nova69", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 68.1, "file": "X10DD.Muscle-Chevy_Nova69.7z", "link": "https://drive.google.com/file/d/1LyRahIviADT43ujiC1Zwyo4zfvAR2AFj/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Corvette_C5", "make": "Chevrolet", "model": "Corvette C5", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 159.5, "file": "LVL-240_55Deg-Corvette_C5.7z", "link": "https://drive.google.com/file/d/1pnFC2Hu4Tq6Njq8pc5rKvgeG0R07AYQ1/view?usp=drive_link"}, {"name": "adl_proam_c5_extended", "make": "Chevrolet", "model": "c5 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 173.9, "file": "adl_proam_c5_extended.7z", "link": "https://drive.google.com/file/d/11-S3d-E9Ir9TUL28jaf3Xh0kFFlv0pQb/view?usp=drive_link"}, {"name": "j8_chevrolet_c8_20", "make": "Chevrolet", "model": "j8 chevrolet c8 20", "pack": "U$D v2", "physics": "", "size": 76.1, "file": "j8_chevrolet_c8_20.7z", "link": "https://drive.google.com/file/d/10Tv7Lr8ToTK0gRuPZlr1WVqMEJbE_lyz/view?usp=drive_link"}, {"name": "X10DD.Street-Dodge Challenger Demon", "make": "Dodge", "model": "Dodge Challenger Demon", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 89.0, "file": "X10DD.Street-Dodge Challenger Demon.7z", "link": "https://drive.google.com/file/d/1WGjMH1uqKhBRwsW12Ij-MLXLVRaGYts0/view?usp=drive_link"}, {"name": "X10DD.Muscle-Dodge Challenger RT", "make": "Dodge", "model": "Dodge Challenger RT", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 77.4, "file": "X10DD.Muscle-Dodge Challenger RT.7z", "link": "https://drive.google.com/file/d/1gkzpQoQKx6Yq-EtvhKpKYlqYUWpVJq1r/view?usp=drive_link"}, {"name": "USD-Dodge Charger 68", "make": "Dodge", "model": "Dodge Charger 68", "pack": "U$D v2", "physics": "", "size": 113.6, "file": "USD-Dodge Charger 68.7z", "link": "https://drive.google.com/file/d/1OcYbii-bXW21oWVjVakVn7i8du18L4I8/view?usp=drive_link"}, {"name": "X10DD.Street-Dodge Charger RT", "make": "Dodge", "model": "Dodge Charger RT", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 97.6, "file": "X10DD.Street-Dodge Charger RT.7z", "link": "https://drive.google.com/file/d/1ZL3haqfj3bPMocN12LF1N79tinwWT4Ar/view?usp=drive_link"}, {"name": "LVL-Dodge Viper", "make": "Dodge", "model": "Dodge Viper", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 100.2, "file": "LVL-Dodge Viper.7z", "link": "https://drive.google.com/file/d/1BrsjnorsNFXRAwXT3-rrV37jiQaNhEBe/view?usp=drive_link"}, {"name": "pb_charger_dom", "make": "Dodge", "model": "pb charger dom", "pack": "X10DD", "physics": "Fast and Furious", "size": 23.5, "file": "pb_charger_dom.7z", "link": "https://drive.google.com/file/d/139X-NYLcUHi-W6aADHdKxrtBgJoOG4g4/view?usp=drive_link"}, {"name": "traffic_dodge_challenger_srt", "make": "Dodge", "model": "traffic dodge challenger srt", "pack": "Traffic", "physics": "", "size": 30.9, "file": "traffic_dodge_challenger_srt.7z", "link": "https://drive.google.com/file/d/1-o6n2HUtpDtF0Iz6wYo5_5RngNBcpuOt/view?usp=drive_link"}, {"name": "PDP_Ford Crown Vic Stage 1", "make": "Ford", "model": "Ford Crown Vic Stage 1", "pack": "Police", "physics": "", "size": 56.8, "file": "PDP_Ford Crown Vic Stage 1.7z", "link": "https://drive.google.com/file/d/1w65F64Aqfg-Ck3kiSh8mDLqp4YaQUobO/view?usp=drive_link"}, {"name": "X10DD.Street+Ford_CrownVic", "make": "Ford", "model": "Ford CrownVic", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 108.1, "file": "X10DD.Street+Ford_CrownVic.7z", "link": "https://drive.google.com/file/d/1h4mVZV1crnNc6wcfxJFyocS1cUVR-W2S/view?usp=drive_link"}, {"name": "LVLRX_Ford_Focus", "make": "Ford", "model": "Ford Focus", "pack": "RallyCross", "physics": "LVL-RX", "size": 79.2, "file": "LVLRX_Ford_Focus.7z", "link": "https://drive.google.com/file/d/1OWcgcRttxzlLB6clBWVQ0VKkS_SeuVJf/view?usp=drive_link"}, {"name": "JDAM_Ford_Foxbody", "make": "Ford", "model": "Ford Foxbody", "pack": "JDAM", "physics": "", "size": 115.2, "file": "JDAM_Ford_Foxbody.7z", "link": "https://drive.google.com/file/d/1HVUfAJ_kri2KieLAAF58CkOgGRt3pHl1/view?usp=drive_link"}, {"name": "TAP-Ford_Foxbody", "make": "Ford", "model": "Ford Foxbody", "pack": "TAP", "physics": "", "size": 117.2, "file": "TAP-Ford_Foxbody.7z", "link": "https://drive.google.com/file/d/1mwfxmjWmJN_X5pf9VKPm1FzPaeQuWFiU/view?usp=drive_link"}, {"name": "X10DD.Street-Ford_Foxbody_Mustang", "make": "Ford", "model": "Ford Foxbody Mustang", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 103.5, "file": "X10DD.Street-Ford_Foxbody_Mustang.7z", "link": "https://drive.google.com/file/d/1MBCwiwG36BmYtGxksWbMwZ0K0lYj1n8q/view?usp=drive_link"}, {"name": "-Ai.5O-Ford Interceptor", "make": "Ford", "model": "Ford Interceptor", "pack": "Police", "physics": "", "size": 34.2, "file": "-Ai.5O-Ford Interceptor.7z", "link": "https://drive.google.com/file/d/1RMwWsJZBuRczH0N40Rm76krS1sXflh8X/view?usp=drive_link"}, {"name": "X10DD.Muscle-Ford_Mavrick", "make": "Ford", "model": "Ford Mavrick", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 126.6, "file": "X10DD.Muscle-Ford_Mavrick.7z", "link": "https://drive.google.com/file/d/1nAbWMTC3Oe-pp6dv-820V13qGPxg3I6o/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Ford Mustang 66 RTR", "make": "Ford", "model": "Ford Mustang 66 RTR", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 80.8, "file": "X10DD.ProSpec-Ford Mustang 66 RTR.7z", "link": "https://drive.google.com/file/d/1mlH2Wcjg_fUsHS0acVwacPPXtVP1nwtq/view?usp=drive_link"}, {"name": "adl_proam_Ford Mustang 66_extended", "make": "Ford", "model": "Ford Mustang 66 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 170.9, "file": "adl_proam_Ford Mustang 66_extended.7z", "link": "https://drive.google.com/file/d/15D8apAN-MMjYbY1Zab42cliid3-XGuzy/view?usp=drive_link"}, {"name": "USD-Ford Mustang Boss 302", "make": "Ford", "model": "Ford Mustang Boss 302", "pack": "U$D v2", "physics": "", "size": 96.4, "file": "USD-Ford Mustang Boss 302.7z", "link": "https://drive.google.com/file/d/128j8F_pdTOM-t_nUOoLZoJyEo0Qw0RWK/view?usp=drive_link"}, {"name": "USD-Ford Mustang Boss 429", "make": "Ford", "model": "Ford Mustang Boss 429", "pack": "U$D v2", "physics": "", "size": 114.0, "file": "USD-Ford Mustang Boss 429.7z", "link": "https://drive.google.com/file/d/1bkPA1i_swTn9u59KTz_3YlviospGd3Dd/view?usp=drive_link"}, {"name": "X10DD.Muscle-Ford Mustang Boss 70", "make": "Ford", "model": "Ford Mustang Boss 70", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 85.2, "file": "X10DD.Muscle-Ford Mustang Boss 70.7z", "link": "https://drive.google.com/file/d/16NA2d53ZZ6iUtEmf59XtntSkTCnT_qR3/view?usp=drive_link"}, {"name": "X10DD.Street+Ford Mustang DT", "make": "Ford", "model": "Ford Mustang DT", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 79.6, "file": "X10DD.Street+Ford Mustang DT.7z", "link": "https://drive.google.com/file/d/10FGSGboqaboYcSIMCfmHxWcxm_fZ6NvY/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Ford_Mustang_Fox", "make": "Ford", "model": "Ford Mustang Fox", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 144.1, "file": "LVL-240_55Deg-Ford_Mustang_Fox.7z", "link": "https://drive.google.com/file/d/10ZEEQiee9devEUxR01farq20sZIi5CIb/view?usp=drive_link"}, {"name": "TANDEM-Ford_Mustang_Fox", "make": "Ford", "model": "Ford Mustang Fox", "pack": "T.A.N.D.E.M.", "physics": "", "size": 213.2, "file": "TANDEM-Ford_Mustang_Fox.7z", "link": "https://drive.google.com/file/d/1N9HIyhEoQFeSzpBZlFFgTIFleoDWqKRX/view?usp=drive_link"}, {"name": "IUSD-Ford_Mustang_LX", "make": "Ford", "model": "Ford Mustang LX", "pack": "Initial U$D", "physics": "", "size": 90.9, "file": "IUSD-Ford_Mustang_LX.7z", "link": "https://drive.google.com/file/d/1AgSgtw69AM7FT100VAHTRjN_rbItOX4s/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Ford Mustang Notch", "make": "Ford", "model": "Ford Mustang Notch", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 101.1, "file": "X10DD.Grassroots-Ford Mustang Notch.7z", "link": "https://drive.google.com/file/d/1LdlO4ntyeExXt2G75vQrNArXDfq0Lhh4/view?usp=drive_link"}, {"name": "X10DD.Street-Ford Mustang RTR", "make": "Ford", "model": "Ford Mustang RTR", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 459.4, "file": "X10DD.Street-Ford Mustang RTR.7z", "link": "https://drive.google.com/file/d/1wdmZUxfq2pCVn-L_JugSXju6P3RtwdnO/view?usp=drive_link"}, {"name": "LVL-Ford_Mustang_RTR_S650", "make": "Ford", "model": "Ford Mustang RTR S650", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 205.6, "file": "LVL-Ford_Mustang_RTR_S650.7z", "link": "https://drive.google.com/file/d/1p0zq-yDVFve9zQjNl8K3wDJ_Kdjz_v5O/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Ford_Mustang_S197", "make": "Ford", "model": "Ford Mustang S197", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 141.9, "file": "LVL-240_55Deg-Ford_Mustang_S197.7z", "link": "https://drive.google.com/file/d/1GkxJ_HCXk6GwNl2fjIRAmpXE3WG5L2ID/view?usp=drive_link"}, {"name": "LVL-Ford Mustang S197", "make": "Ford", "model": "Ford Mustang S197", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 156.3, "file": "LVL-Ford Mustang S197.7z", "link": "https://drive.google.com/file/d/1Xz2LA-a2eJoh-u_6-K6JSMtQ4sC03osW/view?usp=drive_link"}, {"name": "TANDEM-Ford_Mustang_S197", "make": "Ford", "model": "Ford Mustang S197", "pack": "T.A.N.D.E.M.", "physics": "", "size": 147.7, "file": "TANDEM-Ford_Mustang_S197.7z", "link": "https://drive.google.com/file/d/1tc9YFq-fE6qO9iCobIcScUWKaY1FKxw7/view?usp=drive_link"}, {"name": "X10DD.Street-Ford Mustang S197", "make": "Ford", "model": "Ford Mustang S197", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 107.1, "file": "X10DD.Street-Ford Mustang S197.7z", "link": "https://drive.google.com/file/d/1fBemQpf4ygVuTtfGRMjQkO0tC7ZpNSmj/view?usp=drive_link"}, {"name": "X10DD.ProSpec+Ford Mustang S197", "make": "Ford", "model": "Ford Mustang S197", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 73.9, "file": "X10DD.ProSpec+Ford Mustang S197.7z", "link": "https://drive.google.com/file/d/1yXvM2pWqknTqAGpWAy9jHD9ZjVIJA3kW/view?usp=drive_link"}, {"name": "X10DD.Arch-Ford Mustang S550", "make": "Ford", "model": "Ford Mustang S550", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 239.1, "file": "X10DD.Arch-Ford Mustang S550.7z", "link": "https://drive.google.com/file/d/1tIuZgHHnPVj-HuWSXtFJ9DtIwEOqgaZf/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Ford Mustang S550", "make": "Ford", "model": "Ford Mustang S550", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 56.6, "file": "X10DD.ProSpec-Ford Mustang S550.7z", "link": "https://drive.google.com/file/d/1Ibwc_M2vRCon4BcgFE-qRjopbaxkbgvV/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Ford_Mustang_S650", "make": "Ford", "model": "Ford Mustang S650", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 181.1, "file": "LVL-240_55Deg-Ford_Mustang_S650.7z", "link": "https://drive.google.com/file/d/11sXhYU5eFZmpw6EdVyBH14ZGYCb8mNUV/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Ford_Mustang_SN95", "make": "Ford", "model": "Ford Mustang SN95", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 124.0, "file": "LVL-240_55Deg-Ford_Mustang_SN95.7z", "link": "https://drive.google.com/file/d/1GWOjkdEtDd3nEvmG1eBnmn-DH4TrLoBW/view?usp=drive_link"}, {"name": "TANDEM-Ford_Mustang_SN95", "make": "Ford", "model": "Ford Mustang SN95", "pack": "T.A.N.D.E.M.", "physics": "", "size": 167.5, "file": "TANDEM-Ford_Mustang_SN95.7z", "link": "https://drive.google.com/file/d/1CfXR0nFvcpS1-whu2VzX79HtGgOgqm5j/view?usp=drive_link"}, {"name": "X10DD.Arch+Ford_Mustang_SN95", "make": "Ford", "model": "Ford Mustang SN95", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 154.6, "file": "X10DD.Arch+Ford_Mustang_SN95.7z", "link": "https://drive.google.com/file/d/16E-Dw58BbgTW-irq77BsutzNPEWNTk2W/view?usp=drive_link"}, {"name": "TANDEM-Ford_Mustang_SN95.1", "make": "Ford", "model": "Ford Mustang SN95.1", "pack": "T.A.N.D.E.M.", "physics": "", "size": 139.6, "file": "TANDEM-Ford_Mustang_SN95.1.7z", "link": "https://drive.google.com/file/d/1Giksihy-BxNt5Dr6SQdzXWIiTjb7T_-q/view?usp=drive_link"}, {"name": "X10DD.Street-Ford Mustang Saleen", "make": "Ford", "model": "Ford Mustang Saleen", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 90.7, "file": "X10DD.Street-Ford Mustang Saleen.7z", "link": "https://drive.google.com/file/d/1GkMhlOl-brEE_EAVdoRoaMq4lq-hLWzq/view?usp=drive_link"}, {"name": "USD-Ford Mustang Shelby GT500", "make": "Ford", "model": "Ford Mustang Shelby GT500", "pack": "U$D v2", "physics": "", "size": 112.8, "file": "USD-Ford Mustang Shelby GT500.7z", "link": "https://drive.google.com/file/d/1Beg7Tln0lx7tIMEXcG0EqGa7zw-Wha1A/view?usp=drive_link"}, {"name": "X10DD.Muscle-Ford_Mustang_Shelby_GT500_67", "make": "Ford", "model": "Ford Mustang Shelby GT500 67", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 230.4, "file": "X10DD.Muscle-Ford_Mustang_Shelby_GT500_67.7z", "link": "https://drive.google.com/file/d/1C0Qw35aAre0-pw4NX-gpUEa0UVUdIAwh/view?usp=drive_link"}, {"name": "X10DD.Street-Ford_Mustang_sn95", "make": "Ford", "model": "Ford Mustang sn95", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 94.7, "file": "X10DD.Street-Ford_Mustang_sn95.7z", "link": "https://drive.google.com/file/d/1eek2FEzNcMXWVUP5bEdpFrN8LI8fhs4l/view?usp=drive_link"}, {"name": "TANDEM-Ford_Mustang.RTR", "make": "Ford", "model": "Ford Mustang.RTR", "pack": "T.A.N.D.E.M.", "physics": "", "size": 128.2, "file": "TANDEM-Ford_Mustang.RTR.7z", "link": "https://drive.google.com/file/d/14BCg0c6PlzR7HM9ElFJOaAZc2KkImeu6/view?usp=drive_link"}, {"name": "LVLGR8_Ford_RS200", "make": "Ford", "model": "Ford RS200", "pack": "RallyCross", "physics": "LVL-GR8", "size": 63.1, "file": "LVLGR8_Ford_RS200.7z", "link": "https://drive.google.com/file/d/1KLJ9oaOZ_prFKhjui9-PMkgzMdx7-okV/view?usp=drive_link"}, {"name": "LVLRX_Ford_RS200_EVO", "make": "Ford", "model": "Ford RS200 EVO", "pack": "RallyCross", "physics": "LVL-RX", "size": 46.7, "file": "LVLRX_Ford_RS200_EVO.7z", "link": "https://drive.google.com/file/d/1XAdYnYuuqoPSu14TyopNbFD727joTIky/view?usp=drive_link"}, {"name": "TANDEM-Ford Skystang", "make": "Ford", "model": "Ford Skystang", "pack": "T.A.N.D.E.M.", "physics": "", "size": 140.3, "file": "TANDEM-Ford Skystang.7z", "link": "https://drive.google.com/file/d/17RlfJ1x_Kfo6kOXjEYxzmWeeTrBOcKp3/view?usp=drive_link"}, {"name": "adl_proam_foxbody_extended", "make": "Ford", "model": "foxbody extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 129.1, "file": "adl_proam_foxbody_extended.7z", "link": "https://drive.google.com/file/d/1oG1JNXEPqonrjxYoCxekjBBuv06KPOFA/view?usp=drive_link"}, {"name": "mg_ford_mustang_fnf", "make": "Ford", "model": "mg ford mustang fnf", "pack": "X10DD", "physics": "Fast and Furious", "size": 179.4, "file": "mg_ford_mustang_fnf.7z", "link": "https://drive.google.com/file/d/1GsXSfcsrEPbT19ZPOPkqFo5_pgilhx2L/view?usp=drive_link"}, {"name": "X10DD.Street-GMC Syclone", "make": "GMC", "model": "GMC Syclone", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 114.4, "file": "X10DD.Street-GMC Syclone.7z", "link": "https://drive.google.com/file/d/1cWaeBQfM4QYAXCnO-nJzUoo0psDm0goT/view?usp=drive_link"}, {"name": "tky_harley_davidson", "make": "Harley-Davidson", "model": "tky harley davidson", "pack": "JDAM", "physics": "", "size": 15.6, "file": "tky_harley_davidson.7z", "link": "https://drive.google.com/file/d/1Jtvrao-VG7KYB6MmV4IFfvW8WVfkcWol/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Acura_NSX", "make": "Honda", "model": "Acura NSX", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 111.4, "file": "LVL-240_55Deg-Acura_NSX.7z", "link": "https://drive.google.com/file/d/1kk-N7WGhqjgC2kMd2mlRKttBmeCCbmnt/view?usp=drive_link"}, {"name": "X10DD.Battle-FnF_Honda_S2000", "make": "Honda", "model": "FnF Honda S2000", "pack": "X10DD", "physics": "Fast and Furious", "size": 55.3, "file": "X10DD.Battle-FnF_Honda_S2000.7z", "link": "https://drive.google.com/file/d/1a6-jnIwomS4gaeZQOHovFiDzO_syLvOF/view?usp=drive_link"}, {"name": "X10DD.FnF-Honda_Civic_EJ1", "make": "Honda", "model": "Honda Civic EJ1", "pack": "X10DD", "physics": "Fast and Furious", "size": 26.5, "file": "X10DD.FnF-Honda_Civic_EJ1.7z", "link": "https://drive.google.com/file/d/129iWCWbLsZVQIJYndXQ-N05XKamo-br2/view?usp=drive_link"}, {"name": "X10DD.FnF-Honda_Civic_EJ2", "make": "Honda", "model": "Honda Civic EJ2", "pack": "X10DD", "physics": "Fast and Furious", "size": 48.1, "file": "X10DD.FnF-Honda_Civic_EJ2.7z", "link": "https://drive.google.com/file/d/1krfHuvSEZYDaosQ4Q74YnvDRUn1V4Oin/view?usp=drive_link"}, {"name": "TAP-Honda_Civic-SoD", "make": "Honda", "model": "Honda Civic SoD", "pack": "TAP", "physics": "Commisioned", "size": 99.3, "file": "TAP-Honda_Civic-SoD.7z", "link": "https://drive.google.com/file/d/19boN7E_yKt0KaCa21k5UbOn1iEOD4I4G/view?usp=drive_link"}, {"name": "X10DD.Battle-Honda_Civic_ek9", "make": "Honda", "model": "Honda Civic ek9", "pack": "Initial D", "physics": "", "size": 63.6, "file": "X10DD.Battle-Honda_Civic_ek9.7z", "link": "https://drive.google.com/file/d/1zTAoOM9lLcyVx1ThLrqO0JTSMqwu-I2F/view?usp=drive_link"}, {"name": "X10DD.Battle-Honda_S2000", "make": "Honda", "model": "Honda S2000", "pack": "Initial D", "physics": "", "size": 51.8, "file": "X10DD.Battle-Honda_S2000.7z", "link": "https://drive.google.com/file/d/1tfVdyh8dJ12Vm4LRAAEGiOrgyDvRjbpJ/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Honda_S2000", "make": "Honda", "model": "Honda S2000", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 113.7, "file": "LVL-240_55Deg-Honda_S2000.7z", "link": "https://drive.google.com/file/d/1TLAUn_8u18MC_g4XHV5nJMf3xeym69ph/view?usp=drive_link"}, {"name": "LVL-Honda S2000", "make": "Honda", "model": "Honda S2000", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 116.8, "file": "LVL-Honda S2000.7z", "link": "https://drive.google.com/file/d/1spjQbP4vBGf7kB_CQqwtTkmyxxVIV-6Q/view?usp=drive_link"}, {"name": "X10DD.Battle-Honda_civic_eg6_", "make": "Honda", "model": "Honda civic eg6", "pack": "Initial D", "physics": "", "size": 91.8, "file": "X10DD.Battle-Honda_civic_eg6_.7z", "link": "https://drive.google.com/file/d/1LYXtEoco0Dgd-O7Vx3mAkm2ffamFjpcP/view?usp=drive_link"}, {"name": "LVL-Mini Truck_Honda_CBR1000R", "make": "Honda", "model": "Mini Truck Honda CBR1000R", "pack": "RallyCross", "physics": "Busa Trucks", "size": 108.2, "file": "LVL-Mini Truck_Honda_CBR1000R.7z", "link": "https://drive.google.com/file/d/1Fc6_H5dhW0XyuVoHrm-PuLyITtVHn7Uq/view?usp=drive_link"}, {"name": "integra_Fnf1_edwin", "make": "Honda", "model": "integra Fnf1 edwin", "pack": "X10DD", "physics": "Fast and Furious", "size": 35.7, "file": "integra_Fnf1_edwin.7z", "link": "https://drive.google.com/file/d/1V4XANxeIVtWP4t1-_B7gowM1ck58gOIQ/view?usp=drive_link"}, {"name": "integra_mia_fnf1", "make": "Honda", "model": "integra mia fnf1", "pack": "X10DD", "physics": "Fast and Furious", "size": 18.9, "file": "integra_mia_fnf1.7z", "link": "https://drive.google.com/file/d/1PaVq4zQAZedzIGOpMUG_y9UjFXmBeMNN/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Hyundai Genesis", "make": "Hyundai", "model": "Hyundai Genesis", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 50.9, "file": "X10DD.Grassroots-Hyundai Genesis.7z", "link": "https://drive.google.com/file/d/1galL3iC6cxrHjQmaFiERv9jmQiXAA85T/view?usp=drive_link"}, {"name": "TANDEM-Infiniti_G35", "make": "Infiniti", "model": "Infiniti G35", "pack": "T.A.N.D.E.M.", "physics": "", "size": 88.6, "file": "TANDEM-Infiniti_G35.7z", "link": "https://drive.google.com/file/d/1ijWRR5ea0MSzBmK-JQ4Na5_xqxA0sckN/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Infinity_G35", "make": "Infiniti", "model": "Infinity G35", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 147.6, "file": "LVL-240_55Deg-Infinity_G35.7z", "link": "https://drive.google.com/file/d/1nrekNWz1040FGHAQi3U3OallwetJy7c4/view?usp=drive_link"}, {"name": "LVL-Mini Truck Kawasaki ZX-14R", "make": "Kawasaki", "model": "Mini Truck Kawasaki ZX 14R", "pack": "RallyCross", "physics": "Busa Trucks", "size": 116.8, "file": "LVL-Mini Truck Kawasaki ZX-14R.7z", "link": "https://drive.google.com/file/d/1hKsMrzXb1Ke0PYU7BoW0BWH_GMDolQSb/view?usp=drive_link"}, {"name": "JDAM_Lada_RB", "make": "Lada", "model": "Lada RB", "pack": "JDAM", "physics": "", "size": 34.9, "file": "JDAM_Lada_RB.7z", "link": "https://drive.google.com/file/d/1A-64PBpcTEZYD2hsCPVuaVgjfWNp-brF/view?usp=drive_link"}, {"name": "LVLGR8_Delta_S4", "make": "Lancia", "model": "Delta S4", "pack": "RallyCross", "physics": "LVL-GR8", "size": 67.3, "file": "LVLGR8_Delta_S4.7z", "link": "https://drive.google.com/file/d/1VoPEQ_i35XougWMUB8xF0N7xGG8Av6H7/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Lexus_GS300", "make": "Lexus", "model": "Lexus GS300", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 151.7, "file": "LVL-240_55Deg-Lexus_GS300.7z", "link": "https://drive.google.com/file/d/13BLuP3xwz63Kc12b8Dy77xfjErcOLXGF/view?usp=drive_link"}, {"name": "X10DD.Street-Lexus IS300", "make": "Lexus", "model": "Lexus IS300", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 165.1, "file": "X10DD.Street-Lexus IS300.7z", "link": "https://drive.google.com/file/d/1XipFHo5MLKaOqX2GXSqNNFB6WHLeZXaq/view?usp=drive_link"}, {"name": "X10DD.ProSpec.Lexus_RCF", "make": "Lexus", "model": "Lexus RCF", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 90.4, "file": "X10DD.ProSpec.Lexus_RCF.7z", "link": "https://drive.google.com/file/d/1zwIwQty7rNUEZTFMx38GqNTTas62Mix0/view?usp=drive_link"}, {"name": "JDAM_Lexus_SC300", "make": "Lexus", "model": "Lexus SC300", "pack": "JDAM", "physics": "", "size": 83.5, "file": "JDAM_Lexus_SC300.7z", "link": "https://drive.google.com/file/d/1ZI36gEX_OvMOqAGE6lxD7bJr6qzOdzeZ/view?usp=drive_link"}, {"name": "LVLGR8_MG_Metro6R4", "make": "MG", "model": "MG Metro6R4", "pack": "RallyCross", "physics": "LVL-GR8", "size": 72.0, "file": "LVLGR8_MG_Metro6R4.7z", "link": "https://drive.google.com/file/d/1FkAL4hfiRJxlI_zDAi5eQ9vE4tkEnR9B/view?usp=drive_link"}, {"name": "X10DD.Battle-Mazda_Miata", "make": "Mazda", "model": "Mazda Miata", "pack": "Initial D", "physics": "", "size": 69.8, "file": "X10DD.Battle-Mazda_Miata.7z", "link": "https://drive.google.com/file/d/1R_5MEfEur3SUnmGIZRYz8tqIYekZODlW/view?usp=drive_link"}, {"name": "LVL-250_50Deg-Mazda Miata", "make": "Mazda", "model": "Mazda Miata", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 197.0, "file": "LVL-250_50Deg-Mazda Miata.7z", "link": "https://drive.google.com/file/d/1KrPykqDoi8OfXVC6YWWgxd1yEqoMWdMM/view?usp=drive_link"}, {"name": "TANDEM-Mazda Miata", "make": "Mazda", "model": "Mazda Miata", "pack": "T.A.N.D.E.M.", "physics": "", "size": 171.9, "file": "TANDEM-Mazda Miata.7z", "link": "https://drive.google.com/file/d/1hJREV4fvIkVipTYsV9G4YmgemyIE4gTZ/view?usp=drive_link"}, {"name": "TAP-Mazda_Miata", "make": "Mazda", "model": "Mazda Miata", "pack": "TAP", "physics": "", "size": 77.1, "file": "TAP-Mazda_Miata.7z", "link": "https://drive.google.com/file/d/1YgvzPPdQjYKspHnk3ZPIMehDfYjHxAAz/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Mazda Miata NA8C", "make": "Mazda", "model": "Mazda Miata NA8C", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 91.8, "file": "X10DD.Grassroots-Mazda Miata NA8C.7z", "link": "https://drive.google.com/file/d/1nUO8s4VhUPPqUt7I6HU5RJ4igihnVUfu/view?usp=drive_link"}, {"name": "X10DD.Street-Mazda_Miata NA8C", "make": "Mazda", "model": "Mazda Miata NA8C", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 162.4, "file": "X10DD.Street-Mazda_Miata NA8C.7z", "link": "https://drive.google.com/file/d/1q_ZUSnqIFmyud7tVW4sLLsbUryxyD-GX/view?usp=drive_link"}, {"name": "JDAM-Mazda_Miata_Turbo", "make": "Mazda", "model": "Mazda Miata Turbo", "pack": "JDAM", "physics": "", "size": 76.1, "file": "JDAM-Mazda_Miata_Turbo.7z", "link": "https://drive.google.com/file/d/1SploHsFAhYiwcF3U7AvOxaoI3r6ScYzz/view?usp=drive_link"}, {"name": "X10DD.Arch+Mazda_Miata_nb8c", "make": "Mazda", "model": "Mazda Miata nb8c", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 38.3, "file": "X10DD.Arch+Mazda_Miata_nb8c.7z", "link": "https://drive.google.com/file/d/1rX-9FD2iGMLzNB3oZiz_BYRAG92B3Buw/view?usp=drive_link"}, {"name": "TANDEM-Mazda_RX-7_FC", "make": "Mazda", "model": "Mazda RX 7 FC", "pack": "T.A.N.D.E.M.", "physics": "", "size": 155.7, "file": "TANDEM-Mazda_RX-7_FC.7z", "link": "https://drive.google.com/file/d/1iXjnhL78PAz7ELSY7p7DhVo3UPcbCi7O/view?usp=drive_link"}, {"name": "X10DD.Battle-Mazda_RX_7_FC_GTX", "make": "Mazda", "model": "Mazda RX 7 FC GTX", "pack": "Initial D", "physics": "", "size": 56.9, "file": "X10DD.Battle-Mazda_RX_7_FC_GTX.7z", "link": "https://drive.google.com/file/d/162MZNyKouAXB2UfOcWDh7ZCwq6ktxabQ/view?usp=drive_link"}, {"name": "LVL-Mazda RX-7 FC3S", "make": "Mazda", "model": "Mazda RX 7 FC3S", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 143.9, "file": "LVL-Mazda RX-7 FC3S.7z", "link": "https://drive.google.com/file/d/1D9yuJg29rRmfvmd6HHJFRub1Ac5ezyVk/view?usp=drive_link"}, {"name": "X10DD.Street-Mazda RX-7 FC3S", "make": "Mazda", "model": "Mazda RX 7 FC3S", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 101.1, "file": "X10DD.Street-Mazda RX-7 FC3S.7z", "link": "https://drive.google.com/file/d/1DkYTGF8hOaYpLRbuuNPaBUoG4KzP9Fps/view?usp=drive_link"}, {"name": "X10DD.Battle-Mazda_RX-7_FD3S", "make": "Mazda", "model": "Mazda RX 7 FD3S", "pack": "Initial D", "physics": "", "size": 52.4, "file": "X10DD.Battle-Mazda_RX-7_FD3S.7z", "link": "https://drive.google.com/file/d/1JBd2d394Kp8LKXtWcdme-WrkyuTNVm3K/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Mazda RX7 FC3S", "make": "Mazda", "model": "Mazda RX7 FC3S", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 61.3, "file": "X10DD.Grassroots-Mazda RX7 FC3S.7z", "link": "https://drive.google.com/file/d/1AK6D2kTVL5iiufigI6sT5YlZdB6SU_nH/view?usp=drive_link"}, {"name": "LVL-Mazda RX7 FD", "make": "Mazda", "model": "Mazda RX7 FD", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 138.7, "file": "LVL-Mazda RX7 FD.7z", "link": "https://drive.google.com/file/d/1wl4wdjDSCu4IYPpeAsKX_Qxgq9PRRw4a/view?usp=drive_link"}, {"name": "TANDEM-Mazda_RX7_FD", "make": "Mazda", "model": "Mazda RX7 FD", "pack": "T.A.N.D.E.M.", "physics": "", "size": 125.0, "file": "TANDEM-Mazda_RX7_FD.7z", "link": "https://drive.google.com/file/d/145su6fNo-h9JIWfqWavQiRJ90oNTaC3h/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Mazda RX7 FD", "make": "Mazda", "model": "Mazda RX7 FD", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 77.1, "file": "X10DD.Grassroots-Mazda RX7 FD.7z", "link": "https://drive.google.com/file/d/1L7TotJrg45l0rqti52bTzu8QkO-iTHtJ/view?usp=drive_link"}, {"name": "X10DD.Street-Mazda RX7 FD", "make": "Mazda", "model": "Mazda RX7 FD", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 124.0, "file": "X10DD.Street-Mazda RX7 FD.7z", "link": "https://drive.google.com/file/d/1cv7XfQIU0Uzc1m-BekhcMmp7qcopckxt/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Mazda_RX7_FD3S", "make": "Mazda", "model": "Mazda RX7 FD3S", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 102.6, "file": "LVL-240_55Deg-Mazda_RX7_FD3S.7z", "link": "https://drive.google.com/file/d/1TXVFGmOl1uevYUrARa2Aomg_Ns07KUOD/view?usp=drive_link"}, {"name": "LVL-240_55Deg-RX7_FC3S", "make": "Mazda", "model": "RX7 FC3S", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 82.0, "file": "LVL-240_55Deg-RX7_FC3S.7z", "link": "https://drive.google.com/file/d/1HMdNB9rYKAotg6ybEhCMCM3GM6snsqBb/view?usp=drive_link"}, {"name": "X10DD.Street-Mercedes_SL65", "make": "Mercedes", "model": "Mercedes SL65", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 65.9, "file": "X10DD.Street-Mercedes_SL65.7z", "link": "https://drive.google.com/file/d/1VWkTXR2ZWf18J_tb4uxagpIkne_CbJ_M/view?usp=drive_link"}, {"name": "X10DD.Muscle-Mercury Cougar", "make": "Mercury", "model": "Mercury Cougar", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 149.6, "file": "X10DD.Muscle-Mercury Cougar.7z", "link": "https://drive.google.com/file/d/1rcY0hxEUvGeABSQ9emV4hSfBzAKZRKP1/view?usp=drive_link"}, {"name": "X10DD.Battle-Mitsubishi_Evo_3", "make": "Mitsubishi", "model": "Mitsubishi Evo 3", "pack": "Initial D", "physics": "", "size": 59.4, "file": "X10DD.Battle-Mitsubishi_Evo_3.7z", "link": "https://drive.google.com/file/d/12ijltmXOqL5m9lKAcwGa4i2OezoFOO4s/view?usp=drive_link"}, {"name": "X10DD.Arch+Mitsubishi Lancer Evo III GSR", "make": "Mitsubishi", "model": "Mitsubishi Lancer Evo III GSR", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 63.0, "file": "X10DD.Arch+Mitsubishi Lancer Evo III GSR.7z", "link": "https://drive.google.com/file/d/1SnY8VhRHZQKEcIl-fyHT7rmwiYZzkcbj/view?usp=drive_link"}, {"name": "LVL-Mitsubishi Lancer Evo X", "make": "Mitsubishi", "model": "Mitsubishi Lancer Evo X", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 155.4, "file": "LVL-Mitsubishi Lancer Evo X.7z", "link": "https://drive.google.com/file/d/1BrKmm4FFNYnNtr51d10Yy8n6fMtCjVdp/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Mitsubishi Lancer Evo X", "make": "Mitsubishi", "model": "Mitsubishi Lancer Evo X", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 96.3, "file": "X10DD.ProSpec-Mitsubishi Lancer Evo X.7z", "link": "https://drive.google.com/file/d/1_qg-ku2jPLJzjzXGFdVdZuOSYLQKYcZI/view?usp=drive_link"}, {"name": "X10DD.Street-Mitsubishi_Lancer_Evo6", "make": "Mitsubishi", "model": "Mitsubishi Lancer Evo6", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 86.9, "file": "X10DD.Street-Mitsubishi_Lancer_Evo6.7z", "link": "https://drive.google.com/file/d/18rZ_pOLHVTni3QPvBbdB6wOUeSC1C-5M/view?usp=drive_link"}, {"name": "-AiO.Street-Mitsubishi.Evo", "make": "Mitsubishi", "model": "Mitsubishi.Evo", "pack": "X10DD", "physics": "Fast and Furious", "size": 49.9, "file": "-AiO.Street-Mitsubishi.Evo.7z", "link": "https://drive.google.com/file/d/1HXJcJSbHiFEPU0RDRkwRgVkMk4gIlMFt/view?usp=drive_link"}, {"name": "LVLGR8_Peugeot_205_T16_Evo2", "make": "Mitsubishi", "model": "Peugeot 205 T16 Evo2", "pack": "RallyCross", "physics": "LVL-GR8", "size": 69.3, "file": "LVLGR8_Peugeot_205_T16_Evo2.7z", "link": "https://drive.google.com/file/d/1H8eghdc14B1fZYraRS8usk-eHX8Dr1bi/view?usp=drive_link"}, {"name": "fnf_mitsubishi_eclipse", "make": "Mitsubishi", "model": "fnf mitsubishi eclipse", "pack": "X10DD", "physics": "Fast and Furious", "size": 24.0, "file": "fnf_mitsubishi_eclipse.7z", "link": "https://drive.google.com/file/d/1wMBSyQvoFefScjvLfP59c4r_Az1DVkHy/view?usp=drive_link"}, {"name": "adl_proam_180sx_extended", "make": "Nissan", "model": "180sx extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 89.3, "file": "adl_proam_180sx_extended.7z", "link": "https://drive.google.com/file/d/1uCDa2NYapDoubmJ-v-TdfigB6OLi_HqJ/view?usp=drive_link"}, {"name": "adl_proam_350z_extended", "make": "Nissan", "model": "350z extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 197.5, "file": "adl_proam_350z_extended.7z", "link": "https://drive.google.com/file/d/1DU-a30Gnp40R0LoPcWPDaH8dop7KGbHI/view?usp=drive_link"}, {"name": "adl_proam_400z_extended", "make": "Nissan", "model": "400z extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 165.4, "file": "adl_proam_400z_extended.7z", "link": "https://drive.google.com/file/d/1ovc676BRY2fnLrDnL8GK-teykOKb7sNO/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_180SX", "make": "Nissan", "model": "Nissan 180SX", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 183.7, "file": "LVL-240_55Deg-Nissan_180SX.7z", "link": "https://drive.google.com/file/d/14bcBmLrbrKSZG2v_2uOBYS2vbkJs_Y45/view?usp=drive_link"}, {"name": "TANDEM-Nissan_180SX", "make": "Nissan", "model": "Nissan 180SX", "pack": "T.A.N.D.E.M.", "physics": "", "size": 103.5, "file": "TANDEM-Nissan_180SX.7z", "link": "https://drive.google.com/file/d/1-v5p3HhufCFLC7zjfiwQgpYIPvfYuiWz/view?usp=drive_link"}, {"name": "TAProot-Nissan 180SX", "make": "Nissan", "model": "Nissan 180SX", "pack": "TAP", "physics": "TAProots", "size": 47.2, "file": "TAProot-Nissan 180SX.7z", "link": "https://drive.google.com/file/d/1FJ5hG8LGwbO_i34KB7snQgH8qpG3_VTO/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan 180SX", "make": "Nissan", "model": "Nissan 180SX", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 146.5, "file": "X10DD.Grassroots-Nissan 180SX.7z", "link": "https://drive.google.com/file/d/1uVe4CTRMo3gSB3xKadWPnc8UL4TWEaqj/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan_180SX", "make": "Nissan", "model": "Nissan 180SX", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 96.0, "file": "X10DD.ProSpec-Nissan_180SX.7z", "link": "https://drive.google.com/file/d/1iy72Z5CJP_zxWKBnnF7sCfE5wesw7jgL/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan 180SX RPS13", "make": "Nissan", "model": "Nissan 180SX RPS13", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 141.0, "file": "X10DD.Street-Nissan 180SX RPS13.7z", "link": "https://drive.google.com/file/d/1J5Bt5tCGslGfO2oEPicVTgorUbZDU5bB/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_180sx", "make": "Nissan", "model": "Nissan 180sx", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 79.7, "file": "X10DD.Arch+Nissan_180sx.7z", "link": "https://drive.google.com/file/d/1lLxESb-awNtf_WX5q6WDO7mRiwEhh4iN/view?usp=drive_link"}, {"name": "TAP-Nissan_200SX", "make": "Nissan", "model": "Nissan 200SX", "pack": "TAP", "physics": "", "size": 61.5, "file": "TAP-Nissan_200SX.7z", "link": "https://drive.google.com/file/d/1J16_8KalCWWfbvi5ggb_Ww_GawmNkSUe/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 110.2, "file": "LVL-240_55Deg-Nissan_240SX.7z", "link": "https://drive.google.com/file/d/1iYMt0reM0pn5VQpZaZRmzb4_duzTZKoK/view?usp=drive_link"}, {"name": "TANDEM-Nissan_240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "T.A.N.D.E.M.", "physics": "", "size": 168.9, "file": "TANDEM-Nissan_240SX.7z", "link": "https://drive.google.com/file/d/1eccuareJ5SrYZvFEmni119gCa5wq6tTn/view?usp=drive_link"}, {"name": "TAP-Nissan_240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "TAP", "physics": "", "size": 43.5, "file": "TAP-Nissan_240SX.7z", "link": "https://drive.google.com/file/d/1t0BA_uRpkDKe3zAqcfW3it_RKvJzhSCA/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 38.6, "file": "X10DD.Arch+Nissan_240SX.7z", "link": "https://drive.google.com/file/d/1VJhKWzgvynHAqAAmkCf1VyTz-6GfcCYR/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan 240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 98.8, "file": "X10DD.Grassroots-Nissan 240SX.7z", "link": "https://drive.google.com/file/d/1uC6wDQo9AaDtsLAcchNZzyzhBnl4dF8q/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan 240SX", "make": "Nissan", "model": "Nissan 240SX", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 82.8, "file": "X10DD.Street-Nissan 240SX.7z", "link": "https://drive.google.com/file/d/1oOEpUdXyS8WkiMqkQNO7_QYiXvtWhEUP/view?usp=drive_link"}, {"name": "TANDEM-Nissan_300ZX", "make": "Nissan", "model": "Nissan 300ZX", "pack": "T.A.N.D.E.M.", "physics": "", "size": 120.5, "file": "TANDEM-Nissan_300ZX.7z", "link": "https://drive.google.com/file/d/1bBXrDaGDn6rg2UUBLfkDiArs3gH7QHNP/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan_300zx", "make": "Nissan", "model": "Nissan 300zx", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 91.3, "file": "X10DD.Grassroots-Nissan_300zx.7z", "link": "https://drive.google.com/file/d/1AS2h3dfFo_dMp7nNrn22c0DD0GfjVad_/view?usp=drive_link"}, {"name": "TANDEM-Nissan_350_z", "make": "Nissan", "model": "Nissan 350 z", "pack": "T.A.N.D.E.M.", "physics": "", "size": 122.6, "file": "TANDEM-Nissan_350_z.7z", "link": "https://drive.google.com/file/d/1MDnYZGW-kq2r10dEjIs45WhuXrUAYnc9/view?usp=drive_link"}, {"name": "LVL-Nissan 350Z", "make": "Nissan", "model": "Nissan 350Z", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 98.1, "file": "LVL-Nissan 350Z.7z", "link": "https://drive.google.com/file/d/1AmohbNEymSEHLjN1IjD2419SuO3dQ0pJ/view?usp=drive_link"}, {"name": "TAP-Nissan_350Z", "make": "Nissan", "model": "Nissan 350Z", "pack": "TAP", "physics": "", "size": 60.5, "file": "TAP-Nissan_350Z.7z", "link": "https://drive.google.com/file/d/1GJKlaDvAcXO_JUYMXjTJxKX6Afw9xoma/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan_350Z", "make": "Nissan", "model": "Nissan 350Z", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 74.8, "file": "X10DD.Grassroots-Nissan_350Z.7z", "link": "https://drive.google.com/file/d/1VCLH59PRse2O1poZKOpByKQs_o9OUyJp/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan_350Z", "make": "Nissan", "model": "Nissan 350Z", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 94.3, "file": "X10DD.Street-Nissan_350Z.7z", "link": "https://drive.google.com/file/d/1qzaP-Rj0whCvOkzwZ_VEhzwwfESpKSAn/view?usp=drive_link"}, {"name": "JDAM-Nissan_350z", "make": "Nissan", "model": "Nissan 350z", "pack": "JDAM", "physics": "", "size": 31.9, "file": "JDAM-Nissan_350z.7z", "link": "https://drive.google.com/file/d/1rCxkFdmrU68YYYJ6joztwZrIZ0F62EHM/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_350z", "make": "Nissan", "model": "Nissan 350z", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 97.3, "file": "LVL-240_55Deg-Nissan_350z.7z", "link": "https://drive.google.com/file/d/1kNWuoQ2q69D8FhsrrB62ctKvx7Ihtgyt/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_350z", "make": "Nissan", "model": "Nissan 350z", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 49.4, "file": "X10DD.Arch+Nissan_350z.7z", "link": "https://drive.google.com/file/d/1pQROOu9JIOYSpbk3dNp2dRD_lYGr-Bps/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan_350z", "make": "Nissan", "model": "Nissan 350z", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 126.9, "file": "X10DD.ProSpec-Nissan_350z.7z", "link": "https://drive.google.com/file/d/1a8ijmGTTtxGnf3ZekpgyLfcp_8agobFp/view?usp=drive_link"}, {"name": "X10DD.Street+Nissan_370Z", "make": "Nissan", "model": "Nissan 370Z", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 91.9, "file": "X10DD.Street+Nissan_370Z.7z", "link": "https://drive.google.com/file/d/1BjEBN5iNnti6J9wdD248nMKQNC9zUlsk/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_370z", "make": "Nissan", "model": "Nissan 370z", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 90.5, "file": "LVL-240_55Deg-Nissan_370z.7z", "link": "https://drive.google.com/file/d/1p3i7hq2hEumq8l-uB4lT23XKCdlsA-Lo/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan 370z", "make": "Nissan", "model": "Nissan 370z", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 30.8, "file": "X10DD.Grassroots-Nissan 370z.7z", "link": "https://drive.google.com/file/d/1fue7L1GZ_XReeLtFZHWOtr8mEuFllM0f/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Fairlady 350Z", "make": "Nissan", "model": "Nissan Fairlady 350Z", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 90.0, "file": "X10DD.Grassroots-Nissan Fairlady 350Z.7z", "link": "https://drive.google.com/file/d/1LObPgBECr-2fNMEpc1sX14RL3a9uCcpW/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan_Laurel_C35", "make": "Nissan", "model": "Nissan Laurel C35", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 127.3, "file": "X10DD.Street-Nissan_Laurel_C35.7z", "link": "https://drive.google.com/file/d/1UO-2UWre8kvfCxXlQP9-d2HRQpTc0jt2/view?usp=drive_link"}, {"name": "TANDEM-Nissan Onevia S13", "make": "Nissan", "model": "Nissan Onevia S13", "pack": "T.A.N.D.E.M.", "physics": "", "size": 158.2, "file": "TANDEM-Nissan Onevia S13.7z", "link": "https://drive.google.com/file/d/1Dzm-9dKdDsdRWQSjswprnSlcgsovLr7y/view?usp=drive_link"}, {"name": "X10DD.Street+Nissan PS13", "make": "Nissan", "model": "Nissan PS13", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 36.6, "file": "X10DD.Street+Nissan PS13.7z", "link": "https://drive.google.com/file/d/1ZfeZZ47c8dFOg7dBTF-441pYm9026Mif/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_R31", "make": "Nissan", "model": "Nissan R31", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 137.5, "file": "LVL-240_55Deg-Nissan_R31.7z", "link": "https://drive.google.com/file/d/1kNksMVnPhzq_zn8npUITN7nMkX309g3v/view?usp=drive_link"}, {"name": "X10DD.Street+Nissan_R31", "make": "Nissan", "model": "Nissan R31", "pack": "X10DD", "physics": "02.) X10DD.Street/Street+", "size": 159.1, "file": "X10DD.Street+Nissan_R31.7z", "link": "https://drive.google.com/file/d/1rE8R-DlUgLxyyERgiedLCQkMppP42Jfp/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_R32", "make": "Nissan", "model": "Nissan R32", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 108.9, "file": "LVL-240_55Deg-Nissan_R32.7z", "link": "https://drive.google.com/file/d/11fCd2HKYwkk_ImYoOIRRn5QU3iPrPBrD/view?usp=drive_link"}, {"name": "TANDEM-Nissan_R32", "make": "Nissan", "model": "Nissan R32", "pack": "T.A.N.D.E.M.", "physics": "", "size": 143.0, "file": "TANDEM-Nissan_R32.7z", "link": "https://drive.google.com/file/d/1jcDvjMYKY9FKWXpTeqttmz8Oauc0ae00/view?usp=drive_link"}, {"name": "TANDEM-Nissan_R33", "make": "Nissan", "model": "Nissan R33", "pack": "T.A.N.D.E.M.", "physics": "", "size": 124.1, "file": "TANDEM-Nissan_R33.7z", "link": "https://drive.google.com/file/d/1GiAmU0j5g0bbp7qXxXuOGb-ZHAPqXMJe/view?usp=drive_link"}, {"name": "TAP-Nissan_R34", "make": "Nissan", "model": "Nissan R34", "pack": "TAP", "physics": "", "size": 46.2, "file": "TAP-Nissan_R34.7z", "link": "https://drive.google.com/file/d/1I-A0jhTBY-US0idTLQg5RVQZRnkfbTRQ/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan R34", "make": "Nissan", "model": "Nissan R34", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 139.7, "file": "X10DD.Street-Nissan R34.7z", "link": "https://drive.google.com/file/d/1psS52wfxQv0HPHVJX7lB7iOjZlK5IERr/view?usp=drive_link"}, {"name": "TAProot-Nissan S12", "make": "Nissan", "model": "Nissan S12", "pack": "TAP", "physics": "TAProots", "size": 82.5, "file": "TAProot-Nissan S12.7z", "link": "https://drive.google.com/file/d/1eLWnmAPsRL1S4rXdghuh6zm_y05XBzPu/view?usp=drive_link"}, {"name": "JDAM-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "JDAM", "physics": "", "size": 84.3, "file": "JDAM-Nissan_S13.7z", "link": "https://drive.google.com/file/d/1a3MWpSZoUJ4SFEyPMT8hy8uSod7R1Zsb/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 148.4, "file": "LVL-240_55Deg-Nissan_S13.7z", "link": "https://drive.google.com/file/d/1WmvBYV3nnirlNjTA5fOXfwlcLt6YIiAB/view?usp=drive_link"}, {"name": "LVL-Nissan S13", "make": "Nissan", "model": "Nissan S13", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 219.8, "file": "LVL-Nissan S13.7z", "link": "https://drive.google.com/file/d/1nXRGmnw2qAcz14tyv0GffSPa4fMOeeib/view?usp=drive_link"}, {"name": "TANDEM-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "T.A.N.D.E.M.", "physics": "", "size": 129.5, "file": "TANDEM-Nissan_S13.7z", "link": "https://drive.google.com/file/d/1B-06DVcDuLM_gfCFsln35xrfpOwhW_UU/view?usp=drive_link"}, {"name": "TAP-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "TAP", "physics": "", "size": 68.3, "file": "TAP-Nissan_S13.7z", "link": "https://drive.google.com/file/d/14rGNlWjPCYDu7yhfw0pc0ZDMcuHb9SSn/view?usp=drive_link"}, {"name": "TAProot-Nissan S13", "make": "Nissan", "model": "Nissan S13", "pack": "TAP", "physics": "TAProots", "size": 111.7, "file": "TAProot-Nissan S13.7z", "link": "https://drive.google.com/file/d/1dXOu9cB_aQFGA5miUMSqaTdiEUG9N1h9/view?usp=drive_link"}, {"name": "X10DD.Arch-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 76.7, "file": "X10DD.Arch-Nissan_S13.7z", "link": "https://drive.google.com/file/d/1G8chkdHezXoS18zRzPlwARF6hB7A7npU/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan_S13", "make": "Nissan", "model": "Nissan S13", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 117.2, "file": "X10DD.ProSpec-Nissan_S13.7z", "link": "https://drive.google.com/file/d/1WW-cPMcvvE7EglII207xiilw90nbY4wg/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_S13_Cabrio", "make": "Nissan", "model": "Nissan S13 Cabrio", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 182.5, "file": "X10DD.Arch+Nissan_S13_Cabrio.7z", "link": "https://drive.google.com/file/d/10FY2wlLydvuP_76Ec-wYIwkvWw6PpYNQ/view?usp=drive_link"}, {"name": "JDAM_Nissan_S14", "make": "Nissan", "model": "Nissan S14", "pack": "JDAM", "physics": "", "size": 73.1, "file": "JDAM_Nissan_S14.7z", "link": "https://drive.google.com/file/d/1yCd9oAS2NTExYb__Ulp-YVukdnCCg_PC/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_S14", "make": "Nissan", "model": "Nissan S14", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 106.9, "file": "LVL-240_55Deg-Nissan_S14.7z", "link": "https://drive.google.com/file/d/1diPT8QbGxISNuNc_jRpQbwsB4pycjpLa/view?usp=drive_link"}, {"name": "LVL-Nissan S14", "make": "Nissan", "model": "Nissan S14", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 91.6, "file": "LVL-Nissan S14.7z", "link": "https://drive.google.com/file/d/1fiSefKujO18lBHecqM6v13wwVI_C9FLk/view?usp=drive_link"}, {"name": "TANDEM-Nissan_S14", "make": "Nissan", "model": "Nissan S14", "pack": "T.A.N.D.E.M.", "physics": "", "size": 99.5, "file": "TANDEM-Nissan_S14.7z", "link": "https://drive.google.com/file/d/1UmI91tYD_v-DNDwoaagwMXsDzYYmQ5jF/view?usp=drive_link"}, {"name": "TAP-Nissan_S14", "make": "Nissan", "model": "Nissan S14", "pack": "TAP", "physics": "", "size": 58.1, "file": "TAP-Nissan_S14.7z", "link": "https://drive.google.com/file/d/1hTLhFJkO-mM5V_bcDx33Qhh0zsCgz3nA/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan S14", "make": "Nissan", "model": "Nissan S14", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 34.9, "file": "X10DD.Grassroots-Nissan S14.7z", "link": "https://drive.google.com/file/d/1NE6s1tKA34WoN8qLh50WntuuWwd_zJwN/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan S14", "make": "Nissan", "model": "Nissan S14", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 177.9, "file": "X10DD.Street-Nissan S14.7z", "link": "https://drive.google.com/file/d/15b8lotGhMHmWZ_xirl2JPS7PcQxF8smx/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan S14", "make": "Nissan", "model": "Nissan S14", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 70.0, "file": "X10DD.ProSpec-Nissan S14.7z", "link": "https://drive.google.com/file/d/1skhkVURZgFFqZhg23SOu2jY_kEwqLVBa/view?usp=drive_link"}, {"name": "LVL-Nissan_S14_Boss", "make": "Nissan", "model": "Nissan S14 Boss", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 150.7, "file": "LVL-Nissan_S14_Boss.7z", "link": "https://drive.google.com/file/d/10qC62UyJOtu6XfFDHacUarxu_JtQ3QtI/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan_S14_Boss", "make": "Nissan", "model": "Nissan S14 Boss", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 85.8, "file": "X10DD.ProSpec-Nissan_S14_Boss.7z", "link": "https://drive.google.com/file/d/1lvdYQbdVYuGDFZdyx2zgEwXOTsqOBblo/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Nissan_S15", "make": "Nissan", "model": "Nissan S15", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 147.0, "file": "LVL-240_55Deg-Nissan_S15.7z", "link": "https://drive.google.com/file/d/1GE481Ftn97WGlAgd6ugG8u80Z-iq02iu/view?usp=drive_link"}, {"name": "LVL-Nissan_S15_", "make": "Nissan", "model": "Nissan S15", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 155.6, "file": "LVL-Nissan_S15_.7z", "link": "https://drive.google.com/file/d/1kkvVL6-wVd3cC7XV3T6oDuQWV4gTGGSs/view?usp=drive_link"}, {"name": "TANDEM-Nissan S15", "make": "Nissan", "model": "Nissan S15", "pack": "T.A.N.D.E.M.", "physics": "", "size": 159.4, "file": "TANDEM-Nissan S15.7z", "link": "https://drive.google.com/file/d/1w8u4heKYmPU6MD6fKTn5gIGtluMaMOIJ/view?usp=drive_link"}, {"name": "TAP-Nissan_S15", "make": "Nissan", "model": "Nissan S15", "pack": "TAP", "physics": "", "size": 29.8, "file": "TAP-Nissan_S15.7z", "link": "https://drive.google.com/file/d/1o7tIAeBSWY_851KQtWX9JhUqhR9V8Gr8/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan S15", "make": "Nissan", "model": "Nissan S15", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 81.7, "file": "X10DD.Grassroots-Nissan S15.7z", "link": "https://drive.google.com/file/d/1ilhlb0Xk0UlOPUtZwjczUXdqPc7Zl1__/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Nissan S15", "make": "Nissan", "model": "Nissan S15", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 91.1, "file": "X10DD.ProSpec-Nissan S15.7z", "link": "https://drive.google.com/file/d/1cs8tTdkg1wg1lL57WezjfQaXPq_ZRm97/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Sentra", "make": "Nissan", "model": "Nissan Sentra", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 64.6, "file": "X10DD.Grassroots-Nissan Sentra.7z", "link": "https://drive.google.com/file/d/1bgxyNofvyDKbTlLt3FgKiApNXngavGQw/view?usp=drive_link"}, {"name": "X10DD.Battle-Nissan_Sil80", "make": "Nissan", "model": "Nissan Sil80", "pack": "Initial D", "physics": "", "size": 21.5, "file": "X10DD.Battle-Nissan_Sil80.7z", "link": "https://drive.google.com/file/d/1z3OY5JGeF320Mu09Bm-eWCOQ48wNxlMC/view?usp=drive_link"}, {"name": "X10DD.Battle-Nissan Silvia S13", "make": "Nissan", "model": "Nissan Silvia S13", "pack": "Initial D", "physics": "", "size": 30.5, "file": "X10DD.Battle-Nissan Silvia S13.7z", "link": "https://drive.google.com/file/d/1NFaPHbb3gjYRGB8-XGVnQCL0a9J3Ptfp/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Silvia S13", "make": "Nissan", "model": "Nissan Silvia S13", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 91.6, "file": "X10DD.Grassroots-Nissan Silvia S13.7z", "link": "https://drive.google.com/file/d/1fZk2A7CkNYp0ocA8Q5-i9uqJYva6RV6e/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_Silvia_S14", "make": "Nissan", "model": "Nissan Silvia S14", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 31.0, "file": "X10DD.Arch+Nissan_Silvia_S14.7z", "link": "https://drive.google.com/file/d/1Qorr3vWHPofdNA1tyAfw23iEGBwXlADm/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan_Silvia_S15", "make": "Nissan", "model": "Nissan Silvia S15", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 47.9, "file": "X10DD.Arch+Nissan_Silvia_S15.7z", "link": "https://drive.google.com/file/d/1gkRUZYiyaljG7RaW_ZmeNTPZPE0w9xue/view?usp=drive_link"}, {"name": "JDAM-Nissan Skyline GT-R34", "make": "Nissan", "model": "Nissan Skyline GT R34", "pack": "JDAM", "physics": "", "size": 154.7, "file": "JDAM-Nissan Skyline GT-R34.7z", "link": "https://drive.google.com/file/d/1aAkadFFKF_LBqfi1U-zayiiNEpTnxoXd/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Skyline R31", "make": "Nissan", "model": "Nissan Skyline R31", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 26.6, "file": "X10DD.Grassroots-Nissan Skyline R31.7z", "link": "https://drive.google.com/file/d/11RSNLy6lgjbDjYAIWq1Wph5C11yOFDi-/view?usp=drive_link"}, {"name": "-Ai.5O-Nissan Skyline R32", "make": "Nissan", "model": "Nissan Skyline R32", "pack": "Police", "physics": "", "size": 35.8, "file": "-Ai.5O-Nissan Skyline R32.7z", "link": "https://drive.google.com/file/d/1dlpvGXkutwz1oo8IL27GI7cI3is9lkki/view?usp=drive_link"}, {"name": "TAP-Nissan_Skyline_R32", "make": "Nissan", "model": "Nissan Skyline R32", "pack": "TAP", "physics": "", "size": 140.3, "file": "TAP-Nissan_Skyline_R32.7z", "link": "https://drive.google.com/file/d/1w_Ou8AqEapVpTziEoM5OxB9g70sv4mbB/view?usp=drive_link"}, {"name": "X10DD.Arch+Nissan Skyline R32", "make": "Nissan", "model": "Nissan Skyline R32", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 92.2, "file": "X10DD.Arch+Nissan Skyline R32.7z", "link": "https://drive.google.com/file/d/156KSkQXNgMxJxpLDGTp7jyUf3yzEtXHX/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Skyline R32", "make": "Nissan", "model": "Nissan Skyline R32", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 98.8, "file": "X10DD.Grassroots-Nissan Skyline R32.7z", "link": "https://drive.google.com/file/d/1wCxe5dnKI8MYy2E6zB9KQWRfrkV0O0yK/view?usp=drive_link"}, {"name": "LVL-Nissan_Skyline_R34", "make": "Nissan", "model": "Nissan Skyline R34", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 154.6, "file": "LVL-Nissan_Skyline_R34.7z", "link": "https://drive.google.com/file/d/1qfVJ0jm0Rm3O4SIL-aep8sQwb6n4P4KV/view?usp=drive_link"}, {"name": "X10DD.Battle-Nissan_Skyline_gtr32", "make": "Nissan", "model": "Nissan Skyline gtr32", "pack": "Initial D", "physics": "", "size": 79.9, "file": "X10DD.Battle-Nissan_Skyline_gtr32.7z", "link": "https://drive.google.com/file/d/1aFL2nx5KQfJb2o7Soij7ZHVtnX1URIZE/view?usp=drive_link"}, {"name": "LVL-Nissan Z", "make": "Nissan", "model": "Nissan Z", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 142.7, "file": "LVL-Nissan Z.7z", "link": "https://drive.google.com/file/d/1AlsqrFgpG2pqoxpwXkST_0mj3wTsGOk0/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Nissan Z", "make": "Nissan", "model": "Nissan Z", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 143.4, "file": "X10DD.Grassroots-Nissan Z.7z", "link": "https://drive.google.com/file/d/1jqptUwuR7GOKZ10Ri1_iigSZ2aXlXu7b/view?usp=drive_link"}, {"name": "X10DD.Arch-Nissan_sil80", "make": "Nissan", "model": "Nissan sil80", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 134.0, "file": "X10DD.Arch-Nissan_sil80.7z", "link": "https://drive.google.com/file/d/1yIAeXpPpDmXJ8zqRdfBVKi4hmwKLD-91/view?usp=drive_link"}, {"name": "X10DD.Street-Nissan.S13", "make": "Nissan", "model": "Nissan.S13", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 79.6, "file": "X10DD.Street-Nissan.S13.7z", "link": "https://drive.google.com/file/d/1Yd_RmDNRBTBbkNY4kdLxh1D5e-PdB_bK/view?usp=drive_link"}, {"name": "X10DD.Street-S15 Nissan", "make": "Nissan", "model": "S15 Nissan", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 112.5, "file": "X10DD.Street-S15 Nissan.7z", "link": "https://drive.google.com/file/d/1dpBtaV1fbl34LI5_zxuLpCf20CuIAhct/view?usp=drive_link"}, {"name": "Url_nissan_400z_nismo", "make": "Nissan", "model": "Url nissan 400z nismo", "pack": "TAP", "physics": "Commisioned", "size": 385.7, "file": "Url_nissan_400z_nismo.7z", "link": "https://drive.google.com/file/d/1bBb6OdEXCLsUgjnB0CXLUyDZOU-gSWyb/view?usp=drive_link"}, {"name": "fnf2_nissan_skyline", "make": "Nissan", "model": "fnf2 nissan skyline", "pack": "X10DD", "physics": "Fast and Furious", "size": 60.0, "file": "fnf2_nissan_skyline.7z", "link": "https://drive.google.com/file/d/18wO0GKfIjwwGL7JcAORJgLZ62C7to6Uh/view?usp=drive_link"}, {"name": "navi_nissan_z33_veilside", "make": "Nissan", "model": "navi nissan z33 veilside", "pack": "X10DD", "physics": "Fast and Furious", "size": 32.6, "file": "navi_nissan_z33_veilside.7z", "link": "https://drive.google.com/file/d/1u3eUlXhs5IaWy4FRre0xTnD-widDxXtm/view?usp=drive_link"}, {"name": "nissan_s14_fnf1", "make": "Nissan", "model": "nissan s14 fnf1", "pack": "X10DD", "physics": "Fast and Furious", "size": 40.3, "file": "nissan_s14_fnf1.7z", "link": "https://drive.google.com/file/d/1a6Ncrb6B0zxML-xlh__H3IdtaCIwgD4D/view?usp=drive_link"}, {"name": "nissan_skyline_FNF1", "make": "Nissan", "model": "nissan skyline FNF1", "pack": "X10DD", "physics": "Fast and Furious", "size": 36.1, "file": "nissan_skyline_FNF1.7z", "link": "https://drive.google.com/file/d/1PyNyGOI3G2bqN0dgUHSaWx6YHuAyxjOh/view?usp=drive_link"}, {"name": "adl_proam_r31_wagon_extended", "make": "Nissan", "model": "r31 wagon extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 143.6, "file": "adl_proam_r31_wagon_extended.7z", "link": "https://drive.google.com/file/d/1gHBPSgtENYcLKVsn1NAfd6Vvz-ZzDgde/view?usp=drive_link"}, {"name": "adl_proam_r34_extended", "make": "Nissan", "model": "r34 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 101.6, "file": "adl_proam_r34_extended.7z", "link": "https://drive.google.com/file/d/1KfmG6dTk5VmOBc4YJMrFU0XfBWV0aOQi/view?usp=drive_link"}, {"name": "adl_proam_s13_extended", "make": "Nissan", "model": "s13 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 198.2, "file": "adl_proam_s13_extended.7z", "link": "https://drive.google.com/file/d/1yC5_C5ILP5cDvIZi8v8VpWf5J2zcafj3/view?usp=drive_link"}, {"name": "adl_proam_s14_extended", "make": "Nissan", "model": "s14 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 87.8, "file": "adl_proam_s14_extended.7z", "link": "https://drive.google.com/file/d/1WZoc6R2RWmrE-5XDrKSFHbcO-OY_Re6Z/view?usp=drive_link"}, {"name": "adl_proam_s15_extended", "make": "Nissan", "model": "s15 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 107.4, "file": "adl_proam_s15_extended.7z", "link": "https://drive.google.com/file/d/1o2x7m-c149sfjDai6OEJFNTOEEZcpCUk/view?usp=drive_link"}, {"name": "ADL-RealiSimHQ Pro Am Extended Physics", "make": "Other", "model": "ADL RealiSimHQ Pro Am Extended Physics", "pack": "Zipped Carpacks", "physics": "", "size": 2487.4, "file": "ADL-RealiSimHQ Pro Am Extended Physics.7z", "link": "https://drive.google.com/file/d/1JfQbMxnJ1efDHbkE8MgvRJjXkQCroOBk/view?usp=drive_link"}, {"name": "ADL+", "make": "Other", "model": "ADL+", "pack": "ADL-RealiSim HQ", "physics": "Extended", "size": 13.1, "file": "ADL+.7z", "link": "https://drive.google.com/file/d/1Ki4TG8VvKd1XVx4gzjYhQrowbFUQIZmy/view?usp=drive_link"}, {"name": "LAWD-Exobuggy", "make": "Other", "model": "Exobuggy", "pack": "RallyCross", "physics": "RX Style Fun Cars", "size": 70.8, "file": "LAWD-Exobuggy.7z", "link": "https://drive.google.com/file/d/1vNe9_4H49NQrMeASr-5U8IEXXz776Bzs/view?usp=drive_link"}, {"name": "JK_Java_bike", "make": "Other", "model": "JK Java bike", "pack": "Traffic", "physics": "", "size": 51.7, "file": "JK_Java_bike.7z", "link": "https://drive.google.com/file/d/1pUK2wMcpLsB1bXNBGZj-y3fmfW-I-u1V/view?usp=drive_link"}, {"name": "LVL240 Carpack v0.01.00", "make": "Other", "model": "LVL240 Carpack v0.01.00", "pack": "Zipped Carpacks", "physics": "", "size": 4451.7, "file": "LVL240 Carpack v0.01.00.7z", "link": "https://drive.google.com/file/d/1AaeUGsLZdbX22pMxrwqe9xq6fgd3LfFx/view?usp=drive_link"}, {"name": "LVL420 Carpack v0.01.00", "make": "Other", "model": "LVL420 Carpack v0.01.00", "pack": "Zipped Carpacks", "physics": "", "size": 4066.1, "file": "LVL420 Carpack v0.01.00.7z", "link": "https://drive.google.com/file/d/1Mzwvx_uiPLxAQHTRYQ-ZXD8qqa69nFtF/view?usp=drive_link"}, {"name": "LVL-Mini MonsterTruck AWD", "make": "Other", "model": "Mini MonsterTruck AWD", "pack": "RallyCross", "physics": "Busa Trucks", "size": 110.9, "file": "LVL-Mini MonsterTruck AWD.7z", "link": "https://drive.google.com/file/d/1Cdml8ZpS07cD6CK_OI-lfj1K6ks6whNx/view?usp=drive_link"}, {"name": "_T.A.N.D.E.M.S_", "make": "Other", "model": "T.A.N.D.E.M.S", "pack": "Zipped Carpacks", "physics": "", "size": 4186.5, "file": "_T.A.N.D.E.M.S_.7z", "link": "https://drive.google.com/file/d/1rOhM2GLfy9vPMiH7N_-x7SMtnJHm5lAX/view?usp=drive_link"}, {"name": "LVL-Teslide", "make": "Other", "model": "Teslide", "pack": "L.E.V.E.L.", "physics": "Extra Cars", "size": 148.4, "file": "LVL-Teslide.7z", "link": "https://drive.google.com/file/d/1EIn44hSqQ_1sezA8xRVFApOFs0XXRRG8/view?usp=drive_link"}, {"name": "Traffic", "make": "Other", "model": "Traffic", "pack": "Traffic", "physics": "Motorcycle Touge Traffic", "size": 351.4, "file": "Traffic.7z", "link": "https://drive.google.com/file/d/1gy9dEQT11SUtGIXv7BxxXGOSk3OyWIvV/view?usp=drive_link"}, {"name": "Traffic_Tourer_bike", "make": "Other", "model": "Traffic Tourer bike", "pack": "Traffic", "physics": "", "size": 38.7, "file": "Traffic_Tourer_bike.7z", "link": "https://drive.google.com/file/d/1-WlCryozXCYH4HLqfsllWY2zFx8QPVA_/view?usp=drive_link"}, {"name": "X10DD 01.Grassroots Pack", "make": "Other", "model": "X10DD 01.Grassroots Pack", "pack": "Zipped Carpacks", "physics": "", "size": 1302.2, "file": "X10DD 01.Grassroots Pack.7z", "link": "https://drive.google.com/file/d/1y9svUOW7isJMFDWXTNcMqUhHprxzDNtt/view?usp=drive_link"}, {"name": "X10DD 02.Street Carpack", "make": "Other", "model": "X10DD 02.Street Carpack", "pack": "Zipped Carpacks", "physics": "", "size": 3563.3, "file": "X10DD 02.Street Carpack.7z", "link": "https://drive.google.com/file/d/1Aa6DMsLpjALwr14FfvZAs5EjBh5jeOXU/view?usp=drive_link"}, {"name": "X10DD 03.Muscle Carpack", "make": "Other", "model": "X10DD 03.Muscle Carpack", "pack": "Zipped Carpacks", "physics": "", "size": 1437.6, "file": "X10DD 03.Muscle Carpack.zip", "link": "https://drive.google.com/file/d/1G82arf_WHxb-HEMDwK9sbQzw30-Qu5Bn/view?usp=drive_link"}, {"name": "X10DD 04. FD ProSpec", "make": "Other", "model": "X10DD 04. FD ProSpec", "pack": "Zipped Carpacks", "physics": "", "size": 2316.8, "file": "X10DD 04. FD ProSpec.7z", "link": "https://drive.google.com/file/d/1W9_6L4RJXi3YOAkmawbse8Sj5A8zuF2U/view?usp=drive_link"}, {"name": "adl_proam_a80_extended", "make": "Other", "model": "a80 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 115.1, "file": "adl_proam_a80_extended.7z", "link": "https://drive.google.com/file/d/1JF-Zpq1xtlyAEQYupio50BH04R6SrlOV/view?usp=drive_link"}, {"name": "axfor_camotos_r6", "make": "Other", "model": "axfor camotos r6", "pack": "RallyCross", "physics": "RX Style Fun Cars", "size": 101.5, "file": "axfor_camotos_r6.7z", "link": "https://drive.google.com/file/d/1TRQlu5A8El26H19hGU5MuJ7yVjgL13b3/view?usp=drive_link"}, {"name": "bk_truck_kent_t800", "make": "Other", "model": "bk truck kent t800", "pack": "X10DD", "physics": "Fast and Furious", "size": 51.0, "file": "bk_truck_kent_t800.7z", "link": "https://drive.google.com/file/d/1VFdouw3Aa2PWN6Z8irMGXn63wCXyNPaA/view?usp=drive_link"}, {"name": "f2_tecno", "make": "Other", "model": "f2 tecno", "pack": "Initial D", "physics": "", "size": 72.5, "file": "f2_tecno.7z", "link": "https://drive.google.com/file/d/1TzsaACi_HTd8iI8QV0MDi1azU6A5h_WR/view?usp=drive_link"}, {"name": "f2_tecno", "make": "Other", "model": "f2 tecno", "pack": "RallyCross", "physics": "", "size": 287.9, "file": "f2_tecno.7z", "link": "https://drive.google.com/file/d/1TzsaACi_HTd8iI8QV0MDi1azU6A5h_WR/view?usp=drive_link"}, {"name": "adl_proam_fc_extended", "make": "Other", "model": "fc extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 159.9, "file": "adl_proam_fc_extended.7z", "link": "https://drive.google.com/file/d/10X9M0-ZJstlKHLpoNTPjynlvg_R5YHyW/view?usp=drive_link"}, {"name": "pb_gpz900r_enhanced", "make": "Other", "model": "pb gpz900r enhanced", "pack": "Traffic", "physics": "", "size": 39.7, "file": "pb_gpz900r_enhanced.7z", "link": "https://drive.google.com/file/d/1LtnnnAP7OGvIXkaj19TBArtVPnARWPpl/view?usp=drive_link"}, {"name": "adl_proam_rtr_extended", "make": "Other", "model": "rtr extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 129.8, "file": "adl_proam_rtr_extended.7z", "link": "https://drive.google.com/file/d/1PwmWfPplG29wRZO8g5GXgqMPyLl5NrYL/view?usp=drive_link"}, {"name": "adl_proam_sn95_extended", "make": "Other", "model": "sn95 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 123.5, "file": "adl_proam_sn95_extended.7z", "link": "https://drive.google.com/file/d/1WAplvNGMtZj7iaNfsaYK_GD-G9caE59D/view?usp=drive_link"}, {"name": "traffic_audi_a4_jp", "make": "Other", "model": "traffic audi a4 jp", "pack": "Traffic", "physics": "", "size": 38.3, "file": "traffic_audi_a4_jp.7z", "link": "https://drive.google.com/file/d/1--nMo06EcFQ9_d7_fAujnCZxSrwrl1Ph/view?usp=drive_link"}, {"name": "traffic_f_f_truck", "make": "Other", "model": "traffic f f truck", "pack": "X10DD", "physics": "Fast and Furious", "size": 52.8, "file": "traffic_f_f_truck.7z", "link": "https://drive.google.com/file/d/1ISGPu9-bHbYDRJcMqSGcwDQ1Adcj1RcG/view?usp=drive_link"}, {"name": "traffic_f&f_truck", "make": "Other", "model": "traffic f&f truck", "pack": "Traffic", "physics": "", "size": 96.7, "file": "traffic_f&f_truck.7z", "link": "https://drive.google.com/file/d/1p_jqUuEEaxgxa_HqgP_jHRUhHjpTUbfC/view?usp=drive_link"}, {"name": "traffic_isuzu_hauler", "make": "Other", "model": "traffic isuzu hauler", "pack": "Traffic", "physics": "", "size": 34.5, "file": "traffic_isuzu_hauler.7z", "link": "https://drive.google.com/file/d/1-mwyc1JgOQM2VKBft8iQYq4kV83CYKB0/view?usp=drive_link"}, {"name": "traffic_isuzu_npr", "make": "Other", "model": "traffic isuzu npr", "pack": "Traffic", "physics": "", "size": 30.8, "file": "traffic_isuzu_npr.7z", "link": "https://drive.google.com/file/d/1-bbNuupfazv6UzFxfBaiIQ821Znh8Bt_/view?usp=drive_link"}, {"name": "traffic_isuzu_tanker", "make": "Other", "model": "traffic isuzu tanker", "pack": "Traffic", "physics": "", "size": 30.2, "file": "traffic_isuzu_tanker.7z", "link": "https://drive.google.com/file/d/1-iPkIAnYCkcsLp6LMxIXKYbJpHGB3XOh/view?usp=drive_link"}, {"name": "adl_proam_ws6_extended", "make": "Other", "model": "ws6 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 104.5, "file": "adl_proam_ws6_extended.7z", "link": "https://drive.google.com/file/d/1aSe9kCiEOphI4rwXRcfEi9unlX5ENCsj/view?usp=drive_link"}, {"name": "X10DD.Muscle-Plymouth Barracuda", "make": "Plymouth", "model": "Plymouth Barracuda", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 154.5, "file": "X10DD.Muscle-Plymouth Barracuda.7z", "link": "https://drive.google.com/file/d/10ObeUjMZxNDuPr5Fs9BUW-7LnsuO9uDf/view?usp=drive_link"}, {"name": "X10DD.Muscle-Plymouth Road Runner", "make": "Plymouth", "model": "Plymouth Road Runner", "pack": "X10DD", "physics": "03.) X10DD.Muscle", "size": 133.7, "file": "X10DD.Muscle-Plymouth Road Runner.7z", "link": "https://drive.google.com/file/d/1J5KW4suJmpWnI7KjXx6pepz1uuymSzK1/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Pontiac_Solstice", "make": "Pontiac", "model": "Pontiac Solstice", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 114.9, "file": "LVL-240_55Deg-Pontiac_Solstice.7z", "link": "https://drive.google.com/file/d/1-K0rd1iLFhsemPe5_n2PyKtSuSiU9JG4/view?usp=drive_link"}, {"name": "LVLGR8_Porsche_959", "make": "Porsche", "model": "Porsche 959", "pack": "RallyCross", "physics": "LVL-GR8", "size": 53.4, "file": "LVLGR8_Porsche_959.7z", "link": "https://drive.google.com/file/d/1nsvtf5G7XKAciNJFcyvtDyv7i8FRy_zS/view?usp=drive_link"}, {"name": "X10DD.Arch-Porsche 964 911RS", "make": "Porsche", "model": "Porsche 964 911RS", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 235.7, "file": "X10DD.Arch-Porsche 964 911RS.7z", "link": "https://drive.google.com/file/d/1a7KwxnHKbzMg3ZuCwrnmnfHfDUtf0H69/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Porsche 964 911RS", "make": "Porsche", "model": "Porsche 964 911RS", "pack": "X10DD", "physics": "01.) X10DD.Grassroots/001.Server Exclusives", "size": 60.5, "file": "X10DD.Grassroots-Porsche 964 911RS.7z", "link": "https://drive.google.com/file/d/19dY5HXiqJbO0f0M6bhU4EqEszGYARZcF/view?usp=drive_link"}, {"name": "adl_proam_718_extended", "make": "Porsche", "model": "extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 91.0, "file": "adl_proam_718_extended.7z", "link": "https://drive.google.com/file/d/1GM_rxIjMe26w7qNr8dDRY7Hf_89O12XW/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Scion_TC", "make": "Scion", "model": "Scion TC", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 266.8, "file": "LVL-240_55Deg-Scion_TC.7z", "link": "https://drive.google.com/file/d/16VwgpF9Ybe01q6wQxpf2_RnqkEH4YD7m/view?usp=drive_link"}, {"name": "_TANDEM_Patch v2.09.02_", "make": "Scion", "model": "TANDEM Patch v2.09.02", "pack": "T.A.N.D.E.M.", "physics": "Pack", "size": 406.3, "file": "_TANDEM_Patch v2.09.02_.7z", "link": "https://drive.google.com/file/d/1eTjgoJcy-2PYuplvZ8saaaeUTEgR4w58/view?usp=drive_link"}, {"name": "LVL-Subaru_BRZ", "make": "Subaru", "model": "Subaru BRZ", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 77.6, "file": "LVL-Subaru_BRZ.7z", "link": "https://drive.google.com/file/d/12XE4Sq0_emd77QdrcMuXqb43nCQoXCoX/view?usp=drive_link"}, {"name": "LVLRX_Subaru_Impreza", "make": "Subaru", "model": "Subaru Impreza", "pack": "RallyCross", "physics": "LVL-RX", "size": 57.3, "file": "LVLRX_Subaru_Impreza.7z", "link": "https://drive.google.com/file/d/1DXI8hk4jtICUp5Y0_ykfoHiA34LCgNzK/view?usp=drive_link"}, {"name": "X10DD.Battle-Subaru WRX STi", "make": "Subaru", "model": "Subaru WRX STi", "pack": "Initial D", "physics": "", "size": 72.4, "file": "X10DD.Battle-Subaru WRX STi.7z", "link": "https://drive.google.com/file/d/1hH76tReValj6rLkGDRyktQnLfey5aBB-/view?usp=drive_link"}, {"name": "X10DD.Street-Subaru_WRX_STi", "make": "Subaru", "model": "Subaru WRX STi", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 96.9, "file": "X10DD.Street-Subaru_WRX_STi.7z", "link": "https://drive.google.com/file/d/1Ve41m6KutPlmBpsqUcUPiuTAV-xGWXYu/view?usp=drive_link"}, {"name": "TAP-Subaru_WRX_Wagon", "make": "Subaru", "model": "Subaru WRX Wagon", "pack": "TAP", "physics": "", "size": 42.8, "file": "TAP-Subaru_WRX_Wagon.7z", "link": "https://drive.google.com/file/d/1LpRjY7CnXHbCnM93-zSBPVw_E-Gn08Jp/view?usp=drive_link"}, {"name": "2sloww_Hayabusa", "make": "Suzuki", "model": "2sloww Hayabusa", "pack": "JDAM", "physics": "", "size": 69.5, "file": "2sloww_Hayabusa.7z", "link": "https://drive.google.com/file/d/1FoVvS2E7i2J3ZL8xbTZJsDgJ176uabEs/view?usp=drive_link"}, {"name": "LVL-Mini Truck Suzuki Hayabusa", "make": "Suzuki", "model": "Mini Truck Suzuki Hayabusa", "pack": "RallyCross", "physics": "Busa Trucks", "size": 122.6, "file": "LVL-Mini Truck Suzuki Hayabusa.7z", "link": "https://drive.google.com/file/d/1BbYFwNtgiV9oX8WhnM39IE8FLaunFD46/view?usp=drive_link"}, {"name": "X10DD.Battle-Suzuki_Cappuccino", "make": "Suzuki", "model": "Suzuki Cappuccino", "pack": "Initial D", "physics": "", "size": 53.9, "file": "X10DD.Battle-Suzuki_Cappuccino.7z", "link": "https://drive.google.com/file/d/185DQeiuJNTF_FmKa5OQovHMlJ8IWt-Np/view?usp=drive_link"}, {"name": "tky_suzuki_skywave", "make": "Suzuki", "model": "tky suzuki skywave", "pack": "Traffic", "physics": "", "size": 138.3, "file": "tky_suzuki_skywave.7z", "link": "https://drive.google.com/file/d/1fLclFEHdLfUvKp_Hu86k1Zt7Nf_l84db/view?usp=drive_link"}, {"name": "LVL-Toyota A80 Supra", "make": "Toyota", "model": "Toyota A80 Supra", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 140.5, "file": "LVL-Toyota A80 Supra.7z", "link": "https://drive.google.com/file/d/1HJV2fb9j-D3qVZMKWkTjgbXPDCp0E5gZ/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Toyota A80 Supra", "make": "Toyota", "model": "Toyota A80 Supra", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 97.5, "file": "X10DD.ProSpec-Toyota A80 Supra.7z", "link": "https://drive.google.com/file/d/10XGdlazH46CkBjsshtEFCyLBlGS94TfN/view?usp=drive_link"}, {"name": "JDAM_Toyota_AE86", "make": "Toyota", "model": "Toyota AE86", "pack": "JDAM", "physics": "", "size": 33.4, "file": "JDAM_Toyota_AE86.7z", "link": "https://drive.google.com/file/d/1MDW9aZagDcd18u200Vidvnrvy6-uOpvY/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota_AE86", "make": "Toyota", "model": "Toyota AE86", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 104.9, "file": "LVL-240_55Deg-Toyota_AE86.7z", "link": "https://drive.google.com/file/d/1jS66iYV7gCKytCAnwqy4_N9hOKduMeTK/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Toyota AE86", "make": "Toyota", "model": "Toyota AE86", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 61.2, "file": "X10DD.Grassroots-Toyota AE86.7z", "link": "https://drive.google.com/file/d/1TWJo-mC7TQQEzy51mdGnCxXNwqctDR5j/view?usp=drive_link"}, {"name": "X10DD.Street-Toyota AE86", "make": "Toyota", "model": "Toyota AE86", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 100.8, "file": "X10DD.Street-Toyota AE86.7z", "link": "https://drive.google.com/file/d/1AHNjLdX2gvCj5VgC3gIG9xVIFPlxabnZ/view?usp=drive_link"}, {"name": "TANDEM-Toyota_AE86_Levin", "make": "Toyota", "model": "Toyota AE86 Levin", "pack": "T.A.N.D.E.M.", "physics": "", "size": 194.3, "file": "TANDEM-Toyota_AE86_Levin.7z", "link": "https://drive.google.com/file/d/1VFrekMCxOx1V3doZiLg8QKeR_IEDX87l/view?usp=drive_link"}, {"name": "TAP-Toyota_AE86_Levin", "make": "Toyota", "model": "Toyota AE86 Levin", "pack": "TAP", "physics": "", "size": 76.4, "file": "TAP-Toyota_AE86_Levin.7z", "link": "https://drive.google.com/file/d/1s7S9XcTQKlmL1uaPyWUMVCu2SwxKn0LR/view?usp=drive_link"}, {"name": "X10DD.Arch-Toyota_AE86_Levin", "make": "Toyota", "model": "Toyota AE86 Levin", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 85.4, "file": "X10DD.Arch-Toyota_AE86_Levin.7z", "link": "https://drive.google.com/file/d/1BWgZRBI_k1on5iJoj7KLj51CAEd83GNm/view?usp=drive_link"}, {"name": "X10DD.Battle-Toyota AE86 Trueno", "make": "Toyota", "model": "Toyota AE86 Trueno", "pack": "Initial D", "physics": "", "size": 29.8, "file": "X10DD.Battle-Toyota AE86 Trueno.7z", "link": "https://drive.google.com/file/d/1fuch07fnBnWdVRbuB4-h3qsIKMTlUr6s/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota_Altezza", "make": "Toyota", "model": "Toyota Altezza", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 95.0, "file": "LVL-240_55Deg-Toyota_Altezza.7z", "link": "https://drive.google.com/file/d/1lpR_zL3_fWLyN4LrUeA7v2zWQ7KnhFAy/view?usp=drive_link"}, {"name": "LVL-Toyota Aristo", "make": "Toyota", "model": "Toyota Aristo", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 122.4, "file": "LVL-Toyota Aristo.7z", "link": "https://drive.google.com/file/d/1fJwrmszfGN534SDIsq2Nw-tXFw-t_mko/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Toyota Aristo", "make": "Toyota", "model": "Toyota Aristo", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 70.3, "file": "X10DD.ProSpec-Toyota Aristo.7z", "link": "https://drive.google.com/file/d/1wJk3Tp1mPSPsP0KyumHAFjkm1vTBSGf5/view?usp=drive_link"}, {"name": "LVL-Toyota Corolla", "make": "Toyota", "model": "Toyota Corolla", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 149.2, "file": "LVL-Toyota Corolla.7z", "link": "https://drive.google.com/file/d/11wwsqOWbEY_e5I_2WOSX70ptIHHMpDu_/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Toyota Corolla", "make": "Toyota", "model": "Toyota Corolla", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 97.0, "file": "X10DD.ProSpec-Toyota Corolla.7z", "link": "https://drive.google.com/file/d/1ga5cqkSgga3XjvbprUwQ8ZZWCGIO_vqf/view?usp=drive_link"}, {"name": "LVL-Toyota_GR_86", "make": "Toyota", "model": "Toyota GR 86", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 121.2, "file": "LVL-Toyota_GR_86.7z", "link": "https://drive.google.com/file/d/1HjQi00nhVNzWy5Co57Gi0RpFzi5KWLr3/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota_GR86", "make": "Toyota", "model": "Toyota GR86", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 218.2, "file": "LVL-240_55Deg-Toyota_GR86.7z", "link": "https://drive.google.com/file/d/1NYB_osjlHlus0X103O4ofuvHuNhmHQ3D/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Toyota GR86", "make": "Toyota", "model": "Toyota GR86", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 125.7, "file": "X10DD.Grassroots-Toyota GR86.7z", "link": "https://drive.google.com/file/d/1VncGMyQJh_I7ISh7CHNNUeWHVY-v5X2g/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota_GT86", "make": "Toyota", "model": "Toyota GT86", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 146.4, "file": "LVL-240_55Deg-Toyota_GT86.7z", "link": "https://drive.google.com/file/d/1vYa6XaQ6fapAj_cey9tFGGpcOA4J2MHI/view?usp=drive_link"}, {"name": "TANDEM-Toyota_GT86_", "make": "Toyota", "model": "Toyota GT86", "pack": "T.A.N.D.E.M.", "physics": "", "size": 109.4, "file": "TANDEM-Toyota_GT86_.7z", "link": "https://drive.google.com/file/d/1zx8H5NdaaFDG_jn_0KzhFzSvcwUZVwtD/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Toyota GT86", "make": "Toyota", "model": "Toyota GT86", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 107.4, "file": "X10DD.ProSpec-Toyota GT86.7z", "link": "https://drive.google.com/file/d/19-iCmm3IGq_4GfqORUd2qoAc9xoXk8Pm/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota JZX100", "make": "Toyota", "model": "Toyota JZX100", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 127.8, "file": "LVL-240_55Deg-Toyota JZX100.7z", "link": "https://drive.google.com/file/d/1P_h8KM7mLHP1q3SHyZ_X4QxJdreoFRvD/view?usp=drive_link"}, {"name": "X10DD.Arch+Toyota JZX100", "make": "Toyota", "model": "Toyota JZX100", "pack": "X10DD", "physics": "00.Arch.X10DD", "size": 55.1, "file": "X10DD.Arch+Toyota JZX100.7z", "link": "https://drive.google.com/file/d/1thAVOM011EDZA5mqzH-YHcN5Isb7diW-/view?usp=drive_link"}, {"name": "JDAM-Toyota_JZX90", "make": "Toyota", "model": "Toyota JZX90", "pack": "JDAM", "physics": "", "size": 505.9, "file": "JDAM-Toyota_JZX90.7z", "link": "https://drive.google.com/file/d/1cOiH7GotqH_ng2JSkBSK7ZL1njiM4t-r/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota_JZX90", "make": "Toyota", "model": "Toyota JZX90", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 162.7, "file": "LVL-240_55Deg-Toyota_JZX90.7z", "link": "https://drive.google.com/file/d/1BKu6z9RtDYS7lGt1vZmIId8fdwsplVjl/view?usp=drive_link"}, {"name": "TANDEM-Toyota_Mark_JZX100", "make": "Toyota", "model": "Toyota Mark JZX100", "pack": "T.A.N.D.E.M.", "physics": "", "size": 145.8, "file": "TANDEM-Toyota_Mark_JZX100.7z", "link": "https://drive.google.com/file/d/18TracSyRLBQyTF90l1lnkFjBRLwXjzKQ/view?usp=drive_link"}, {"name": "TAProot-Toyota Supra A70", "make": "Toyota", "model": "Toyota Supra A70", "pack": "TAP", "physics": "TAProots", "size": 73.9, "file": "TAProot-Toyota Supra A70.7z", "link": "https://drive.google.com/file/d/1FuJxSJ9lahiYF-oRQDTz68sl3ouaoL2S/view?usp=drive_link"}, {"name": "X10DD.Grassroots-Toyota Supra A70 mk3", "make": "Toyota", "model": "Toyota Supra A70 mk3", "pack": "X10DD", "physics": "01.) X10DD.Grassroots", "size": 88.7, "file": "X10DD.Grassroots-Toyota Supra A70 mk3.7z", "link": "https://drive.google.com/file/d/1mG_6yJrsuvd1nqO44LQCc1B-NzmB0pL9/view?usp=drive_link"}, {"name": "TANDEM-Toyota_Supra_A80", "make": "Toyota", "model": "Toyota Supra A80", "pack": "T.A.N.D.E.M.", "physics": "", "size": 115.5, "file": "TANDEM-Toyota_Supra_A80.7z", "link": "https://drive.google.com/file/d/1rbeJrVKtvrdKxlm9Nfy81Q3j4CWv0Z6K/view?usp=drive_link"}, {"name": "LVL-240_55Deg-Toyota-Supra_A90", "make": "Toyota", "model": "Toyota Supra A90", "pack": "L.E.V.E.L.", "physics": "240HP\uff0f55Deg", "size": 143.3, "file": "LVL-240_55Deg-Toyota-Supra_A90.7z", "link": "https://drive.google.com/file/d/1M-hPr-cuw4Q_NnHtPq4px91PALmpihDH/view?usp=drive_link"}, {"name": "LVL-Toyota Supra A90", "make": "Toyota", "model": "Toyota Supra A90", "pack": "L.E.V.E.L.", "physics": "420HP\uff0f70Deg", "size": 140.0, "file": "LVL-Toyota Supra A90.7z", "link": "https://drive.google.com/file/d/1eYpRUvzE7v3l1G3EU1CSm1xPlxC2IQiz/view?usp=drive_link"}, {"name": "TANDEM-Toyota_Supra_A90", "make": "Toyota", "model": "Toyota Supra A90", "pack": "T.A.N.D.E.M.", "physics": "", "size": 136.9, "file": "TANDEM-Toyota_Supra_A90.7z", "link": "https://drive.google.com/file/d/1Jr9OlhSCDIoGuT14cgHUvZD8L-jbKx0A/view?usp=drive_link"}, {"name": "X10DD.ProSpec-Toyota Supra A90", "make": "Toyota", "model": "Toyota Supra A90", "pack": "X10DD", "physics": "04.) X10DD.ProSpec", "size": 97.6, "file": "X10DD.ProSpec-Toyota Supra A90.7z", "link": "https://drive.google.com/file/d/19HGZHbcskUTcb_gN2jU3t6Imr1hQWXP_/view?usp=drive_link"}, {"name": "X10DD.Street-Toyota Supra JZA70", "make": "Toyota", "model": "Toyota Supra JZA70", "pack": "X10DD", "physics": "02.) X10DD.Street", "size": 101.9, "file": "X10DD.Street-Toyota Supra JZA70.7z", "link": "https://drive.google.com/file/d/1KteLBKDivSvSZKCwWs2QGRHNWeJlIfdn/view?usp=drive_link"}, {"name": "fnf_toyota_supra", "make": "Toyota", "model": "fnf toyota supra", "pack": "X10DD", "physics": "Fast and Furious", "size": 36.2, "file": "fnf_toyota_supra.7z", "link": "https://drive.google.com/file/d/1gU7jCl6ypeAWLRZBTmWL-kJ6i8sujW-7/view?usp=drive_link"}, {"name": "adl_proam_gt86_extended", "make": "Toyota", "model": "gt86 extended", "pack": "ADL-RealiSim HQ", "physics": "COSMIC", "size": 80.4, "file": "adl_proam_gt86_extended.7z", "link": "https://drive.google.com/file/d/1iLyXs9O71_HUA3ZynS_ttsfCGOxm9C_E/view?usp=drive_link"}, {"name": "hhrc_darks_jzx100_missile", "make": "Toyota", "model": "hhrc darks jzx100 missile", "pack": "JDAM", "physics": "", "size": 197.0, "file": "hhrc_darks_jzx100_missile.7z", "link": "https://drive.google.com/file/d/10C8UuQ5ZEZ9D38f3e0Z5aqG4uB7gS1VE/view?usp=drive_link"}, {"name": "traffic_toyota_camry", "make": "Toyota", "model": "traffic toyota camry", "pack": "Traffic", "physics": "", "size": 25.8, "file": "traffic_toyota_camry.7z", "link": "https://drive.google.com/file/d/1-2ibvXqIN0ITebv0sLfURMF7jVatBucC/view?usp=drive_link"}, {"name": "traffic_toyota_rav4", "make": "Toyota", "model": "traffic toyota rav4", "pack": "Traffic", "physics": "", "size": 26.3, "file": "traffic_toyota_rav4.7z", "link": "https://drive.google.com/file/d/101eprwIcEru8fFHbRTbzsne68O_t4BuJ/view?usp=drive_link"}, {"name": "asw-volkswagen-golf-iv-gti-2001-track", "make": "Volkswagen", "model": "asw volkswagen golf iv gti 2001 track", "pack": "TAP", "physics": "Commisioned", "size": 65.0, "file": "asw-volkswagen-golf-iv-gti-2001-track.zip", "link": "https://drive.google.com/file/d/18GoAKVJ47hTqN-TBL54f1f58gp7pSrqB/view?usp=drive_link"}, {"name": "pb_ff1_jetta", "make": "Volkswagen", "model": "pb ff1 jetta", "pack": "X10DD", "physics": "Fast and Furious", "size": 19.5, "file": "pb_ff1_jetta.7z", "link": "https://drive.google.com/file/d/1NXoGSlrB5WqTSQhYjHm3XQHW7aqf10iw/view?usp=drive_link"}, {"name": "LVL-Mini Truck Yamaha R7", "make": "Yamaha", "model": "Mini Truck Yamaha R7", "pack": "RallyCross", "physics": "Busa Trucks", "size": 84.3, "file": "LVL-Mini Truck Yamaha R7.7z", "link": "https://drive.google.com/file/d/1EaqYoVBIiunKQy0T21AIaVSZdrwWlqZ5/view?usp=drive_link"}];
+const TRACKS = [{"name": "Acs NOLA V1.5 (SurfaceFX)", "raw_name": "acs_nola_v1.5", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 325.9, "file": "acs_nola_v1.5.7z", "link": "https://drive.google.com/file/d/1-36I8bA-VzBZBouZNkSgHzziBz9JEXfG/view?usp=drive_link"}, {"name": "Acs Sebring (SurfaceFX)", "raw_name": "acs_sebring", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 402.0, "file": "acs_sebring.7z", "link": "https://drive.google.com/file/d/1yPaVSbxMvqRLtzHNWwxW9Auhns7_bigf/view?usp=drive_link"}, {"name": "Adam LZ Secret Spot", "raw_name": "Adam LZ Secret Spot", "category": "Patreon Weekly", "type": "Circuit", "x10dd": false, "size": 355.6, "file": "Adam LZ Secret Spot.7z", "link": "https://drive.google.com/file/d/1bjMnnkNk_ZM5mcY_DWRo1C1jn2LITyxv/view?usp=drive_link"}, {"name": "Adc Klutch Kickers Drifters Paradise (SurfaceFX)", "raw_name": "adc_klutch_kickers_drifters_paradise", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 103.9, "file": "adc_klutch_kickers_drifters_paradise.7z", "link": "https://drive.google.com/file/d/174QqBlPUl6nDhkY2Fu_GsZ5Wn66Xquld/view?usp=drive_link"}, {"name": "Akagi [EK] (SurfaceFX)", "raw_name": "ek_akagi", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 261.4, "file": "ek_akagi.7z", "link": "https://drive.google.com/file/d/1nxfI8A3jIkN-5BNNcUX1zaaDeQF_l9Al/view?usp=drive_link"}, {"name": "Akina [EK]", "raw_name": "ek_akina", "category": "Initial D", "type": "Touge", "x10dd": false, "size": 309.6, "file": "ek_akina.7z", "link": "https://drive.google.com/file/d/17tCNfTBmtwj-bLFs8Ck8MYbPtnVpXKpo/view?usp=drive_link"}, {"name": "Akina [PK] (SurfaceFX)", "raw_name": "pk_akina", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 328.8, "file": "pk_akina.7z", "link": "https://drive.google.com/file/d/18zE-tXPrYxi-IIsyjoWyEcQ6BbvsQmkU/view?usp=drive_link"}, {"name": "Alpha V2", "raw_name": "_Alpha v2", "category": "Free Versions RD", "type": "Circuit", "x10dd": false, "size": 36.8, "file": "_Alpha v2.7z", "link": "https://drive.google.com/file/d/1FTY7VrrxGDcEUCqos1t8GT6pPJyrhXEV/view?usp=drive_link"}, {"name": "Battersea", "raw_name": "battersea", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 56.3, "file": "battersea.7z", "link": "https://drive.google.com/file/d/11NIuItVyGdYUSxGIqQdVsFeIFHDxFe0o/view?usp=drive_link"}, {"name": "Blue Ridge Parkway RT 80 NC", "raw_name": "Blue Ridge Parkway Rt 80 NC", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 86.2, "file": "Blue Ridge Parkway Rt 80 NC.7z", "link": "https://drive.google.com/file/d/1h4TA1GN03Iw3Y01UW5fTud2tRANeg5v9/view?usp=drive_link"}, {"name": "Brooklyn Park (SurfaceFX)", "raw_name": "Brooklyn Park", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 253.2, "file": "Brooklyn Park.7z", "link": "https://drive.google.com/file/d/15_OYnTbh2_ZmLM1u4-yOpKTr0wUfFTKi/view?usp=drive_link"}, {"name": "Brooklyn Park X10DD (SurfaceFX)", "raw_name": "Brooklyn Park X10DD", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 259.6, "file": "Brooklyn Park X10DD.7z", "link": "https://drive.google.com/file/d/1HeDNOC3LtaiJtyfhYsgYtKQ-PI-jIjD9/view?usp=drive_link"}, {"name": "Caffine Octane (SurfaceFX)", "raw_name": "caffine_octane", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 606.4, "file": "caffine_octane.7z", "link": "https://drive.google.com/file/d/1wyIXQddgMwajjLDX7qx9zz7yU3FgOaxL/view?usp=drive_link"}, {"name": "Can You Hear Me Knockin", "raw_name": "Can You Hear Me Knockin", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 134.2, "file": "Can You Hear Me Knockin.7z", "link": "https://drive.google.com/file/d/1O8LAQIskjIgOmthv-CXOEODNIR7XLQIK/view?usp=drive_link"}, {"name": "DCGP Dmgp Plock 2019 (SurfaceFX)", "raw_name": "dcgp_dmgp_plock_2019", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 63.7, "file": "dcgp_dmgp_plock_2019.7z", "link": "https://drive.google.com/file/d/1w0uxlUbLJ-7k6ne_HzLJAbyer4djALAU/view?usp=drive_link"}, {"name": "DCGP Ferropolis 2023 (SurfaceFX)", "raw_name": "dcgp_ferropolis_2023", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 56.6, "file": "dcgp_ferropolis_2023.7z", "link": "https://drive.google.com/file/d/1xhHlFl0BnX9dYwKYPuPzh3SBJy-U02US/view?usp=drive_link"}, {"name": "DCGP s8 Motoarena (SurfaceFX)", "raw_name": "dcgp_s8_motoarena", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 29.6, "file": "dcgp_s8_motoarena.7z", "link": "https://drive.google.com/file/d/1nL38OHqCRfYUmnvtrgroWviPFyFop1g-/view?usp=drive_link"}, {"name": "DSC 0.9 (SurfaceFX)", "raw_name": "DSC_0.9", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 338.7, "file": "DSC_0.9.7z", "link": "https://drive.google.com/file/d/1ROInvYlZU5cCYxzfFKcNJbNx6x5kQh3e/view?usp=drive_link"}, {"name": "Devils Whip Tail Of The Dragon", "raw_name": "Devils Whip Tail Of The Dragon", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 1794.8, "file": "Devils Whip Tail Of The Dragon.7z", "link": "https://drive.google.com/file/d/1FUCmKkb8n4vp2V5laaxNC0wGKsSMXnVP/view?usp=drive_link"}, {"name": "Dirt2 Battersea [RMI]", "raw_name": "rmi_dirt2_battersea", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 56.9, "file": "rmi_dirt2_battersea.7z", "link": "https://drive.google.com/file/d/1EJrFQdA4gKekw9utpnaI9E5_maXmTx_m/view?usp=drive_link"}, {"name": "Docks (SurfaceFX)", "raw_name": "Docks", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 139.4, "file": "Docks.7z", "link": "https://drive.google.com/file/d/1at6H_v64tYtRO70biGuIyoBO8h-Jaa36/view?usp=drive_link"}, {"name": "Drift Appalachia", "raw_name": "Drift Appalachia", "category": "Original", "type": "Touge", "x10dd": false, "size": 167.6, "file": "Drift Appalachia.7z", "link": "https://drive.google.com/file/d/1-YJP6QO5UH5guCvwXdwHhSedG7bddXaM/view?usp=drive_link"}, {"name": "Drift Appalachia Stages", "raw_name": "Drift Appalachia Stages", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 657.9, "file": "Drift Appalachia Stages.7z", "link": "https://drive.google.com/file/d/11INjn3FoX27HBb5RxCIktq3c_8uXkfup/view?usp=drive_link"}, {"name": "Drift Appalachia X10DD (SurfaceFX)", "raw_name": "Drift Appalachia X10DD", "category": "Patreon Weekly", "type": "Touge", "x10dd": true, "size": 233.9, "file": "Drift Appalachia X10DD.7z", "link": "https://drive.google.com/file/d/1dmup86AUILmUlazf-qn39XzQl-VhhBVY/view?usp=drive_link"}, {"name": "Drift Track by The Old Tree BHS Team (SurfaceFX)", "raw_name": "drift_track_by_the_old_tree_BHS_Team", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 157.5, "file": "drift_track_by_the_old_tree_BHS_Team.7z", "link": "https://drive.google.com/file/d/1d2wNeyvyG6pbALBu0ZtGCMS1lq_2ZVnV/view?usp=drive_link"}, {"name": "DriftPlayground2026", "raw_name": "DriftPlayground2026", "category": "Free Versions RD", "type": "Freeroam", "x10dd": false, "size": 48.8, "file": "DriftPlayground2026.7z", "link": "https://drive.google.com/file/d/1LRcSDugtgYggiUQehXhDvNFBRzCQy97a/view?usp=drive_link"}, {"name": "Driftplayground (SurfaceFX)", "raw_name": "driftplayground", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 118.1, "file": "driftplayground.7z", "link": "https://drive.google.com/file/d/1TGDoQGQsyknNZQ-yGJTAEiX1OYnfmkbx/view?usp=drive_link"}, {"name": "Driftplayground 2021 (SurfaceFX)", "raw_name": "driftplayground_2021", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 42.0, "file": "driftplayground_2021.7z", "link": "https://drive.google.com/file/d/14KFu-3dOT5MSaT9BwC5sHJ1NJuGBTd_u/view?usp=drive_link"}, {"name": "ESDA Barbagallo 2024 (SurfaceFX)", "raw_name": "esda_barbagallo_2024", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 126.8, "file": "esda_barbagallo_2024.zip", "link": "https://drive.google.com/file/d/1vaOvoTMeZbnxa7HpcUGT-37vcWlrXXcb/view?usp=drive_link"}, {"name": "ESDA Chang 2023 (SurfaceFX)", "raw_name": "esda_chang_2023", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 112.5, "file": "esda_chang_2023.7z", "link": "https://drive.google.com/file/d/1wCTFAQnlkKMxdRi34tKSYgXyoKC58Gik/view?usp=drive_link"}, {"name": "ESDA Long Beach (SurfaceFX)", "raw_name": "esda_long_beach", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 90.6, "file": "esda_long_beach.7z", "link": "https://drive.google.com/file/d/1wqkrSvBu1fO3OkKJeby0vlOui5eXPKqI/view?usp=drive_link"}, {"name": "ESDA Yas Marina (SurfaceFX)", "raw_name": "esda_yas_marina", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 35.3, "file": "esda_yas_marina.7z", "link": "https://drive.google.com/file/d/126B725cSAgexX5djaIg9Mxei58py68N2/view?usp=drive_link"}, {"name": "Ebisu Minami (SurfaceFX)", "raw_name": "ebisu_minami", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 71.8, "file": "ebisu_minami.7z", "link": "https://drive.google.com/file/d/1vuCAFQi509bH3_zeA1zT1cxw6A2fkqB9/view?usp=drive_link"}, {"name": "Ebisu North (SurfaceFX)", "raw_name": "ebisu_north", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 33.4, "file": "ebisu_north.7z", "link": "https://drive.google.com/file/d/1QvzA2fslaJMiCnS74vHSG2Z7wbsHSJv5/view?usp=drive_link"}, {"name": "Ebisu Touge Course (SurfaceFX)", "raw_name": "ebisu_touge_course", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 39.6, "file": "ebisu_touge_course.7z", "link": "https://drive.google.com/file/d/1-66O1P5vRti1v22PrjzjUZe7laf1ORRH/view?usp=drive_link"}, {"name": "Englishtown Gambler (SurfaceFX)", "raw_name": "englishtown_gambler", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 60.6, "file": "englishtown_gambler.7z", "link": "https://drive.google.com/file/d/1xMkIK_florSAm6h7YzqWZib282YKOju7/view?usp=drive_link"}, {"name": "Englishtown Gambler ESDA (SurfaceFX)", "raw_name": "englishtown_gambler_esda", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 66.3, "file": "englishtown_gambler_esda.7z", "link": "https://drive.google.com/file/d/1FalllRrPhE6Iw1WctMKQk8bbuZgamCfy/view?usp=drive_link"}, {"name": "FD Soldier Field (SurfaceFX)", "raw_name": "fd_soldier_field", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 182.2, "file": "fd_soldier_field.7z", "link": "https://drive.google.com/file/d/1pqMZm9-oB0rindUoJnoQwStkCB6cF9gs/view?usp=drive_link"}, {"name": "Feint Valley (SurfaceFX)", "raw_name": "feint_valley", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 299.1, "file": "feint_valley.7z", "link": "https://drive.google.com/file/d/184J1mXTSjjZ-iQzZIWI4aBNCcPn8P_Ax/view?usp=drive_link"}, {"name": "Flatbottom Grills", "raw_name": "Flatbottom Grills", "category": "Free Versions RD", "type": "Circuit", "x10dd": false, "size": 42.5, "file": "Flatbottom Grills.7z", "link": "https://drive.google.com/file/d/1Fthw_e4a5bMgAiGn98W2UtWp8uY2D4cE/view?usp=drive_link"}, {"name": "Fort Curva (SurfaceFX)", "raw_name": "fort_curva", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 139.2, "file": "fort_curva.7z", "link": "https://drive.google.com/file/d/1i01ZzUNyXCjaZs_HKSDXC4K1cabAcBRc/view?usp=drive_link"}, {"name": "GRS Bihoku (SurfaceFX)", "raw_name": "grs_bihoku", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 69.0, "file": "grs_bihoku.zip", "link": "https://drive.google.com/file/d/1svvS6dtq7zOuTVfCsGGN9bU5ZM4gzhm3/view?usp=drive_link"}, {"name": "Grange Motor Circuit (SurfaceFX)", "raw_name": "grange_motor_circuit", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 49.7, "file": "grange_motor_circuit.7z", "link": "https://drive.google.com/file/d/1FluSQ7np4dg5iBXBLkitegrMeLWEcg_1/view?usp=drive_link"}, {"name": "Great State of Touge", "raw_name": "Great State of Touge", "category": "Patreon Touge", "type": "Touge", "x10dd": false, "size": 419.7, "file": "Great State of Touge.7z", "link": "https://drive.google.com/file/d/1ynAanvVHo8fLMq1EhUSD5LjgWRKIy3bu/view?usp=drive_link"}, {"name": "Gunma Cycle Sports Center [PK] (SurfaceFX)", "raw_name": "pk_gunma_cycle_sports_center", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 581.0, "file": "pk_gunma_cycle_sports_center.7z", "link": "https://drive.google.com/file/d/1H6-QKyhu2aEvs8Cn1ScIkegaTJr6ANqB/view?usp=drive_link"}, {"name": "Gymkhana Playgroud (SurfaceFX)", "raw_name": "Gymkhana_Playgroud", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 562.7, "file": "Gymkhana_Playgroud.7z", "link": "https://drive.google.com/file/d/1hLu-UfZl4gZ9Q_j9hQzLOWJuEpK9ymnR/view?usp=drive_link"}, {"name": "Happogahara X10DD [EK] (SurfaceFX)", "raw_name": "ek_happogahara_x10dd", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 326.5, "file": "ek_happogahara_x10dd.7z", "link": "https://drive.google.com/file/d/1KS1Rf1LzyMMrU4wsn1ygFCQvMB0Zrfmd/view?usp=drive_link"}, {"name": "Hell Rallyx", "raw_name": "hell_rallyx", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 198.4, "file": "hell_rallyx.7z", "link": "https://drive.google.com/file/d/1YfgEwNRFnP_cH-TXStcT0Wxozuy-h0BW/view?usp=drive_link"}, {"name": "Houston Police HQ", "raw_name": "_Houston Police_HQ_", "category": "RealSim HQ", "type": "Freeroam", "x10dd": false, "size": 152.2, "file": "_Houston Police_HQ_.7z", "link": "https://drive.google.com/file/d/1Z45jssP4kwV_GI-zp3WilV7U9ka4vZOB/view?usp=drive_link"}, {"name": "Houston Police X10DD (SurfaceFX)", "raw_name": "Houston_Police_X10DD", "category": "Free Versions RD", "type": "Freeroam", "x10dd": true, "size": 150.2, "file": "Houston_Police_X10DD.7z", "link": "https://drive.google.com/file/d/1ZJEOI7FdhjArvJ9h089V91bvhN27ndG5/view?usp=drive_link"}, {"name": "Interstate Raceway Freeroam", "raw_name": "Interstate Raceway Freeroam", "category": "Free Versions RD", "type": "Freeroam", "x10dd": false, "size": 95.4, "file": "Interstate Raceway Freeroam.7z", "link": "https://drive.google.com/file/d/1DdTC5Z6xyB1xN1K0takM2QZIaa4j84tz/view?usp=drive_link"}, {"name": "Irohazaka Circuit X10DD Edition (SurfaceFX)", "raw_name": "Irohazaka Circuit-X10DD Edition", "category": "Patreon Touge", "type": "Touge", "x10dd": true, "size": 32.9, "file": "Irohazaka Circuit-X10DD Edition.7z", "link": "https://drive.google.com/file/d/1GW920GZ78IKBEkgFPjFlCTMuKc6CLrnx/view?usp=drive_link"}, {"name": "Irohazaka [EK]", "raw_name": "ek_irohazaka", "category": "Initial D", "type": "Touge", "x10dd": false, "size": 288.1, "file": "ek_irohazaka.7z", "link": "https://drive.google.com/file/d/1g1DqZSm4nvaC1CLJGn2EOfAkKnY9ziEr/view?usp=drive_link"}, {"name": "Irohazaka [PK] (SurfaceFX)", "raw_name": "pk_irohazaka", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 448.0, "file": "pk_irohazaka.7z", "link": "https://drive.google.com/file/d/1EhlRUqAO2IhdRWwDcKqg9vbksV9Mpamp/view?usp=drive_link"}, {"name": "Irwindale Hotpit (SurfaceFX)", "raw_name": "irwindale_hotpit", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 164.3, "file": "irwindale_hotpit.7z", "link": "https://drive.google.com/file/d/1nhVS7JaCGDa3ce-pK2X5D-8732-Oi_Bu/view?usp=drive_link"}, {"name": "KTWorks Ogasayama (SurfaceFX)", "raw_name": "KTWorks_Ogasayama", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 175.3, "file": "KTWorks_Ogasayama.7z", "link": "https://drive.google.com/file/d/1b2GGV_INLgZtYxbt-9yYwkgbBS84IzoQ/view?usp=drive_link"}, {"name": "Kazekaeshi Touge [90sGDSP] (SurfaceFX)", "raw_name": "90sgdsp_kazekaeshi_touge", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 476.3, "file": "90sgdsp_kazekaeshi_touge.7z", "link": "https://drive.google.com/file/d/1yIJOlMMgaxhjelzMG_wEXzvOfuSy6JBw/view?usp=drive_link"}, {"name": "Kunitomi Circuit (SurfaceFX)", "raw_name": "Kunitomi Circuit", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 164.2, "file": "Kunitomi Circuit.7z", "link": "https://drive.google.com/file/d/1-QqeqOcWjL1qLN90htbahDkFCnHRSLLW/view?usp=drive_link"}, {"name": "Ld2f Englishtown (SurfaceFX)", "raw_name": "ld2f_englishtown", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 186.2, "file": "ld2f_englishtown.7z", "link": "https://drive.google.com/file/d/1beEzxT4-vPfBbT-GDIJzL4oPHDcGfIk3/view?usp=drive_link"}, {"name": "Ld2f Englishtown CNDS (SurfaceFX)", "raw_name": "ld2f_englishtown_cnds", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 421.0, "file": "ld2f_englishtown_cnds.7z", "link": "https://drive.google.com/file/d/17ScYqPff1Cvhj_Zsu_ziIyxpHetA8kXz/view?usp=drive_link"}, {"name": "Lone Star Drift Hutto Texas Drift Bash", "raw_name": "Lone Star Drift_Hutto Texas Drift Bash", "category": "Patreon Weekly", "type": "Circuit", "x10dd": false, "size": 293.0, "file": "Lone Star Drift_Hutto Texas Drift Bash.7z", "link": "https://drive.google.com/file/d/1us4lWMOUNxSsElrHKtkTqZ8xEnqMgWBY/view?usp=drive_link"}, {"name": "Lone Star Drift Hutto,TX", "raw_name": "Lone Star Drift_Hutto,TX", "category": "RealSim HQ", "type": "Circuit", "x10dd": false, "size": 302.1, "file": "Lone Star Drift_Hutto,TX.7z", "link": "https://drive.google.com/file/d/14-i-u8WN3fCsIswqsz15WSqgmKF9TXy5/view?usp=drive_link"}, {"name": "Long Beach Rd8 RealiSimHQ (SurfaceFX)", "raw_name": "Long Beach Rd8_RealiSimHQ", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 44.1, "file": "Long Beach Rd8_RealiSimHQ.7z", "link": "https://drive.google.com/file/d/1NzH2NjascWurRXdaLbdePHbabXHhPUL-/view?usp=drive_link"}, {"name": "Momiji [EK] (SurfaceFX)", "raw_name": "ek_momiji", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 166.5, "file": "ek_momiji.7z", "link": "https://drive.google.com/file/d/1tny_ICXt2ztkRj6hNajx5aqHA9gUvIb2/view?usp=drive_link"}, {"name": "Monaco Rallycross DIRT3", "raw_name": "Monaco_Rallycross_DiRT3", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 47.9, "file": "Monaco_Rallycross_DiRT3.7z", "link": "https://drive.google.com/file/d/1PhU93Yk7zd38dnNFaLpg42sxLGOeJ-AL/view?usp=drive_link"}, {"name": "Myogi [EK] (SurfaceFX)", "raw_name": "ek_myogi", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 247.7, "file": "ek_myogi.7z", "link": "https://drive.google.com/file/d/1p9-pxy2LHuMInBu7DIQ4PiKX8i0r0K-p/view?usp=drive_link"}, {"name": "Nagao [EK] (SurfaceFX)", "raw_name": "ek_nagao", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 433.2, "file": "ek_nagao.7z", "link": "https://drive.google.com/file/d/17UJbBP4sFhejXVSChPiNQ1T7dovkWY6m/view?usp=drive_link"}, {"name": "Nanamagari [EK] (SurfaceFX)", "raw_name": "ek_nanamagari", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 237.0, "file": "ek_nanamagari.7z", "link": "https://drive.google.com/file/d/1DrfHna1zi4DYwVtW2oYTksdd_V-W-hR5/view?usp=drive_link"}, {"name": "Ndcg Interstate Raceway V2 (SurfaceFX)", "raw_name": "ndcg_interstate_raceway_V2", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 62.5, "file": "ndcg_interstate_raceway_V2.7z", "link": "https://drive.google.com/file/d/1PVyXT1K2JbQCjuYxvDV4UU-uqMZcG0iC/view?usp=drive_link"}, {"name": "Ndp Ikawa (SurfaceFX)", "raw_name": "ndp_ikawa", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 50.9, "file": "ndp_ikawa.7z", "link": "https://drive.google.com/file/d/1HN-UAUl-3BXrr4ysb96yA0mFFijBPRUj/view?usp=drive_link"}, {"name": "Ndp Makime (SurfaceFX)", "raw_name": "ndp_makime", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 72.6, "file": "ndp_makime.7z", "link": "https://drive.google.com/file/d/1iHRzmC1E4QxsWa8KjW_S6YwUzkGJQOer/view?usp=drive_link"}, {"name": "Ndp Tsuru Country (SurfaceFX)", "raw_name": "ndp_tsuru_country", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 43.3, "file": "ndp_tsuru_country.7z", "link": "https://drive.google.com/file/d/1MH6aWyQ80SK3xYfTH_6buy0XnQv7nEfI/view?usp=drive_link"}, {"name": "Nihon Turismo (SurfaceFX)", "raw_name": "nihon_turismo", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 2389.6, "file": "nihon_turismo.7z", "link": "https://drive.google.com/file/d/1dBSAgpg2Panpr_6l_LD3W6hEvs2SgL5B/view?usp=drive_link"}, {"name": "Nikko Circuit 2024 (SurfaceFX)", "raw_name": "Nikko Circuit 2024", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 564.5, "file": "Nikko Circuit 2024.7z", "link": "https://drive.google.com/file/d/1PZzkulJUedQfVxFMcsobmg9bhg663Bi6/view?usp=drive_link"}, {"name": "Otm Limerockdrift (SurfaceFX)", "raw_name": "otm_limerockdrift", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 208.1, "file": "otm_limerockdrift.7z", "link": "https://drive.google.com/file/d/1_DEaf52Lu8_59aJ__mQB51paOQAm5EAi/view?usp=drive_link"}, {"name": "Ozarks Raceway (SurfaceFX)", "raw_name": "ozarks_raceway", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 332.3, "file": "ozarks_raceway.zip", "link": "https://drive.google.com/file/d/12K6UvZ-eSTD5SDlE64hIa8ckrGzFthpo/view?usp=drive_link"}, {"name": "Pisgah HQ", "raw_name": "_Pisgah_ HQ_", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 150.3, "file": "_Pisgah_ HQ_.7z", "link": "https://drive.google.com/file/d/1GDg5dJnufoKfl60hb0K8qoUi5u4hMhWx/view?usp=drive_link"}, {"name": "Pods DMEC Plock 2019 (SurfaceFX)", "raw_name": "Pods DMEC Plock 2019", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 38.6, "file": "Pods DMEC Plock 2019.7z", "link": "https://drive.google.com/file/d/1BYlVq34Wb30_Qh1R8OUI0aP3QD5LQutk/view?usp=drive_link"}, {"name": "Pods Even Flow", "raw_name": "Pods Even Flow", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 8.3, "file": "Pods Even Flow.7z", "link": "https://drive.google.com/file/d/1Ian4-01tfi_ws9Ou_0HpMNRfaJ8OYyGz/view?usp=drive_link"}, {"name": "Pods Forest Paradise Park", "raw_name": "Pods_Forest Paradise Park", "category": "Free Versions RD", "type": "Freeroam", "x10dd": false, "size": 107.2, "file": "Pods_Forest Paradise Park.7z", "link": "https://drive.google.com/file/d/1JOp67IRkdVa3SDEVY5Qm2hwaYXfzVCCE/view?usp=drive_link"}, {"name": "Pods Gymkhana", "raw_name": "Pods Gymkhana", "category": "Free Versions RD", "type": "Freeroam", "x10dd": false, "size": 66.7, "file": "Pods Gymkhana.7z", "link": "https://drive.google.com/file/d/1kKF9xfTGDaMGrPhB6J7w2YjDnzIjmOqt/view?usp=drive_link"}, {"name": "Pods Momentum Drift", "raw_name": "Pods Momentum Drift", "category": "Free Versions RD", "type": "Circuit", "x10dd": false, "size": 25.8, "file": "Pods Momentum Drift.7z", "link": "https://drive.google.com/file/d/1PwKcoPWB3Ay1L8FaGYYbcEXl9ivqdi0M/view?usp=drive_link"}, {"name": "Pods Touge Bravo", "raw_name": "Pods Touge Bravo", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 58.1, "file": "Pods Touge Bravo.7z", "link": "https://drive.google.com/file/d/1bzAcqcxOmgoNJYf2XsH3aC6u6onnOMVr/view?usp=drive_link"}, {"name": "Pods Touge Paradise", "raw_name": "Pods Touge Paradise", "category": "Patreon Touge", "type": "Touge", "x10dd": false, "size": 516.5, "file": "Pods Touge Paradise.7z", "link": "https://drive.google.com/file/d/1X3tnZH1A08rmyoSYZ1Wt1TtnD5rpxYQ5/view?usp=drive_link"}, {"name": "Pods Touge Paradise FREE Version", "raw_name": "Pods Touge Paradise Free Version", "category": "Original", "type": "Touge", "x10dd": false, "size": 539.6, "file": "Pods Touge Paradise Free Version.7z", "link": "https://drive.google.com/file/d/1Qge5d5F4pUdu73xRGr9QqJoIMqoVaU5t/view?usp=drive_link"}, {"name": "Pods Touge Paradise Test Version", "raw_name": "Pods Touge Paradise Test Version", "category": "Patreon Only", "type": "Touge", "x10dd": false, "size": 456.8, "file": "Pods Touge Paradise Test Version.7z", "link": "https://drive.google.com/file/d/1jjBSJHsxFdMobss1hVv-iOX0dwUQ6aAE/view?usp=drive_link"}, {"name": "Pods Touge TANDEM", "raw_name": "Pods Touge Tandem", "category": "Patreon Only", "type": "Touge", "x10dd": false, "size": 66.4, "file": "Pods Touge Tandem.7z", "link": "https://drive.google.com/file/d/1C0ikKbMQRI37tWyCaXB-kQl4nskXS7_G/view?usp=drive_link"}, {"name": "Pods Tuning Lot", "raw_name": "Pods Tuning Lot", "category": "Free Versions RD", "type": "Freeroam", "x10dd": false, "size": 27.0, "file": "Pods Tuning Lot.7z", "link": "https://drive.google.com/file/d/1UqdTtYCojRC4390PWciUR7xkVfxCtL5v/view?usp=drive_link"}, {"name": "Project T.A.N.D.E.M", "raw_name": "Project T.A.N.D.E.M", "category": "Free Versions RD", "type": "Circuit", "x10dd": false, "size": 42.1, "file": "Project T.A.N.D.E.M.7z", "link": "https://drive.google.com/file/d/16FVdMFgJxzqZroBSERPZvekQHxKCysNG/view?usp=drive_link"}, {"name": "RT Suzuka (SurfaceFX)", "raw_name": "rt_suzuka", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 189.8, "file": "rt_suzuka.7z", "link": "https://drive.google.com/file/d/1AugkPzulveo2bayZ9HtuxxEO61HSWLKN/view?usp=drive_link"}, {"name": "RX Blackwood", "raw_name": "RX_blackwood", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 96.3, "file": "RX_blackwood.7z", "link": "https://drive.google.com/file/d/1iBR9EDNoT9Wi91trRfqIEFPHajdiSjVx/view?usp=drive_link"}, {"name": "RX Holjes", "raw_name": "RX_holjes", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 66.2, "file": "RX_holjes.7z", "link": "https://drive.google.com/file/d/1cBB0bYjT-hj2zcmUGnzEmBFPtQabJuxp/view?usp=drive_link"}, {"name": "RX Shibuya", "raw_name": "RX_shibuya", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 41.4, "file": "RX_shibuya.7z", "link": "https://drive.google.com/file/d/1Dxju673Lh-6RAjHcp1XFZDNf65m4NLpR/view?usp=drive_link"}, {"name": "RealiSim HQ Layout Nihon Turismo (SurfaceFX)", "raw_name": "RealiSim HQ Layout_nihon_turismo", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 224.5, "file": "RealiSim HQ Layout_nihon_turismo.7z", "link": "https://drive.google.com/file/d/1PNK_Jc1bagi3aW6OUAFXCjzpEGyDoe3J/view?usp=drive_link"}, {"name": "RealiSimHQ Extended Edition Touge", "raw_name": "_RealiSimHQ_Extended_Edition-Touge", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 230.6, "file": "_RealiSimHQ_Extended_Edition-Touge.7z", "link": "https://drive.google.com/file/d/1WhPjAAlFzFLxZz_A6TG0OyTrQQsgiG5B/view?usp=drive_link"}, {"name": "RealiSimHQ Extended Editions (SurfaceFX)", "raw_name": "_RealiSimHQ_Extended_Editions", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 275.7, "file": "_RealiSimHQ_Extended_Editions.7z", "link": "https://drive.google.com/file/d/14X8PN6_5Nw4UWH0cD6DG0lRKLEzMEmuc/view?usp=drive_link"}, {"name": "RealiSimHQ Happogahara Circuit", "raw_name": "_RealiSimHQ_Happogahara_Circuit", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 126.2, "file": "_RealiSimHQ_Happogahara_Circuit.7z", "link": "https://drive.google.com/file/d/15TKgpMCMLuVOvtT_4qObYDMDRq6cc__m/view?usp=drive_link"}, {"name": "SCS EMJ FREE (SurfaceFX)", "raw_name": "SCS_EMJ_FREE", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 140.3, "file": "SCS_EMJ_FREE.7z", "link": "https://drive.google.com/file/d/1ALQGTIeBFOLKvEpaw7CeCV6z5nABGN9h/view?usp=drive_link"}, {"name": "Sadamine [EK] (SurfaceFX)", "raw_name": "ek_sadamine", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 383.5, "file": "ek_sadamine.7z", "link": "https://drive.google.com/file/d/1GEPbMY5QUZ13TuMoSNKJBEbhbzE_XufY/view?usp=drive_link"}, {"name": "Sherbetland [RMI]", "raw_name": "rmi_sherbetland", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 12.6, "file": "rmi_sherbetland.7z", "link": "https://drive.google.com/file/d/1edeP1yKWuDn_F50FQuXbA_nZ63AVrdbc/view?usp=drive_link"}, {"name": "Shigemo Circuit", "raw_name": "Shigemo Circuit", "category": "Patreon Weekly", "type": "Touge", "x10dd": false, "size": 70.5, "file": "Shigemo Circuit.7z", "link": "https://drive.google.com/file/d/1GqMBuc5OQNjhnq5VxEDLZW0aQKONQNnh/view?usp=drive_link"}, {"name": "Shigemo Circuit HQ", "raw_name": "_Shigemo Circuit HQ_", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 113.2, "file": "_Shigemo Circuit HQ_.7z", "link": "https://drive.google.com/file/d/1TCa1nBl48oEsH0BBcv85DpWzo6H_yVJK/view?usp=drive_link"}, {"name": "Shigemo Line (SurfaceFX)", "raw_name": "shigemo_line", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 148.4, "file": "shigemo_line.7z", "link": "https://drive.google.com/file/d/10Z5QYvLPiVW3m-k3qykESaYxIQ42eKQt/view?usp=drive_link"}, {"name": "Shigemo Line HQ", "raw_name": "_Shigemo Line_HQ_", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 71.1, "file": "_Shigemo Line_HQ_.7z", "link": "https://drive.google.com/file/d/1cM1VV2vhsEsjS30_aihR7QgSfJIhzY7S/view?usp=drive_link"}, {"name": "Shomaru Rev (SurfaceFX)", "raw_name": "shomaru-rev", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 136.0, "file": "shomaru-rev.7z", "link": "https://drive.google.com/file/d/1y7Fv2Lr8Vxm-tzZLihkWoibpCzwz07-e/view?usp=drive_link"}, {"name": "Shuto Revival Project Beta (SurfaceFX)", "raw_name": "shuto_revival_project_beta", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 2.4, "file": "shuto_revival_project_beta.7z", "link": "https://drive.google.com/file/d/1FW09d3G8ntNroxgXc1vgeBAqK4YlW1ek/view?usp=drive_link"}, {"name": "Simhq LZ Compound (SurfaceFX)", "raw_name": "simhq_lz_compound", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 381.2, "file": "simhq_lz_compound.7z", "link": "https://drive.google.com/file/d/1ePfp4zcKwoJBusa80V6zlq9eJUBSEg6p/view?usp=drive_link"}, {"name": "Soyo Daikoku (SurfaceFX)", "raw_name": "soyo_daikoku", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 135.5, "file": "soyo_daikoku.7z", "link": "https://drive.google.com/file/d/1ObbJPLdTF0yXMuyDpNa0-CO33gDGYHem/view?usp=drive_link"}, {"name": "Sunrise Circuit (SurfaceFX)", "raw_name": "sunrise_circuit", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 79.0, "file": "sunrise_circuit.7z", "link": "https://drive.google.com/file/d/1f4jZWXt_O1RgzEClQBzvs38zXfy4a9yI/view?usp=drive_link"}, {"name": "TANDEM Doors R US", "raw_name": "TANDEM Doors R US", "category": "Free Versions RD", "type": "Circuit", "x10dd": false, "size": 38.6, "file": "TANDEM Doors R US.7z", "link": "https://drive.google.com/file/d/1kuOW41Oi28tsuC60TSasZkGUSJ1wC_Rq/view?usp=drive_link"}, {"name": "Tail of The Dragon X10DD (SurfaceFX)", "raw_name": "Tail of The Dragon_X10DD", "category": "Free Versions RD", "type": "Touge", "x10dd": true, "size": 872.1, "file": "Tail of The Dragon_X10DD.7z", "link": "https://drive.google.com/file/d/1Vn8nBVX_rj2EISiUdMlJDAMz8y8kHRZD/view?usp=drive_link"}, {"name": "Tail of The Dragon [PK] (SurfaceFX)", "raw_name": "pk_tail_of_the_dragon", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 27.5, "file": "pk_tail_of_the_dragon.7z", "link": "https://drive.google.com/file/d/1FL4GFj9sE__rrH2cz3gRqIO884-WAxfE/view?usp=drive_link"}, {"name": "Tail of The Dragon x2 HQ", "raw_name": "Tail of The Dragon x2 HQ", "category": "RealSim HQ", "type": "Touge", "x10dd": false, "size": 865.7, "file": "Tail of The Dragon x2 HQ.7z", "link": "https://drive.google.com/file/d/1RvSXTYYTbxCYABbW0CjPKPu7OLD3Dqc0/view?usp=drive_link"}, {"name": "Tamworth UK Streets (SurfaceFX)", "raw_name": "Tamworth_Uk_Streets", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 175.9, "file": "Tamworth_Uk_Streets.7z", "link": "https://drive.google.com/file/d/1z9Kc1-QmzNUvtUnoTVkgZBU9f2G5yXvi/view?usp=drive_link"}, {"name": "Tcl Tougecircuit (SurfaceFX)", "raw_name": "tcl-tougecircuit", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 182.1, "file": "tcl-tougecircuit.7z", "link": "https://drive.google.com/file/d/1wqm6z1BhOm6rtvpNhK3GpjiySVjkfc-f/view?usp=drive_link"}, {"name": "The Great Smokey Mountain Touge Project", "raw_name": "The Great Smokey Mountain Touge Project", "category": "The Great Smokey Mountain Touge Project", "type": "Touge", "x10dd": false, "size": 341.4, "file": "The Great Smokey Mountain Touge Project.7z", "link": "https://drive.google.com/file/d/1lMCsd2_NDhzIOMIrHQsVb3lO4e7KRSwc/view?usp=drive_link"}, {"name": "The Switchbacks", "raw_name": "The Switchbacks", "category": "Free Versions RD", "type": "Touge", "x10dd": false, "size": 590.9, "file": "The Switchbacks.7z", "link": "https://drive.google.com/file/d/1Njc6ZBWJaw2g2abzZV_jJuQqAfmPDCwm/view?usp=drive_link"}, {"name": "Tianmen Mountain (SurfaceFX)", "raw_name": "tianmen_mountain", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 275.0, "file": "tianmen_mountain.7z", "link": "https://drive.google.com/file/d/1j_LIwLQAoLzdIvI-8cluay5N8E72gL2o/view?usp=drive_link"}, {"name": "Tsukuba Fruits Line [EK] (SurfaceFX)", "raw_name": "ek_tsukuba_fruits_line", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 282.1, "file": "ek_tsukuba_fruits_line.7z", "link": "https://drive.google.com/file/d/1hb7gqeK3I8K41jyYEzLSzAjMpz4MAryI/view?usp=drive_link"}, {"name": "Tykkimaen Moottorirata Drift Beta V0.9 Boskep (SurfaceFX)", "raw_name": "tykkimaen_moottorirata_Drift_beta_v0.9_boskep", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 301.8, "file": "tykkimaen_moottorirata_Drift_beta_v0.9_boskep.7z", "link": "https://drive.google.com/file/d/1y0gV_uDCQXGpUmTpg8IjM_mzijxWDjcJ/view?usp=drive_link"}, {"name": "Tykkimaki Kouvola (SurfaceFX)", "raw_name": "tykkimaki_kouvola", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 156.3, "file": "tykkimaki_kouvola.7z", "link": "https://drive.google.com/file/d/1paHNSFOxZPXaYEDSzb0OgcvL5SWBYtLQ/view?usp=drive_link"}, {"name": "Usair Raceway (SurfaceFX)", "raw_name": "usair_raceway", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 70.2, "file": "usair_raceway.7z", "link": "https://drive.google.com/file/d/11gyE6Z3TmMGlSOBcEd1dYTfGTmsmpC2W/view?usp=drive_link"}, {"name": "Usui Touge [PK] (SurfaceFX)", "raw_name": "pk_usui_touge", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 339.0, "file": "pk_usui_touge.7z", "link": "https://drive.google.com/file/d/14McBvR6CXsbpIqBGMSX4C6IxKQ0Wl2Y_/view?usp=drive_link"}, {"name": "VDC Bikernieki 2022 (SurfaceFX)", "raw_name": "vdc_bikernieki_2022", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 343.2, "file": "vdc_bikernieki_2022.7z", "link": "https://drive.google.com/file/d/19VJj7dtxp_SF1xRlnZVs-QVkQxLyxh0d/view?usp=drive_link"}, {"name": "X10DD Even Flow (SurfaceFX)", "raw_name": "X10DD_Even_Flow", "category": "Patreon Weekly", "type": "Circuit", "x10dd": true, "size": 188.7, "file": "X10DD_Even_Flow.7z", "link": "https://drive.google.com/file/d/1g7zYPnpmUOr6qRobPHTQr0AfafTUcwpi/view?usp=drive_link"}, {"name": "X10DD Pump Track (SurfaceFX)", "raw_name": "X10DD_Pump Track", "category": "Patreon Free", "type": "Circuit", "x10dd": true, "size": 72.3, "file": "X10DD_Pump Track.7z", "link": "https://drive.google.com/file/d/1GqRVS9OSkKKOZhAYvCIzTwQbG4ZJu2Ku/view?usp=drive_link"}, {"name": "X10DD Shigemo Line TANDEM (SurfaceFX)", "raw_name": "X10DD_Shigemo_Line_TANDEM", "category": "Patreon Weekly", "type": "Touge", "x10dd": true, "size": 118.6, "file": "X10DD_Shigemo_Line_TANDEM.7z", "link": "https://drive.google.com/file/d/1rva2Nh-qDEZFueTddgNWQohUd6CSWzvZ/view?usp=drive_link"}, {"name": "Yoshi Village", "raw_name": "yoshi_village", "category": "RallyCross", "type": "Circuit", "x10dd": false, "size": 26.3, "file": "yoshi_village.7z", "link": "https://drive.google.com/file/d/1NGWkxDcq-gq-7AxN4Xw5-vCS2q-hjgG6/view?usp=drive_link"}, {"name": "Zen Track Pack 00", "raw_name": "Zen Track Pack 00", "category": "Zen Track Packs", "type": "Circuit", "x10dd": false, "size": 45.8, "file": "Zen Track Pack 00.7z", "link": "https://drive.google.com/file/d/1ma0E07v3dQUS9jczf_WKMhjhQKprnGI6/view?usp=drive_link"}, {"name": "ac Gymkhana", "raw_name": "ac_gymkhana", "category": "RallyCross", "type": "Freeroam", "x10dd": false, "size": 300.0, "file": "ac_gymkhana.7z", "link": "https://drive.google.com/file/d/18lQ-ty7-AgocLVJyLkNpJdQ0gkeLGJ0O/view?usp=drive_link"}, {"name": "ak Clotkart (SurfaceFX)", "raw_name": "ak_clotkart", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 59.7, "file": "ak_clotkart.7z", "link": "https://drive.google.com/file/d/1gBtDM9n2aae6NHpZQaqUcYlEiX3sr4SP/view?usp=drive_link"}, {"name": "dr Patreon Longbeach (SurfaceFX)", "raw_name": "dr_patreon_longbeach", "category": "X10DD Editions", "type": "Competition", "x10dd": true, "size": 193.1, "file": "dr_patreon_longbeach.7z", "link": "https://drive.google.com/file/d/14mv_1lIq0BgPw9NS-3YKdJ_WWhRapefE/view?usp=drive_link"}, {"name": "fs Driftpark (SurfaceFX)", "raw_name": "fs_driftpark", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 119.0, "file": "fs_driftpark.7z", "link": "https://drive.google.com/file/d/1Aq1cKg030_QlKHET_qNshn0mvjwndyCF/view?usp=drive_link"}, {"name": "jd The Compound Palm Bay (SurfaceFX)", "raw_name": "jd_the_compound_palm_bay", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 76.2, "file": "jd_the_compound_palm_bay.7z", "link": "https://drive.google.com/file/d/1ikv7oUfyNf057c-t4j4bBnwwYP0e-4eF/view?usp=drive_link"}, {"name": "la Canyons (SurfaceFX)", "raw_name": "la_canyons", "category": "X10DD Editions", "type": "Freeroam", "x10dd": true, "size": 986.0, "file": "la_canyons.7z", "link": "https://drive.google.com/file/d/1cOvxq-7nlLkpmInvsqAOsugVMun3UfiG/view?usp=drive_link"}, {"name": "lm Tsuchisaka (SurfaceFX)", "raw_name": "lm_tsuchisaka", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 173.1, "file": "lm_tsuchisaka.7z", "link": "https://drive.google.com/file/d/1BLW8zEJAv2QpTF-CNiqye8tYlT8CgQsR/view?usp=drive_link"}, {"name": "pt Bihoku Highland (SurfaceFX)", "raw_name": "pt_bihoku_highland", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 202.3, "file": "pt_bihoku_highland.7z", "link": "https://drive.google.com/file/d/1hxVHO4Mkt6Mi9g7EfhR5FLdCLNwPv3TM/view?usp=drive_link"}, {"name": "pt Meihan c Course (SurfaceFX)", "raw_name": "pt_meihan_c_course", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 174.4, "file": "pt_meihan_c_course.7z", "link": "https://drive.google.com/file/d/1dF_-1PM-S-JS9EQA_4M3JF-4OJkKRQH4/view?usp=drive_link"}, {"name": "sr Shadowvalley (SurfaceFX)", "raw_name": "sr_shadowvalley", "category": "X10DD Editions", "type": "Circuit", "x10dd": true, "size": 45.4, "file": "sr_shadowvalley.7z", "link": "https://drive.google.com/file/d/14ADX_trpe3aNSiw2WUjQXPhYKLrOGga9/view?usp=drive_link"}, {"name": "zk Tanemachi Dam (SurfaceFX)", "raw_name": "zk_tanemachi_dam", "category": "X10DD Editions", "type": "Touge", "x10dd": true, "size": 114.0, "file": "zk_tanemachi_dam.7z", "link": "https://drive.google.com/file/d/1CGIhc24vGFVwm2SOm74YXt-daYKyqeya/view?usp=drive_link"}];
+
+const SERVERS = [
+  { name:"TAProot Circuit", theme:"Drift · 17 Track Rotation · Vote Every 90min", http:9001, tcp:10001, cars:6, track:"Klutch Kickers (Rotating)", features:"Extended Physics, COSMIC Suspension, VotingPreset, WeatherFX", link:"https://acstuff.club/s/q:race/online/join?ip=152.53.83.105&httpPort=9001" },
+  { name:"LA Canyons", theme:"Open World · AI Traffic · Cruising", http:9004, tcp:10004, cars:16, track:"LA Canyons", features:"AI Traffic, Open World, Extended Physics, JDM + Muscle + Bikes", link:"https://acstuff.club/s/q:race/online/join?ip=152.53.83.105&httpPort=9004" },
+  { name:"Initial D Battle", theme:"Touge · Japanese Street Racing", http:9006, tcp:9606, cars:13, track:"Akina / Irohazaka / Usui (Rotating)", features:"X10DD Battle Cars, Touge Tracks, Extended Physics", link:"https://acstuff.club/s/q:race/online/join?ip=152.53.83.105&httpPort=9006" },
+  { name:"RallyX Chaos Mode", theme:"Group B Legends · Hayabusa Mini Trucks", http:9008, tcp:9608, cars:11, track:"RallyCross Tracks (Rotating)", features:"Group B Rally, Mini Trucks, SurfaceFX, Gravel/Dirt", link:"https://acstuff.club/s/q:race/online/join?ip=152.53.83.105&httpPort=9008" },
+];
+
+const API_HOST = "152.53.83.105";
+
+function packClass(pack) {
+  if (pack.includes('X10DD')) return 'pack-X10DD';
+  if (pack.includes('L.E.V.E.L') || pack.includes('LVL')) return 'pack-LEVEL';
+  if (pack.includes('T.A.N.D.E.M') || pack.includes('TANDEM')) return 'pack-TANDEM';
+  if (pack.includes('Rally')) return 'pack-RallyCross';
+  if (pack.includes('TAP')) return 'pack-TAP';
+  if (pack.includes('ADL')) return 'pack-ADL';
+  if (pack.includes('Initial')) return 'pack-InitialD';
+  if (pack.includes('JDAM')) return 'pack-JDAM';
+  return 'pack-default';
+}
+
+function renderCars(data) {
+  const tbody = document.getElementById('car-body');
+  tbody.innerHTML = data.map(c => `
+    <tr>
+      <td class="make">${c.make}</td>
+      <td class="model">${c.link ? `<a href="${c.link}" target="_blank" style="color:var(--text);text-decoration:none;border-bottom:1px dashed var(--border)">${c.model}</a>` : c.model}</td>
+      <td class="pack"><span class="pack-badge ${packClass(c.pack)}">${c.pack}</span></td>
+      <td class="physics">${c.physics || '—'}</td>
+      <td class="size">${c.size} MB</td>
+    </tr>
+  `).join('');
+  document.getElementById('car-count').textContent = data.length + ' cars';
+}
+
+function trackTypeClass(type) {
+  const map = { 'Freeroam':'pack-LEVEL', 'Touge':'pack-X10DD', 'Circuit':'pack-TAP', 'Competition':'pack-TANDEM' };
+  return map[type] || 'pack-default';
+}
+
+function renderTracks(data) {
+  const tbody = document.getElementById('track-body');
+  tbody.innerHTML = data.map(t => {
+    let nameHtml = t.link ? `<a href="${t.link}" target="_blank" style="color:var(--text);text-decoration:none;border-bottom:1px dashed var(--border)">${t.name}</a>` : t.name;
+    if (t.x10dd) nameHtml += ' <span class="sfx-badge">SurfaceFX</span>';
+    return `
+    <tr>
+      <td class="model" style="text-align:left">${nameHtml}</td>
+      <td class="pack"><span class="pack-badge ${trackTypeClass(t.type)}">${t.type}</span></td>
+      <td class="pack"><span class="pack-badge pack-default">${t.category}</span></td>
+      <td class="size">${t.size} MB</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('track-count').textContent = data.length + ' tracks';
+}
+
+function renderPacks() {
+  const packs = {};
+  CARS.forEach(c => {
+    if (!packs[c.pack]) packs[c.pack] = { count: 0, size: 0, cars: [] };
+    packs[c.pack].count++;
+    packs[c.pack].size += c.size;
+    packs[c.pack].cars.push(c);
+  });
+  
+  const sorted = Object.entries(packs).sort((a,b) => b[1].count - a[1].count);
+  document.getElementById('packs-grid').innerHTML = sorted.map(([name, data], idx) => {
+    const carItems = data.cars.map(c => `
+      <div class="pack-car-item">
+        <span class="car-name">${c.model}</span>
+        ${c.link ? `<a href="${c.link}" target="_blank" class="car-dl">⬇ DL</a>` : '<span style="color:var(--text2);font-size:0.8rem">—</span>'}
+      </div>
+    `).join('');
+    return `
+    <div class="pack-card">
+      <div class="pack-header">
+        <h4><span class="pack-badge ${packClass(name)}">${name}</span></h4>
+      </div>
+      <div class="pack-stats">
+        <span><span class="n">${data.count}</span> cars</span>
+        <span><span class="n">${(data.size/1024).toFixed(1)}</span> GB</span>
+      </div>
+      <button class="pack-expand-btn" onclick="togglePack(this)">▶ Show Cars</button>
+      <div class="pack-car-list" id="pack-list-${idx}">
+        ${carItems}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePack(btn) {
+  const list = btn.nextElementSibling;
+  const open = list.classList.toggle('open');
+  btn.textContent = open ? '▼ Hide Cars' : '▶ Show Cars';
+}
+
+function renderServers() {
+  document.getElementById('servers-grid').innerHTML = SERVERS.map(s => `
+    <div class="server-card">
+      <h3>${s.name}</h3>
+      <div class="theme">${s.theme}</div>
+      <div class="server-live">
+        <span class="live-dot"></span>
+        <span class="player-count">Online</span>
+        <span class="current-track">🏁 ${s.track}</span>
+      </div>
+      <div class="meta">
+        <span>HTTP :${s.http}</span>
+        <span>TCP :${s.tcp}</span>
+        <span>${s.cars} cars</span>
+      </div>
+      <div class="features">${s.features}</div>
+      <p style="font-size:0.75rem;color:var(--text2);margin-bottom:12px;">Live player count available via Content Manager or direct connection.</p>
+      <a href="${s.link}" target="_blank" class="join-btn">JOIN SERVER →</a>
+    </div>
+  `).join('');
+}
+
+function filterCars() {
+  const q = document.getElementById('car-search').value.toLowerCase();
+  const make = document.getElementById('filter-make').value;
+  const pack = document.getElementById('filter-pack').value;
+  const physics = document.getElementById('filter-physics').value;
+  
+  const filtered = CARS.filter(c => {
+    if (q && !c.make.toLowerCase().includes(q) && !c.model.toLowerCase().includes(q) && !c.name.toLowerCase().includes(q) && !c.pack.toLowerCase().includes(q)) return false;
+    if (make && c.make !== make) return false;
+    if (pack && c.pack !== pack) return false;
+    if (physics && c.physics !== physics) return false;
+    return true;
+  });
+  renderCars(filtered);
+}
+
+function filterTracks() {
+  const q = document.getElementById('track-search').value.toLowerCase();
+  const type = document.getElementById('filter-track-type').value;
+  const cat = document.getElementById('filter-track-cat').value;
+  
+  const filtered = TRACKS.filter(t => {
+    if (q && !t.name.toLowerCase().includes(q) && !t.category.toLowerCase().includes(q) && !t.type.toLowerCase().includes(q)) return false;
+    if (type && t.type !== type) return false;
+    if (cat && t.category !== cat) return false;
+    return true;
+  });
+  renderTracks(filtered);
+}
+
+// Sorting
+let sortState = {};
+document.querySelectorAll('th[data-sort]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.sort;
+    const table = th.closest('table');
+    const isCarTable = table.id === 'car-table';
+    const stateKey = table.id + key;
+    
+    sortState[stateKey] = sortState[stateKey] === 'asc' ? 'desc' : 'asc';
+    const dir = sortState[stateKey] === 'asc' ? 1 : -1;
+    
+    table.querySelectorAll('th').forEach(t => t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    
+    const data = isCarTable ? CARS : TRACKS;
+    data.sort((a,b) => {
+      let va = a[key], vb = b[key];
+      if (key === 'size') return (va - vb) * dir;
+      return String(va).localeCompare(String(vb)) * dir;
+    });
+    
+    if (isCarTable) filterCars();
+    else filterTracks();
+  });
+});
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+document.getElementById('car-search').addEventListener('input', filterCars);
+document.getElementById('filter-make').addEventListener('change', filterCars);
+document.getElementById('filter-pack').addEventListener('change', filterCars);
+document.getElementById('filter-physics').addEventListener('change', filterCars);
+document.getElementById('track-search').addEventListener('input', filterTracks);
+document.getElementById('filter-track-type').addEventListener('change', filterTracks);
+document.getElementById('filter-track-cat').addEventListener('change', filterTracks);
+
+// Init
+renderCars(CARS);
+renderTracks(TRACKS);
+renderPacks();
+renderServers();
+</script>
+</body>
+</html>
