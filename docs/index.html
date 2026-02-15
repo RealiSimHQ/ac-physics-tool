@@ -7,205 +7,402 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root {
-    --bg: #08080f; --bg2: #0e0e1a; --bg3: #151525;
+    --bg: #08080f; --bg2: #0e0e1a; --bg3: #151525; --bg4: #1c1c35;
     --border: #1a1a35; --border-hi: #00e5ff;
-    --cyan: #00e5ff; --cyan-dim: #00e5ff44; --cyan-glow: #00e5ff22;
-    --green: #00ff88; --red: #ff4466; --orange: #ffaa00;
+    --cyan: #00e5ff; --cyan-dim: #00e5ff44; --cyan-glow: #00e5ff22; --cyan-bg: #00e5ff08;
+    --green: #00ff88; --green-dim: #00ff8844; --red: #ff4466; --orange: #ffaa00; --purple: #aa66ff;
     --text: #e0e0e8; --text2: #8888aa; --text3: #555577;
-    --radius: 10px;
+    --radius: 10px; --radius-lg: 16px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Inter','Segoe UI',system-ui,sans-serif; line-height: 1.5; }
-.app { max-width: 1100px; margin: 0 auto; padding: 20px; }
-header { text-align: center; padding: 30px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
-header h1 { font-size: 2.2em; letter-spacing: -1px; }
-header h1 span { color: var(--cyan); }
-header p { color: var(--text2); margin-top: 4px; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;line-height:1.6;min-height:100vh}
+.app{max-width:1200px;margin:0 auto;padding:20px 24px}
+a{color:var(--cyan);text-decoration:none}
 
-.step { display: none; animation: fadeIn .3s ease; }
-.step.active { display: block; }
-@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+/* Header */
+header{text-align:center;padding:32px 0 24px;border-bottom:1px solid var(--border);margin-bottom:28px}
+header h1{font-size:2rem;letter-spacing:-1px;font-weight:800}
+header h1 .brand{color:var(--cyan);text-shadow:0 0 30px var(--cyan-glow)}
+header .tagline{color:var(--text2);margin-top:6px;font-size:.95em}
+header .version{display:inline-block;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:2px 12px;font-size:.7em;color:var(--text3);margin-top:8px}
 
-.progress { display: flex; gap: 6px; margin-bottom: 30px; }
-.progress-dot { height: 4px; flex: 1; background: var(--border); border-radius: 2px; transition: background .3s; }
-.progress-dot.done { background: var(--cyan); }
-.progress-dot.current { background: linear-gradient(90deg, var(--cyan), var(--cyan-dim)); }
+/* Progress */
+.progress{display:flex;gap:4px;margin-bottom:28px;padding:0 40px}
+.progress-step{flex:1;text-align:center;position:relative}
+.progress-step .bar{height:3px;background:var(--border);border-radius:2px;transition:background .4s}
+.progress-step.done .bar{background:var(--cyan)}
+.progress-step.current .bar{background:linear-gradient(90deg,var(--cyan),var(--cyan-dim))}
+.progress-step .label{font-size:.7em;color:var(--text3);margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+.progress-step.done .label,.progress-step.current .label{color:var(--text2)}
 
-.drop-zone {
-    border: 2px dashed var(--border); border-radius: 16px; padding: 60px 40px;
-    text-align: center; cursor: pointer; transition: all .3s ease;
-    background: linear-gradient(135deg, var(--bg2), var(--bg3));
-    position: relative; overflow: hidden;
+/* Steps */
+.step{display:none;animation:fadeIn .35s ease}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* Drop zone */
+.drop-zone{
+    border:2px dashed var(--border);border-radius:var(--radius-lg);padding:70px 40px;
+    text-align:center;cursor:pointer;transition:all .3s ease;
+    background:linear-gradient(160deg,var(--bg2) 0%,var(--bg3) 100%);
+    position:relative;overflow:hidden;
 }
-.drop-zone::before {
-    content: ''; position: absolute; inset: 0; border-radius: 16px;
-    background: radial-gradient(circle at 50% 50%, var(--cyan-glow) 0%, transparent 70%);
-    opacity: 0; transition: opacity .3s;
+.drop-zone::before{content:'';position:absolute;inset:0;border-radius:var(--radius-lg);background:radial-gradient(circle at 50% 50%,var(--cyan-glow) 0%,transparent 70%);opacity:0;transition:opacity .3s}
+.drop-zone:hover,.drop-zone.dragover{border-color:var(--cyan);box-shadow:0 0 60px var(--cyan-glow)}
+.drop-zone:hover::before,.drop-zone.dragover::before{opacity:1}
+.drop-zone .dz-icon{font-size:3.5em;margin-bottom:16px;filter:drop-shadow(0 0 24px var(--cyan))}
+.drop-zone .dz-title{font-size:1.3em;font-weight:700;color:var(--cyan);position:relative}
+.drop-zone .dz-sub{color:var(--text2);margin-top:8px;font-size:.9em;position:relative}
+.drop-zone .dz-formats{color:var(--text3);margin-top:20px;font-size:.8em;position:relative;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.drop-zone .dz-formats span{background:var(--bg);padding:3px 10px;border-radius:6px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace}
+.drop-zone input{display:none}
+.drop-zone.loading .dz-icon{animation:pulse 1.5s ease infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* Car banner */
+.car-banner{
+    background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--cyan-dim);
+    border-radius:var(--radius);padding:18px 24px;margin-bottom:24px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
 }
-.drop-zone:hover, .drop-zone.dragover { border-color: var(--cyan); box-shadow: 0 0 40px var(--cyan-glow); }
-.drop-zone:hover::before, .drop-zone.dragover::before { opacity: 1; }
-.drop-zone .icon { font-size: 3em; margin-bottom: 12px; filter: drop-shadow(0 0 20px var(--cyan)); }
-.drop-zone .title { font-size: 1.3em; font-weight: 700; color: var(--cyan); position: relative; }
-.drop-zone .subtitle { color: var(--text2); margin-top: 8px; font-size: .9em; position: relative; }
-.drop-zone .formats { color: var(--text3); margin-top: 16px; font-size: .8em; position: relative;
-    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.drop-zone .formats span { background: var(--bg); padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); }
-.drop-zone input { display: none; }
-.drop-zone.loading .icon { animation: pulse 1.5s ease infinite; }
-@keyframes pulse { 0%,100% { opacity:.5; } 50% { opacity:1; } }
+.car-banner .cb-name{font-size:1.4em;font-weight:800}
+.car-banner .cb-detail{color:var(--text2);font-size:.85em;margin-top:2px}
+.car-banner .cb-stats{display:flex;gap:8px;flex-wrap:wrap}
+.car-banner .cb-stat{background:var(--bg);padding:5px 12px;border-radius:6px;font-size:.8em;color:var(--text2);border:1px solid var(--border)}
+.car-banner .cb-stat b{color:var(--cyan)}
 
-.car-banner {
-    background: var(--bg2); border: 1px solid var(--cyan-dim); border-radius: var(--radius);
-    padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+/* Detection card */
+.detect-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px}
+.detect-card h3{color:var(--cyan);font-size:.9em;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.detect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.detect-item{background:var(--bg3);border-radius:6px;padding:10px 14px}
+.detect-item .di-label{font-size:.7em;text-transform:uppercase;letter-spacing:1px;color:var(--text3)}
+.detect-item .di-value{color:var(--text);font-size:1em;font-weight:600;margin-top:2px}
+.detect-item .di-value.highlight{color:var(--cyan)}
+
+/* Mode selector */
+.mode-select{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+@media(max-width:640px){.mode-select{grid-template-columns:1fr}}
+.mode-card{
+    background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius-lg);
+    padding:28px;cursor:pointer;transition:all .2s;text-align:center;position:relative;overflow:hidden;
 }
-.car-banner .name { font-size: 1.3em; font-weight: 700; }
-.car-banner .detail { color: var(--text2); font-size: .85em; margin-top: 2px; }
-.car-banner .stats { display: flex; gap: 8px; flex-wrap: wrap; }
-.car-banner .stat { background: var(--bg3); padding: 4px 10px; border-radius: 6px; font-size: .8em; color: var(--text2); }
+.mode-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,var(--cyan-glow),transparent 70%);opacity:0;transition:opacity .3s}
+.mode-card:hover{border-color:var(--cyan-dim);transform:translateY(-3px)}
+.mode-card:hover::before{opacity:.5}
+.mode-card.selected{border-color:var(--cyan);background:var(--cyan-bg)}
+.mode-card.selected::before{opacity:1}
+.mode-card .mc-icon{font-size:2.5em;margin-bottom:10px;position:relative}
+.mode-card .mc-title{font-size:1.15em;font-weight:700;color:var(--cyan);position:relative}
+.mode-card .mc-desc{color:var(--text2);font-size:.85em;margin-top:6px;position:relative}
 
-.mode-select { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
-@media (max-width:600px) { .mode-select { grid-template-columns: 1fr; } }
-.mode-card {
-    background: var(--bg2); border: 2px solid var(--border); border-radius: var(--radius);
-    padding: 24px; cursor: pointer; transition: all .2s; text-align: center;
+/* Class grid */
+.class-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}
+@media(max-width:768px){.class-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}}
+.class-card{
+    background:var(--bg2);border:2px solid var(--border);border-radius:var(--radius);
+    padding:16px;cursor:pointer;transition:all .15s;text-align:center;
 }
-.mode-card:hover { border-color: var(--cyan); transform: translateY(-2px); }
-.mode-card.selected { border-color: var(--cyan); background: #00e5ff08; }
-.mode-card .mode-icon { font-size: 2em; margin-bottom: 8px; }
-.mode-card .mode-title { font-size: 1.1em; font-weight: 700; color: var(--cyan); }
-.mode-card .mode-desc { color: var(--text2); font-size: .85em; margin-top: 4px; }
+.class-card:hover{border-color:var(--cyan-dim);transform:translateY(-2px)}
+.class-card.selected{border-color:var(--cyan);background:var(--cyan-bg)}
+.class-card .cc-icon{font-size:1.6em;margin-bottom:6px}
+.class-card .cc-name{font-weight:700;color:var(--cyan);font-size:1em}
+.class-card .cc-hp{color:var(--orange);font-size:.8em;margin-top:4px}
+.class-card .cc-desc{color:var(--text3);font-size:.75em;margin-top:4px}
 
-.class-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
-.class-card {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-    padding: 14px; cursor: pointer; transition: all .15s; text-align: center;
+/* Section header */
+.section-hdr{display:flex;align-items:center;gap:10px;margin:28px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.section-hdr h2{font-size:1.1em;color:var(--cyan);font-weight:700}
+.section-hdr .sh-badge{background:var(--bg3);color:var(--text3);font-size:.7em;padding:2px 8px;border-radius:10px;border:1px solid var(--border)}
+
+/* Parts grid */
+.parts-section{margin-bottom:24px}
+.parts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+@media(max-width:700px){.parts-grid{grid-template-columns:1fr}}
+.part-group{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;max-height:400px;overflow-y:auto}
+.part-group::-webkit-scrollbar{width:4px}
+.part-group::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.part-group h3{font-size:.9em;color:var(--cyan);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.part-option{
+    padding:12px 14px;border:1px solid var(--border);border-radius:8px;
+    margin-bottom:8px;cursor:pointer;transition:all .15s;
 }
-.class-card:hover { border-color: var(--cyan-dim); }
-.class-card.selected { border-color: var(--cyan); background: #00e5ff08; }
-.class-card .class-name { font-weight: 700; color: var(--cyan); }
-.class-card .class-hp { color: var(--orange); font-size: .85em; margin-top: 2px; }
-.class-card .class-desc { color: var(--text3); font-size: .8em; margin-top: 4px; }
+.part-option:last-child{margin-bottom:0}
+.part-option:hover{border-color:var(--cyan-dim);background:rgba(0,229,255,.02)}
+.part-option.selected{border-color:var(--cyan);background:var(--cyan-bg)}
+.part-option.disabled{opacity:.3;pointer-events:none}
+.part-option .po-brand{font-size:.65em;text-transform:uppercase;letter-spacing:1px;color:var(--text3)}
+.part-option .po-name{font-weight:600;font-size:.95em;margin-top:2px}
+.part-option .po-desc{color:var(--text3);font-size:.8em;margin-top:3px}
+.part-option .po-spec{color:var(--orange);font-size:.8em;margin-top:3px;font-weight:500}
 
-.parts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-@media (max-width:768px) { .parts-grid { grid-template-columns: 1fr; } }
-.part-group { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
-.part-group h3 { font-size: 1em; color: var(--cyan); margin-bottom: 10px; }
-.part-option { padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; cursor: pointer; transition: all .15s; font-size: .9em; }
-.part-option:hover { border-color: var(--cyan-dim); }
-.part-option.selected { border-color: var(--cyan); background: #00e5ff08; }
-.part-option.disabled { opacity: 0.35; pointer-events: none; }
-.part-option .part-name { font-weight: 600; }
-.part-option .part-desc { color: var(--text3); font-size: .8em; margin-top: 2px; }
-.part-option .part-spec { color: var(--orange); font-size: .8em; margin-top: 2px; }
+/* Turbo section */
+.turbo-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+.turbo-section h3{font-size:.9em;color:var(--orange);margin-bottom:12px;text-transform:uppercase;letter-spacing:1px}
+.turbo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.turbo-grid{grid-template-columns:1fr 1fr}}
+.turbo-card{
+    padding:14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;
+    text-align:center;transition:all .15s;
+}
+.turbo-card:hover{border-color:var(--orange);background:rgba(255,170,0,.03)}
+.turbo-card.selected{border-color:var(--orange);background:rgba(255,170,0,.08)}
+.turbo-card .tc-icon{font-size:1.4em;margin-bottom:4px}
+.turbo-card .tc-name{font-weight:600;font-size:.9em}
+.turbo-card .tc-spec{color:var(--orange);font-size:.75em;margin-top:4px}
+.turbo-card .tc-desc{color:var(--text3);font-size:.7em;margin-top:2px}
 
-.summary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 10px; margin-bottom: 24px; }
-.summary-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
-.summary-card .label { color: var(--text2); font-size: .8em; text-transform: uppercase; letter-spacing: 1px; }
-.summary-card .value { color: var(--cyan); font-size: 1.6em; font-weight: 700; margin-top: 2px; }
-.summary-card .unit { color: var(--text3); font-size: .7em; }
+/* Drivetrain selector */
+.dt-selector{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.dt-card{
+    padding:16px;border:2px solid var(--border);border-radius:var(--radius);cursor:pointer;
+    text-align:center;transition:all .15s;
+}
+.dt-card:hover{border-color:var(--purple)}
+.dt-card.selected{border-color:var(--purple);background:rgba(170,102,255,.06)}
+.dt-card.disabled{opacity:.35;pointer-events:none}
+.dt-card .dtc-icon{font-size:1.3em;margin-bottom:4px}
+.dt-card .dtc-name{font-weight:700;color:var(--purple)}
+.dt-card .dtc-note{font-size:.75em;color:var(--text3);margin-top:2px}
 
-details.comp-details { margin-bottom: 20px; }
-details.comp-details summary { cursor: pointer; color: var(--cyan); font-weight: 600; padding: 8px 0; }
-.comp-section { margin-bottom: 16px; }
-.comp-section h3 { color: var(--text2); font-size: .85em; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-table { width: 100%; border-collapse: collapse; }
-th { background: var(--bg3); color: var(--text2); padding: 8px 12px; text-align: left; font-size: .8em; text-transform: uppercase; letter-spacing: 1px; }
-td { padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: .9em; }
-td.stock { color: var(--text2); }
-td.changed { color: var(--orange); font-weight: 600; }
+/* Summary */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:24px}
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.summary-card .sc-label{color:var(--text2);font-size:.7em;text-transform:uppercase;letter-spacing:1.5px}
+.summary-card .sc-value{color:var(--cyan);font-size:1.5em;font-weight:700;margin-top:4px}
+.summary-card .sc-unit{color:var(--text3);font-size:.6em;font-weight:400}
+.summary-card .sc-delta{font-size:.7em;margin-top:2px}
+.summary-card .sc-delta.up{color:var(--green)}
+.summary-card .sc-delta.down{color:var(--red)}
+.summary-card .sc-delta.neutral{color:var(--text3)}
 
-.btn { background: var(--cyan); color: var(--bg); border: none; border-radius: var(--radius);
-    padding: 14px 32px; font-size: 1.05em; font-weight: 700; cursor: pointer; transition: all .2s;
-    display: inline-flex; align-items: center; gap: 8px; }
-.btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text);
-    border-radius: var(--radius); padding: 10px 20px; font-size: .9em; cursor: pointer; transition: all .2s; }
-.btn-outline:hover { border-color: var(--cyan); color: var(--cyan); }
-.btn-row { display: flex; gap: 10px; margin-top: 24px; justify-content: center; flex-wrap: wrap; }
+/* Comparison */
+details.comp-details{margin-bottom:24px}
+details.comp-details summary{cursor:pointer;color:var(--cyan);font-weight:600;padding:10px 0;font-size:.95em;user-select:none}
+details.comp-details summary:hover{color:var(--text)}
+.comp-section{margin-bottom:20px}
+.comp-section h3{color:var(--text2);font-size:.8em;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg3);color:var(--text2);padding:8px 12px;text-align:left;font-size:.75em;text-transform:uppercase;letter-spacing:1px}
+td{padding:8px 12px;border-bottom:1px solid var(--border);font-size:.85em}
+td.stock{color:var(--text3)}
+td.changed{color:var(--orange);font-weight:600}
 
-footer { text-align: center; color: var(--text3); font-size: .8em; padding: 40px 0 20px; border-top: 1px solid var(--border); margin-top: 40px; }
+/* Files list */
+.files-list{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:20px}
+.files-list h3{color:var(--text2);font-size:.8em;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.file-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.85em}
+.file-item .fi-icon{color:var(--cyan)}
+.file-item .fi-name{font-family:'JetBrains Mono',monospace;font-size:.85em}
+.file-item .fi-status{font-size:.7em;padding:2px 8px;border-radius:10px}
+.file-item .fi-status.modified{background:rgba(255,170,0,.15);color:var(--orange)}
+.file-item .fi-status.added{background:rgba(0,255,136,.15);color:var(--green)}
+.file-item .fi-status.copied{background:rgba(136,136,170,.15);color:var(--text2)}
+
+/* Buttons */
+.btn{
+    background:linear-gradient(135deg,var(--cyan),#00b8d4);color:var(--bg);border:none;
+    border-radius:var(--radius);padding:14px 36px;font-size:1em;font-weight:700;
+    cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:8px;
+    box-shadow:0 4px 20px rgba(0,229,255,.2);
+}
+.btn:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:0 6px 30px rgba(0,229,255,.3)}
+.btn:active{transform:translateY(0)}
+.btn-outline{
+    background:transparent;border:1px solid var(--border);color:var(--text);
+    border-radius:var(--radius);padding:10px 20px;font-size:.9em;cursor:pointer;transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn-row{display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;color:var(--text);font-size:.9em;z-index:100;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+
+/* Footer */
+footer{text-align:center;color:var(--text3);font-size:.8em;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:40px}
+footer a{color:var(--text2)}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+
+/* Responsive */
+@media(max-width:480px){
+    .app{padding:12px 14px}
+    header h1{font-size:1.5rem}
+    .drop-zone{padding:40px 20px}
+}
 </style>
 </head>
 <body>
 <div class="app">
     <header>
-        <h1>⚡ <span>RealiSimHQ</span> Physics Tool</h1>
-        <p>Drop your car → Pick your parts → Download real physics</p>
+        <h1>⚡ <span class="brand">RealiSimHQ</span> Physics Tool</h1>
+        <p class="tagline">Drop your car → Pick your parts → Download real physics</p>
+        <span class="version">v4.0 — Read & Modify Engine</span>
     </header>
+
     <div class="progress" id="progress">
-        <div class="progress-dot current" data-step="1"></div>
-        <div class="progress-dot" data-step="2"></div>
-        <div class="progress-dot" data-step="3"></div>
+        <div class="progress-step current" data-step="1"><div class="bar"></div><div class="label">Upload</div></div>
+        <div class="progress-step" data-step="2"><div class="bar"></div><div class="label">Configure</div></div>
+        <div class="progress-step" data-step="3"><div class="bar"></div><div class="label">Download</div></div>
     </div>
 
-    <!-- STEP 1: Upload -->
+    <!-- STEP 1 -->
     <div class="step active" id="step1">
         <div class="drop-zone" id="dropZone">
-            <div class="icon">📁</div>
-            <div class="title">Drop your car's data folder here</div>
-            <div class="subtitle">Drag & drop a folder or individual .ini files</div>
-            <div class="formats">
-                <span>car.ini</span><span>suspensions.ini</span><span>tyres.ini</span>
-                <span>drivetrain.ini</span><span>brakes.ini</span>
+            <div class="dz-icon">📁</div>
+            <div class="dz-title">Drop your car's data/ folder here</div>
+            <div class="dz-sub">Drag the entire data folder, or select individual files</div>
+            <div class="dz-formats">
+                <span>car.ini</span><span>suspensions.ini</span><span>drivetrain.ini</span>
+                <span>engine.ini</span><span>tyres.ini</span><span>*.lut</span>
             </div>
             <input type="file" id="fileInput" multiple>
             <input type="file" id="folderInput" webkitdirectory multiple>
         </div>
-        <p style="text-align:center;color:var(--text3);margin-top:12px;font-size:.85em;">
-            Find your car's data in: <code style="color:var(--cyan);">assettocorsa/content/cars/YOUR_CAR/data/</code>
-            <br>Click to browse files, or <strong>Shift+Click</strong> for folder select
+        <p style="text-align:center;color:var(--text3);margin-top:14px;font-size:.85em">
+            Path: <code style="color:var(--cyan)">assettocorsa/content/cars/YOUR_CAR/data/</code>
+            <br>Click to browse files · <strong>Shift+Click</strong> for folder select
         </p>
     </div>
 
-    <!-- STEP 2: Build Mode -->
+    <!-- STEP 2 -->
     <div class="step" id="step2">
         <div class="car-banner" id="carBanner"></div>
+        <div id="detectionCard"></div>
         <div class="mode-select" id="modeSelect">
-            <div class="mode-card" onclick="selectMode('quick')">
-                <div class="mode-icon">🚀</div>
-                <div class="mode-title">Quick Build</div>
-                <div class="mode-desc">Pick a class preset — Factory, Grassroots, Street, Pro, or Race</div>
+            <div class="mode-card" data-mode="quick">
+                <div class="mc-icon">🚀</div>
+                <div class="mc-title">Quick Build</div>
+                <div class="mc-desc">Pick a class tier — Factory, Grassroots, Street, Pro, or Race. Pre-configured part packages.</div>
             </div>
-            <div class="mode-card" onclick="selectMode('custom')">
-                <div class="mode-icon">🔧</div>
-                <div class="mode-title">Custom Build</div>
-                <div class="mode-desc">Choose individual parts + engine swap</div>
+            <div class="mode-card" data-mode="custom">
+                <div class="mc-icon">🔧</div>
+                <div class="mc-title">Custom Build</div>
+                <div class="mc-desc">Choose individual parts, engine swap, turbo, drivetrain layout, and tire compound.</div>
             </div>
         </div>
-        <div id="quickBuild" style="display:none;">
-            <h2 style="color:var(--cyan);margin-bottom:16px;">Select Class</h2>
-            <div class="class-grid" id="classGrid"></div>
-        </div>
-        <div id="customBuild" style="display:none;">
-            <div class="parts-grid" id="partsGrid"></div>
-        </div>
+        <div id="quickBuild" style="display:none"></div>
+        <div id="customBuild" style="display:none"></div>
         <div class="btn-row">
             <button class="btn-outline" onclick="goStep(1)">← Upload Different Car</button>
-            <button class="btn" id="generateBtn" onclick="generatePhysics()" style="display:none;">⚡ Generate Physics</button>
+            <button class="btn" id="generateBtn" onclick="generatePhysics()" style="display:none">⚡ Generate Physics</button>
         </div>
     </div>
 
-    <!-- STEP 3: Results -->
+    <!-- STEP 3 -->
     <div class="step" id="step3">
         <div class="car-banner" id="resultBanner"></div>
         <div class="summary-grid" id="summaryGrid"></div>
+        <div id="filesList"></div>
         <details class="comp-details">
             <summary>📊 Detailed Before / After Comparison</summary>
             <div id="comparisonTables"></div>
         </details>
         <div class="btn-row">
             <button class="btn-outline" onclick="goStep(2)">← Modify Parts</button>
-            <button class="btn" onclick="downloadZip()">📦 Download Modified Data</button>
+            <button class="btn" onclick="downloadZip()">📦 Download Modified Physics</button>
         </div>
     </div>
 
-    <footer>RealiSimHQ © 2025 — Real parts, real physics.</footer>
+    <footer>RealiSimHQ © 2025 — Real parts, real physics. <a href="https://github.com/realisimhq" target="_blank">GitHub</a></footer>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-// ═══════════════════════════════════════════════════════════════════
-// DATABASE — Parts, Engine Swaps, Class Presets, Chassis Compatibility
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// INI PARSER — handles AC physics files robustly
+// ═══════════════════════════════════════════════════════════════
+function parseIni(text) {
+    const sections = {};
+    let cur = null;
+    for (const raw of text.split('\n')) {
+        const line = raw.replace(/;.*$/, '').trim();
+        if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+        const sm = line.match(/^\[(.+?)\]$/);
+        if (sm) { cur = sm[1]; if (!sections[cur]) sections[cur] = {}; continue; }
+        if (!cur) continue;
+        const eq = line.indexOf('=');
+        if (eq < 1) continue;
+        const key = line.substring(0, eq).trim();
+        let val = line.substring(eq + 1).trim();
+        const f = parseFloat(val);
+        sections[cur][key] = isNaN(f) ? val : (val.includes('.') || val.includes('e') || val.includes('E') ? f : (Number.isInteger(f) ? parseInt(val, 10) : f));
+    }
+    return sections;
+}
+
+function getVal(sections, section, key, def) {
+    return sections?.[section]?.[key] ?? def;
+}
+
+function parseLut(text) {
+    const entries = [];
+    for (const line of text.split('\n')) {
+        const t = line.replace(/;.*$/, '').trim();
+        if (!t) continue;
+        const sep = t.includes('|') ? '|' : /\s+/;
+        const parts = t.split(sep);
+        if (parts.length >= 2) {
+            const x = parseFloat(parts[0]);
+            const y = parseFloat(parts[parts.length - 1]);
+            if (!isNaN(x) && !isNaN(y)) entries.push([x, y]);
+        }
+    }
+    return entries;
+}
+
+function lutToString(entries) {
+    return entries.map(([x, y]) => `${x}|${y}`).join('\n');
+}
+
+function applyIniChanges(content, sectionChanges) {
+    let result = content;
+    for (const [section, vals] of Object.entries(sectionChanges)) {
+        for (const [key, newVal] of Object.entries(vals)) {
+            // Try to replace existing key=value in the right section
+            const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const pat = new RegExp(`(\\[${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\][^\\[]*?\\n\\s*)${escapedKey}\\s*=\\s*[^\\n]*`, 'i');
+            if (pat.test(result)) {
+                result = result.replace(pat, `$1${key}=${newVal}`);
+            } else {
+                // Simpler: just find key= anywhere after the section header
+                const lines = result.split('\n');
+                let inSection = false;
+                let replaced = false;
+                for (let i = 0; i < lines.length; i++) {
+                    if (lines[i].trim().match(new RegExp(`^\\[${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]$`, 'i'))) {
+                        inSection = true; continue;
+                    }
+                    if (inSection && lines[i].trim().match(/^\[/)) { inSection = false; }
+                    if (inSection) {
+                        const km = lines[i].match(new RegExp(`^(\\s*)${escapedKey}\\s*=`, 'i'));
+                        if (km) {
+                            lines[i] = `${km[1]}${key}=${newVal}`;
+                            replaced = true; break;
+                        }
+                    }
+                }
+                if (replaced) { result = lines.join('\n'); }
+                else {
+                    // Append to section
+                    const secPat = new RegExp(`(\\[${section.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\][^\\[]*)`, 'i');
+                    result = result.replace(secPat, (m) => m.trimEnd() + `\n${key}=${newVal}\n`);
+                }
+            }
+        }
+    }
+    return result;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DATABASE
+// ═══════════════════════════════════════════════════════════════
 
 const CHASSIS_CODES = {
     's13':['Nissan','240SX / Silvia (S13)','1989-1994'],
@@ -218,7 +415,6 @@ const CHASSIS_CODES = {
     'jza80':['Toyota','Supra (A80)','1993-2002'],
     'a80':['Toyota','Supra (A80)','1993-2002'],
     'fd3s':['Mazda','RX-7 (FD3S)','1992-2002'],
-    'rx7':['Mazda','RX-7',''],
     'ap1':['Honda','S2000 (AP1)','1999-2003'],
     'ap2':['Honda','S2000 (AP2)','2004-2009'],
     'z33':['Nissan','350Z (Z33)','2002-2009'],
@@ -231,544 +427,760 @@ const CHASSIS_CODES = {
     'gdb':['Subaru','WRX STI (GDB)','2001-2007'],
     'gc8':['Subaru','WRX (GC8)','1992-2000'],
     'ct9a':['Mitsubishi','Lancer Evo IX','2005-2007'],
-    'evo':['Mitsubishi','Lancer Evolution',''],
 };
 
-const KNOWN_MAKES = {
-    'toyota':'Toyota','lexus':'Lexus','nissan':'Nissan','honda':'Honda',
-    'mazda':'Mazda','subaru':'Subaru','mitsubishi':'Mitsubishi','bmw':'BMW',
-    'mercedes':'Mercedes-Benz','audi':'Audi','porsche':'Porsche',
-    'ford':'Ford','chevrolet':'Chevrolet','chevy':'Chevrolet',
-    'corvette':'Chevrolet','dodge':'Dodge','ferrari':'Ferrari',
-    'lamborghini':'Lamborghini','alfa':'Alfa Romeo','mclaren':'McLaren',
-    'lotus':'Lotus','hyundai':'Hyundai','volvo':'Volvo',
-};
-
-// Platform groups for compatibility
 const PLATFORM = {
-    s_chassis: ['s13','s14','s15','180sx'],
-    e46: ['e46'],
-    ae86: ['ae86'],
-    jza80: ['jza80','a80'],
-    fd3s: ['fd3s'],
-    s2000: ['ap1','ap2'],
-    z33: ['z33'],
-    z34: ['z34'],
-    r34: ['r34'],
-    r33: ['r33'],
-    r32: ['r32'],
-    skyline_r: ['r32','r33','r34'],
-    c6: ['c6'],
-    c5: ['c5'],
-    gdb: ['gdb'],
-    gc8: ['gc8'],
-    evo: ['ct9a'],
-};
-const ALL_PLATFORMS = Object.values(PLATFORM).flat();
-
-// ── COILOVERS ─────────────────────────────────────────
-const COILOVERS = {
-    stock: { name:"Stock Suspension", brand:"OEM", description:"Factory springs and shocks",
-        spring_rate_f_mult:1.0, spring_rate_r_mult:1.0, damping_quality:"basic", compatible:["all"] },
-    bc_br: { name:"BC Racing BR Series", brand:"BC Racing", description:"30-way damping, entry-level adjustable",
-        spring_rate_f_nm:44100, spring_rate_r_nm:33075, damping_quality:"adjustable", compatible:["all"] },
-    tein_flex_z: { name:"Tein Flex Z", brand:"Tein", description:"16-way adjustable, steel body",
-        spring_rate_f_nm:39240, spring_rate_r_nm:29430, damping_quality:"adjustable", compatible:["all"] },
-    ksport_kontrol: { name:"KSport Kontrol Pro", brand:"KSport", description:"36-way adjustable, pillow ball mounts",
-        spring_rate_f_nm:49050, spring_rate_r_nm:39240, damping_quality:"adjustable", compatible:["all"] },
-    hks_hipermax: { name:"HKS Hipermax IV GT", brand:"HKS", description:"30-way adjustable, inverted monotube",
-        spring_rate_f_nm:49050, spring_rate_r_nm:44100, damping_quality:"adjustable",
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.jza80,...PLATFORM.fd3s,...PLATFORM.s2000,...PLATFORM.evo,...PLATFORM.gdb] },
-    ohlins_rt: { name:"Öhlins Road & Track", brand:"Öhlins", description:"DFV technology, 20-way adjustable",
-        spring_rate_f_nm:58860, spring_rate_r_nm:49050, damping_quality:"advanced",
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.z33,...PLATFORM.jza80,...PLATFORM.fd3s,...PLATFORM.s2000,...PLATFORM.c6,...PLATFORM.evo,...PLATFORM.gdb,...PLATFORM.skyline_r] },
-    kw_v3: { name:"KW Variant 3", brand:"KW", description:"Separate rebound/compression, inox-line",
-        spring_rate_f_nm:53955, spring_rate_r_nm:44100, damping_quality:"advanced",
-        compatible:[...PLATFORM.e46,...PLATFORM.c6,...PLATFORM.c5,...PLATFORM.z33,...PLATFORM.s2000,...PLATFORM.jza80,...PLATFORM.skyline_r] },
-    fortune_500: { name:"Fortune Auto 500 Series", brand:"Fortune Auto", description:"24-way, swift springs, digressive valving",
-        spring_rate_f_nm:58860, spring_rate_r_nm:49050, damping_quality:"advanced",
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.z33,...PLATFORM.s2000,...PLATFORM.fd3s,...PLATFORM.jza80,...PLATFORM.ae86] },
-    mca_blue: { name:"MCA Blue Series", brand:"MCA Suspension", description:"2-way adjustable, race-spec valving",
-        spring_rate_f_nm:68670, spring_rate_r_nm:58860, damping_quality:"advanced",
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.ae86,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.fd3s,...PLATFORM.jza80,...PLATFORM.s2000] },
-    bc_zr: { name:"BC Racing ZR Series", brand:"BC Racing", description:"3-way adjustable, remote reservoir",
-        spring_rate_f_nm:78480, spring_rate_r_nm:68670, damping_quality:"advanced", compatible:["all"] },
-    bilstein_b16: { name:"Bilstein B16 PSS10", brand:"Bilstein", description:"10-way adjustable, monotube",
-        spring_rate_f_nm:44100, spring_rate_r_nm:34300, damping_quality:"adjustable",
-        compatible:[...PLATFORM.e46,...PLATFORM.c6,...PLATFORM.z33,...PLATFORM.s2000] },
-    tein_mono_sport: { name:"Tein Mono Sport", brand:"Tein", description:"16-way adjustable monotube, advanced valving",
-        spring_rate_f_nm:53955, spring_rate_r_nm:44100, damping_quality:"advanced",
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.jza80,...PLATFORM.evo,...PLATFORM.gdb,...PLATFORM.s2000,...PLATFORM.fd3s] },
+    s_chassis:['s13','s14','s15','180sx'],
+    e46:['e46'], e36:['e36'], ae86:['ae86'],
+    jza80:['jza80','a80'], fd3s:['fd3s'],
+    s2000:['ap1','ap2'], z33:['z33'], z34:['z34'],
+    skyline_r:['r32','r33','r34'],
+    c6:['c6'], c5:['c5'], gdb:['gdb'], gc8:['gc8'], evo:['ct9a'],
 };
 
-// ── ANGLE KITS ────────────────────────────────────────
-const ANGLE_KITS = {
-    stock: { name:"Stock Steering", brand:"OEM", max_angle_deg:0, description:"Factory steering geometry",
-        hub_mass_add_kg:0, compatible:["all"] },
-    wisefab: { name:"Wisefab Lock Kit", brand:"Wisefab", max_angle_deg:70,
-        description:"Full kit — new knuckles, extended LCA, tie rods. 70° max angle.",
-        ackermann_pct:30, hub_mass_add_kg:2.5,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.jza80,...PLATFORM.fd3s] },
-    megan_angle: { name:"Megan Racing Angle Kit", brand:"Megan Racing", max_angle_deg:50,
-        description:"Tie rod + lower arm spacer kit", hub_mass_add_kg:1.0,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.z33,...PLATFORM.ae86] },
-    drift_knuckles: { name:"Generic Drift Knuckles", brand:"Various", max_angle_deg:55,
-        description:"Extended lower arm + modified knuckle", hub_mass_add_kg:1.5, compatible:["all"] },
-    gktech_angle: { name:"GKTech Steering Angle Kit", brand:"GKTech", max_angle_deg:55,
-        description:"CNC machined tie rod ends + spacers", hub_mass_add_kg:1.2,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.z33,...PLATFORM.skyline_r] },
-};
-
-// ── WHEEL SETUPS ──────────────────────────────────────
-const WHEEL_SETUPS = {
-    stock: { name:"Stock Wheels & Tires", brand:"OEM", description:"Factory wheel and tire setup", compatible:["all"] },
-    "15x8_195": { name:"15×8 ET0 + 195/50R15", brand:"Rota / Konig", description:"Lightweight drift setup, narrow",
-        rim_dia:15, rim_width:8, offset_mm:0, tire_width:0.195, tire_aspect:50, compatible:["all"] },
-    "17x9_215": { name:"17×9 ET22 + 215/45R17", brand:"Work Emotion / Rays", description:"Standard drift fitment",
-        rim_dia:17, rim_width:9, offset_mm:22, tire_width:0.215, tire_aspect:45, compatible:["all"] },
-    "17x9_235": { name:"17×9 ET22 + 235/40R17", brand:"Work / SSR / Rays", description:"Wider drift fitment",
-        rim_dia:17, rim_width:9, offset_mm:22, tire_width:0.235, tire_aspect:40, compatible:["all"] },
-    "18x95_255": { name:"18×9.5 ET22 + 255/35R18", brand:"Rays / Advan / Work", description:"Wide grip fitment, 18-inch",
-        rim_dia:18, rim_width:9.5, offset_mm:22, tire_width:0.255, tire_aspect:35, compatible:["all"] },
-    "18x10_265": { name:"18×10 ET15 + 265/35R18", brand:"Volk TE37 / BBS", description:"Pro-level wide fitment",
-        rim_dia:18, rim_width:10, offset_mm:15, tire_width:0.265, tire_aspect:35, compatible:["all"] },
-    "18x105_275": { name:"18×10.5 ET12 + 275/35R18", brand:"Volk TE37 / Advan GT", description:"FD Pro Spec level, max grip",
-        rim_dia:18, rim_width:10.5, offset_mm:12, tire_width:0.275, tire_aspect:35, compatible:["all"] },
-    "19x10_275": { name:"19×10 ET25 + 275/30R19", brand:"BBS / HRE / Forgeline", description:"Big wheel performance fitment",
-        rim_dia:19, rim_width:10, offset_mm:25, tire_width:0.275, tire_aspect:30,
-        compatible:[...PLATFORM.c6,...PLATFORM.c5,...PLATFORM.e46,...PLATFORM.jza80,...PLATFORM.skyline_r,...PLATFORM.z33] },
-};
-
-// ── BRAKE KITS ────────────────────────────────────────
-const BRAKE_KITS = {
-    stock: { name:"Stock Brakes", brand:"OEM", description:"Factory brake system", compatible:["all"] },
-    z32_swap: { name:"Z32 4-Pot Caliper Swap", brand:"Nissan OEM", description:"300ZX front caliper upgrade",
-        torque_mult:1.30, bias:0.64, mass_add_f_kg:3.0,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.ae86,...PLATFORM.z33] },
-    wilwood_dynapro: { name:"Wilwood Dynapro 4-Piston", brand:"Wilwood", description:"Lightweight 4-piston forged caliper",
-        torque_mult:1.40, bias:0.64, mass_add_f_kg:1.5, compatible:["all"] },
-    ap_5200: { name:"AP Racing CP5200", brand:"AP Racing", description:"Pro-level 4-piston endurance caliper",
-        torque_mult:1.55, bias:0.65, mass_add_f_kg:2.0, compatible:["all"] },
-    brembo_gt: { name:"Brembo GT 6-Piston", brand:"Brembo", description:"6-piston monobloc, 380mm rotor",
-        torque_mult:1.80, bias:0.66, mass_add_f_kg:4.0, compatible:["all"] },
-    stoptech_trophy: { name:"StopTech Trophy Race", brand:"StopTech", description:"Asymmetric 4-piston, 355mm rotor",
-        torque_mult:1.60, bias:0.65, mass_add_f_kg:2.5, compatible:["all"] },
-    r33_gtr_swap: { name:"R33 GTR Brembo Swap", brand:"Nissan/Brembo OEM", description:"4-pot Brembo from R33 GT-R",
-        torque_mult:1.45, bias:0.64, mass_add_f_kg:3.5,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.skyline_r,...PLATFORM.z33] },
-};
-
-// ── DIFFERENTIALS ─────────────────────────────────────
-const DIFF_TYPES = {
-    stock: { name:"Stock Differential", brand:"OEM", description:"Factory differential", compatible:["all"] },
-    kaaz_15: { name:"Kaaz 1.5-Way LSD", brand:"Kaaz", description:"1.5-way clutch-type, strong power lock",
-        diff_power:0.75, diff_coast:0.35, diff_preload:60, compatible:["all"] },
-    kaaz_2way: { name:"Kaaz 2-Way LSD", brand:"Kaaz", description:"Full 2-way clutch-type, drift spec",
-        diff_power:0.90, diff_coast:0.55, diff_preload:80, compatible:["all"] },
-    os_giken: { name:"OS Giken Super Lock", brand:"OS Giken", description:"Multi-plate, progressive lockup",
-        diff_power:0.85, diff_coast:0.45, diff_preload:70,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.skyline_r,...PLATFORM.jza80,...PLATFORM.z33,...PLATFORM.fd3s,...PLATFORM.ae86,...PLATFORM.s2000] },
-    cusco_rs: { name:"Cusco RS 1.5-Way", brand:"Cusco", description:"1.5-way clutch-type, street/track",
-        diff_power:0.65, diff_coast:0.30, diff_preload:50, compatible:["all"] },
-    cusco_mz: { name:"Cusco Type MZ 2-Way", brand:"Cusco", description:"Full 2-way, drift competition spec",
-        diff_power:0.95, diff_coast:0.60, diff_preload:90, compatible:["all"] },
-    welded: { name:"Welded / Spool", brand:"N/A", description:"Fully locked (welded or mini spool)",
-        diff_power:1.0, diff_coast:1.0, diff_preload:200, compatible:["all"] },
-    wavetrac: { name:"Wavetrac ATB LSD", brand:"Wavetrac", description:"Gear-type ATB, progressive lock on decel",
-        diff_power:0.45, diff_coast:0.35, diff_preload:25,
-        compatible:[...PLATFORM.e46,...PLATFORM.c6,...PLATFORM.s2000,...PLATFORM.z33,...PLATFORM.gdb,...PLATFORM.evo] },
-    drexler: { name:"Drexler Motorsport LSD", brand:"Drexler", description:"Preload-adjustable clutch LSD, race-grade",
-        diff_power:0.80, diff_coast:0.50, diff_preload:75,
-        compatible:[...PLATFORM.e46,...PLATFORM.c6,...PLATFORM.jza80,...PLATFORM.fd3s,...PLATFORM.s2000,...PLATFORM.skyline_r] },
-};
-
-// ── TIRE COMPOUNDS ────────────────────────────────────
-const TIRE_COMPOUNDS = {
-    street: { name:"All-Season / Street", grip_mult:1.10, dx_ref:1.28, dy_ref:1.28, compatible:["all"] },
-    "200tw": { name:"200TW (Hankook RS4 / Federal 595)", grip_mult:1.25, dx_ref:1.35, dy_ref:1.35, compatible:["all"] },
-    semi_slick: { name:"Semi-Slick (RE-71RS / AD09 / RT660)", grip_mult:1.38, dx_ref:1.44, dy_ref:1.44, compatible:["all"] },
-    slick: { name:"Racing Slick (Hoosier / Nitto NT01)", grip_mult:1.50, dx_ref:1.55, dy_ref:1.55, compatible:["all"] },
-};
-
-// ── ENGINE SWAPS ──────────────────────────────────────
-const ENGINE_SWAPS = {
-    stock: { name:"Stock Engine", brand:"OEM", description:"Keep original engine", weight_kg:0, weight_dist_shift:0,
-        power_mult:1.0, compatible:["all"] },
-    sr20det: { name:"SR20DET", brand:"Nissan", description:"2.0L turbo I4 — 205-350hp range",
-        weight_kg:165, stock_weight_kg:165, weight_dist_shift:0, power_mult:1.0,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.ae86],
-        native:[...PLATFORM.s_chassis] },
-    rb26dett: { name:"RB26DETT", brand:"Nissan", description:"2.6L twin-turbo I6 — 280-600hp range",
-        weight_kg:250, stock_weight_kg:250, weight_dist_shift:0.02, power_mult:1.3,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.skyline_r,...PLATFORM.z33,...PLATFORM.jza80],
-        native:[...PLATFORM.skyline_r] },
-    rb25det: { name:"RB25DET", brand:"Nissan", description:"2.5L turbo I6 — 250-450hp, budget RB option",
-        weight_kg:230, stock_weight_kg:230, weight_dist_shift:0.015, power_mult:1.15,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.skyline_r,...PLATFORM.z33],
-        native:['r33'] },
-    "2jz_gte": { name:"2JZ-GTE", brand:"Toyota", description:"3.0L twin-turbo I6 — 321-1000+hp, legendary swap",
-        weight_kg:265, stock_weight_kg:265, weight_dist_shift:0.025, power_mult:1.4,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.jza80,...PLATFORM.ae86,...PLATFORM.z33,...PLATFORM.e46,...PLATFORM.skyline_r,...PLATFORM.fd3s,...PLATFORM.s2000],
-        native:[...PLATFORM.jza80] },
-    ls1: { name:"LS1 (5.7L V8)", brand:"GM", description:"5.7L V8 — 350-500hp, compact aluminum V8",
-        weight_kg:210, stock_weight_kg:0, weight_dist_shift:-0.01, power_mult:1.5,
-        compatible:["all"], native:[...PLATFORM.c5] },
-    ls3: { name:"LS3 (6.2L V8)", brand:"GM", description:"6.2L V8 — 430-600hp, modern LS swap king",
-        weight_kg:215, stock_weight_kg:0, weight_dist_shift:-0.01, power_mult:1.7,
-        compatible:["all"], native:[...PLATFORM.c6] },
-    k20a: { name:"K20A", brand:"Honda", description:"2.0L VTEC I4 — 220-300hp, high-rev NA power",
-        weight_kg:135, stock_weight_kg:135, weight_dist_shift:-0.02, power_mult:1.1,
-        compatible:[...PLATFORM.s2000,...PLATFORM.ae86,...PLATFORM.s_chassis],
-        native:[] },
-    k24: { name:"K24A2 (Turbo)", brand:"Honda", description:"2.4L I4 turbo build — 300-500hp, popular swap",
-        weight_kg:145, stock_weight_kg:145, weight_dist_shift:-0.015, power_mult:1.35,
-        compatible:[...PLATFORM.s2000,...PLATFORM.ae86,...PLATFORM.s_chassis],
-        native:[] },
-    "13b_rew": { name:"13B-REW", brand:"Mazda", description:"1.3L twin-turbo rotary — 255-450hp",
-        weight_kg:140, stock_weight_kg:140, weight_dist_shift:-0.02, power_mult:1.2,
-        compatible:[...PLATFORM.fd3s,...PLATFORM.ae86,...PLATFORM.s_chassis],
-        native:[...PLATFORM.fd3s] },
-    ej257: { name:"EJ257", brand:"Subaru", description:"2.5L turbo boxer-4 — 305-450hp, STI motor",
-        weight_kg:195, stock_weight_kg:195, weight_dist_shift:0, power_mult:1.15,
-        compatible:[...PLATFORM.gdb,...PLATFORM.gc8],
-        native:[...PLATFORM.gdb] },
-    "4g63t": { name:"4G63T", brand:"Mitsubishi", description:"2.0L turbo I4 — 280-500hp, Evo motor",
-        weight_kg:175, stock_weight_kg:175, weight_dist_shift:0, power_mult:1.15,
-        compatible:[...PLATFORM.evo,...PLATFORM.ae86,...PLATFORM.s_chassis],
-        native:[...PLATFORM.evo] },
-};
-
-// ── CLASS PRESETS ──────────────────────────────────────
-const CLASS_PRESETS = {
-    factory: { label:"Factory", hp:"100-300hp", desc:"Stock-class, OEM feel",
-        coilovers:"stock",angle_kit:"stock",wheels:"stock",brakes:"stock",diff:"stock",tire_compound:"street",engine_swap:"stock" },
-    grassroots: { label:"Grassroots", hp:"180-350hp", desc:"Budget build, weekend warrior",
-        coilovers:"bc_br",angle_kit:"megan_angle",wheels:"17x9_215",brakes:"z32_swap",diff:"cusco_rs",tire_compound:"200tw",engine_swap:"stock" },
-    street: { label:"Street", hp:"240-500hp", desc:"Serious street build",
-        coilovers:"ohlins_rt",angle_kit:"wisefab",wheels:"17x9_235",brakes:"wilwood_dynapro",diff:"kaaz_15",tire_compound:"semi_slick",engine_swap:"stock" },
-    pro: { label:"Pro", hp:"500-800hp", desc:"Formula Drift / Pro-Am spec",
-        coilovers:"mca_blue",angle_kit:"wisefab",wheels:"18x10_265",brakes:"ap_5200",diff:"kaaz_2way",tire_compound:"slick",engine_swap:"stock" },
-    race: { label:"Race", hp:"300-600hp", desc:"Time attack / endurance",
-        coilovers:"bc_zr",angle_kit:"stock",wheels:"18x95_255",brakes:"brembo_gt",diff:"os_giken",tire_compound:"slick",engine_swap:"stock" },
-};
-
-// ═══════════════════════════════════════════════════════════════════
-// INI PARSER (client-side)
-// ═══════════════════════════════════════════════════════════════════
-
-function parseIni(text) {
-    const sections = {};
-    let cur = null;
-    for (const raw of text.split('\n')) {
-        const line = raw.trim();
-        if (!line || line.startsWith(';') || line.startsWith('#')) continue;
-        const sm = line.match(/^\[(.+)\]$/);
-        if (sm) { cur = sm[1]; if (!sections[cur]) sections[cur] = {}; continue; }
-        if (!cur) continue;
-        const kv = line.match(/^([A-Za-z0-9_]+)\s*=\s*(.*?)(?:\s*;.*)?$/);
-        if (kv) {
-            let val = kv[2].trim();
-            const f = parseFloat(val);
-            sections[cur][kv[1]] = isNaN(f) ? val : (val.includes('.') ? f : (Number.isInteger(f) ? parseInt(val) : f));
-        }
+// Suspension type classification from COSMIC body names
+function classifySuspType(susText, axle) {
+    const t = (susText || '').toUpperCase();
+    const prefix = axle === 'front' ? 'FRONT' : 'REAR';
+    
+    // Check TYPE first
+    const typeMatch = t.match(new RegExp(`\\[${prefix}\\][^\\[]*?TYPE\\s*=\\s*(\\w+)`, 'i'));
+    const type = typeMatch ? typeMatch[1].toUpperCase() : '';
+    
+    if (type === 'COSMIC') {
+        // Classify COSMIC by body/joint naming
+        if (/AXLE/i.test(t) && axle === 'rear') return 'COSMIC_AXLE';
+        if (/UCA.*BODY|LCA.*BODY|DWB/i.test(t) && (axle === 'front' ? /\[FRONT\]/i.test(t.split(/\[REAR\]/i)[0] || '') : true)) return 'COSMIC_DWB';
+        if (/STRUT/i.test(t)) return 'COSMIC_STRUT';
+        if (/HA3|MULTI.*LINK/i.test(t)) return 'COSMIC_ML';
+        // Check for DWB indicators: J0 + J1 + J2 pattern (ball joints connecting bodies)
+        if (/J0=.*BJ|J2=.*BJ/i.test(t)) return 'COSMIC_DWB';
+        return 'COSMIC_STRUT'; // default COSMIC
     }
-    return sections;
+    if (type === 'DWB') return 'DWB';
+    if (type === 'STRUT') return 'STRUT';
+    if (type === 'ML') return 'ML';
+    if (type === 'AXLE') return 'AXLE';
+    return type || 'UNKNOWN';
 }
 
-function getVal(sections, section, key, def) {
-    if (sections[section] && sections[section][key] !== undefined) return sections[section][key];
-    return def;
-}
-
-function applyChanges(content, sectionChanges) {
-    for (const [section, vals] of Object.entries(sectionChanges)) {
-        for (const [key, newVal] of Object.entries(vals)) {
-            const pat = new RegExp(`((?:^|\\n)(\\s*)${key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\s*=)\\s*[^\\n;]*`, 'i');
-            const replaced = content.replace(pat, `$1${newVal}`);
-            if (replaced !== content) { content = replaced; }
-            else {
-                // Try to insert in section
-                const secPat = new RegExp(`(\\[${section.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\][^\\[]*)`, 'i');
-                content = content.replace(secPat, (m) => m.trimEnd() + `\n${key}=${newVal}\n`);
-            }
-        }
+// Better: parse the suspensions text for front and rear sections separately
+function detectSuspensionTypes(rawSusText) {
+    if (!rawSusText) return { front: 'UNKNOWN', rear: 'UNKNOWN' };
+    
+    const parsed = parseIni(rawSusText);
+    const frontType = getVal(parsed, 'FRONT', 'TYPE', 'STRUT');
+    const rearType = getVal(parsed, 'REAR', 'TYPE', 'STRUT');
+    
+    const result = { front: frontType, rear: rearType };
+    
+    if (frontType === 'COSMIC') {
+        // Look at body names to classify
+        const beforeRear = rawSusText.split(/\[REAR\]/i)[0] || rawSusText;
+        if (/UCA|LCA.*BODY/i.test(beforeRear) && /J\d+=.*BJ/i.test(beforeRear)) result.front = 'COSMIC_DWB';
+        else if (/STRUT/i.test(beforeRear)) result.front = 'COSMIC_STRUT';
+        else result.front = 'COSMIC_STRUT';
     }
-    return content;
+    
+    if (rearType === 'COSMIC') {
+        const afterRear = rawSusText.split(/\[REAR\]/i).slice(1).join('') || '';
+        if (/AXLE/i.test(afterRear)) result.rear = 'COSMIC_AXLE';
+        else if (/HA3|ELASTIC/i.test(afterRear)) result.rear = 'COSMIC_ML';
+        else if (/UCA|LCA.*BODY/i.test(afterRear) && /J\d+=.*BJ/i.test(afterRear)) result.rear = 'COSMIC_DWB';
+        else if (/SUBFRAME/i.test(afterRear)) result.rear = 'COSMIC_ML';
+        else result.rear = 'COSMIC_ML';
+    }
+    
+    return result;
 }
 
-// ═══════════════════════════════════════════════════════════════════
+function isDWBFront(type) {
+    return type === 'DWB' || type === 'COSMIC_DWB';
+}
+
+function isAxleRear(type) {
+    return type === 'AXLE' || type === 'COSMIC_AXLE';
+}
+
+function isStrutFront(type) {
+    return type === 'STRUT' || type === 'COSMIC_STRUT';
+}
+
+// Get friendly name for suspension type
+function suspTypeName(type) {
+    const names = {
+        'STRUT': 'MacPherson Strut', 'DWB': 'Double Wishbone',
+        'ML': 'Multi-Link', 'AXLE': 'Solid Axle',
+        'COSMIC_STRUT': 'COSMIC Strut', 'COSMIC_DWB': 'COSMIC Double Wishbone',
+        'COSMIC_ML': 'COSMIC Multi-Link', 'COSMIC_AXLE': 'COSMIC Live Axle',
+        'UNKNOWN': 'Unknown',
+    };
+    return names[type] || type;
+}
+
+// ── ENGINE SWAPS ──────────────────────────────
+const ENGINE_SWAPS = [
+    { id:'stock', name:'Stock Engine', brand:'OEM', desc:'Keep original engine', weight_kg:0, hp:0, power_mult:1.0, wt_shift:0, compatible:'all' },
+    { id:'k20a', name:'K20A', brand:'Honda', desc:'2.0L VTEC I4 — 220hp NA, lightweight', weight_kg:130, hp:220, power_mult:1.0, wt_shift:-0.02, compatible:['s13','s14','s15','180sx','ae86','ap1','ap2'] },
+    { id:'f20c', name:'F20C', brand:'Honda', desc:'2.0L VTEC I4 — 237hp, 8900rpm redline', weight_kg:150, hp:237, power_mult:1.0, wt_shift:-0.015, compatible:['ap1','ap2','ae86','s13','s14','s15','180sx'] },
+    { id:'sr20det', name:'SR20DET', brand:'Nissan', desc:'2.0L Turbo I4 — 205hp stock', weight_kg:180, hp:205, power_mult:1.0, wt_shift:0, compatible:['s13','s14','s15','180sx','ae86'] },
+    { id:'4g63t', name:'4G63T', brand:'Mitsubishi', desc:'2.0L Turbo I4 — 276hp, Evo motor', weight_kg:190, hp:276, power_mult:1.0, wt_shift:0, compatible:['ct9a','ae86','s13','s14','s15','180sx'] },
+    { id:'vq35de', name:'VQ35DE', brand:'Nissan', desc:'3.5L V6 NA — 287hp, torquey', weight_kg:200, hp:287, power_mult:1.0, wt_shift:0.01, compatible:['z33','z34','s13','s14','s15','180sx'] },
+    { id:'ls1', name:'LS1 5.7L V8', brand:'GM', desc:'5.7L V8 — 350hp, compact aluminum', weight_kg:210, hp:350, power_mult:1.0, wt_shift:-0.01, compatible:'all' },
+    { id:'ls3', name:'LS3 6.2L V8', brand:'GM', desc:'6.2L V8 — 430hp, modern swap king', weight_kg:215, hp:430, power_mult:1.0, wt_shift:-0.01, compatible:'all' },
+    { id:'rb25det', name:'RB25DET', brand:'Nissan', desc:'2.5L Turbo I6 — 250hp, budget RB', weight_kg:230, hp:250, power_mult:1.0, wt_shift:0.015, compatible:['s13','s14','s15','180sx','r32','r33','r34','z33'] },
+    { id:'rb26dett', name:'RB26DETT', brand:'Nissan', desc:'2.6L Twin-Turbo I6 — 276hp stock', weight_kg:250, hp:276, power_mult:1.0, wt_shift:0.02, compatible:['s13','s14','s15','180sx','r32','r33','r34','z33','jza80','a80'] },
+    { id:'2jz_gte', name:'2JZ-GTE', brand:'Toyota', desc:'3.0L Twin-Turbo I6 — 276hp stock, legendary', weight_kg:265, hp:276, power_mult:1.0, wt_shift:0.025, compatible:['s13','s14','s15','180sx','jza80','a80','ae86','z33','e46','r32','r33','r34','fd3s','ap1','ap2'] },
+];
+
+// ── TURBO SIZES ───────────────────────────────
+const TURBO_SIZES = [
+    { id:'none', name:'No Turbo', icon:'❌', desc:'Naturally aspirated', max_boost:0, wastegate:0, lag_up:0, lag_dn:0, reference:0, gamma:0, power_mult:1.0, spec:'' },
+    { id:'small', name:'Small Turbo', icon:'🌀', desc:'TD04 / GT25 class', max_boost:0.9, wastegate:0.7, lag_up:0.992, lag_dn:0.975, reference:4500, gamma:2.2, power_mult:1.5, spec:'Up to ~300hp, fast spool' },
+    { id:'medium', name:'Medium Turbo', icon:'🌀', desc:'GT28 / GT30 class', max_boost:1.35, wastegate:1.0, lag_up:0.988, lag_dn:0.965, reference:5500, gamma:2.0, power_mult:2.0, spec:'Up to ~450hp, mid spool' },
+    { id:'large', name:'Large Turbo', icon:'🌀', desc:'GT35 / GT40 class', max_boost:1.8, wastegate:1.3, lag_up:0.982, lag_dn:0.955, reference:6500, gamma:1.8, power_mult:2.8, spec:'Up to ~700hp+, slow spool' },
+];
+
+// ── COILOVERS (ordered lowest to highest) ─────
+const COILOVERS = [
+    { id:'stock', name:'Stock Suspension', brand:'OEM', desc:'Factory springs and shocks', spring_f:0, spring_r:0, quality:'basic', compatible:'all' },
+    { id:'tein_flex_z', name:'Flex Z', brand:'Tein', desc:'16-way adjustable, steel body', spring_f:39240, spring_r:29430, quality:'adjustable', compatible:'all' },
+    { id:'bc_br', name:'BR Series', brand:'BC Racing', desc:'30-way damping, entry-level coilover', spring_f:44100, spring_r:33075, quality:'adjustable', compatible:'all' },
+    { id:'bilstein_b16', name:'B16 PSS10', brand:'Bilstein', desc:'10-way adjustable monotube', spring_f:44100, spring_r:34300, quality:'adjustable', compatible:['e46','e36','c6','c5','z33','ap1','ap2'] },
+    { id:'ksport', name:'Kontrol Pro', brand:'KSport', desc:'36-way adjustable, pillow ball mounts', spring_f:49050, spring_r:39240, quality:'adjustable', compatible:'all' },
+    { id:'tein_mono', name:'Mono Sport', brand:'Tein', desc:'16-way monotube, advanced valving', spring_f:53955, spring_r:44100, quality:'advanced', compatible:['s13','s14','s15','180sx','z33','r32','r33','r34','jza80','a80','ct9a','gdb','ap1','ap2','fd3s'] },
+    { id:'kw_v3', name:'Variant 3', brand:'KW', desc:'Separate rebound/compression, inox-line', spring_f:53955, spring_r:44100, quality:'advanced', compatible:['e46','e36','c6','c5','z33','ap1','ap2','jza80','a80','r32','r33','r34'] },
+    { id:'ohlins_rt', name:'Road & Track', brand:'Öhlins', desc:'DFV technology, 20-way adjustable', spring_f:58860, spring_r:49050, quality:'advanced', compatible:'all' },
+    { id:'fortune_500', name:'500 Series', brand:'Fortune Auto', desc:'24-way, Swift springs, digressive', spring_f:58860, spring_r:49050, quality:'advanced', compatible:['s13','s14','s15','180sx','e46','z33','ap1','ap2','fd3s','jza80','a80','ae86'] },
+    { id:'mca_blue', name:'Blue Series', brand:'MCA Suspension', desc:'2-way adjustable, race-spec valving', spring_f:68670, spring_r:58860, quality:'advanced', compatible:['s13','s14','s15','180sx','e46','ae86','z33','r32','r33','r34','fd3s','jza80','a80','ap1','ap2'] },
+    { id:'bc_zr', name:'ZR Series', brand:'BC Racing', desc:'3-way adjustable, remote reservoir', spring_f:78480, spring_r:68670, quality:'race', compatible:'all' },
+];
+
+// ── ANGLE KITS ────────────────────────────────
+const ANGLE_KITS = [
+    { id:'stock', name:'Stock Steering', brand:'OEM', desc:'Factory steering geometry', angle:0, hub_add:0, compatible:'all' },
+    { id:'megan', name:'Angle Kit', brand:'Megan Racing', desc:'Tie rod + lower arm spacer', angle:50, hub_add:1.0, compatible:['s13','s14','s15','180sx','z33','ae86'] },
+    { id:'gktech', name:'Steering Angle Kit', brand:'GKTech', desc:'CNC tie rod ends + spacers, bolt-on', angle:55, hub_add:1.2, compatible:['s13','s14','s15','180sx','z33','r32','r33','r34'] },
+    { id:'drift_knuckles', name:'Drift Knuckles', brand:'Various', desc:'Extended LCA + modified knuckle', angle:55, hub_add:1.5, compatible:'all' },
+    { id:'wisefab', name:'Lock Kit', brand:'Wisefab', desc:'Full kit — new knuckles, extended LCA, tie rods', angle:70, hub_add:2.5, compatible:['s13','s14','s15','180sx','e46','z33','r32','r33','r34','jza80','a80','fd3s'] },
+];
+
+// ── BRAKE KITS ────────────────────────────────
+const BRAKE_KITS = [
+    { id:'stock', name:'Stock Brakes', brand:'OEM', desc:'Factory brake system', torque_mult:1.0, bias:0, mass_add:0, compatible:'all' },
+    { id:'z32_swap', name:'Z32 4-Pot Caliper', brand:'Nissan OEM', desc:'300ZX front caliper upgrade', torque_mult:1.30, bias:0.64, mass_add:3.0, compatible:['s13','s14','s15','180sx','ae86','z33'] },
+    { id:'wilwood', name:'Dynapro 4-Piston', brand:'Wilwood', desc:'Lightweight 4-piston forged caliper', torque_mult:1.40, bias:0.64, mass_add:1.5, compatible:'all' },
+    { id:'r33_brembo', name:'R33 GTR Brembo', brand:'Nissan/Brembo OEM', desc:'4-pot Brembo from R33 GT-R', torque_mult:1.45, bias:0.64, mass_add:3.5, compatible:['s13','s14','s15','180sx','r32','r33','r34','z33'] },
+    { id:'ap_5200', name:'CP5200 4-Piston', brand:'AP Racing', desc:'Pro-level endurance caliper', torque_mult:1.55, bias:0.65, mass_add:2.0, compatible:'all' },
+    { id:'stoptech', name:'Trophy Race', brand:'StopTech', desc:'Asymmetric 4-piston, 355mm rotor', torque_mult:1.60, bias:0.65, mass_add:2.5, compatible:'all' },
+    { id:'brembo_gt', name:'GT 6-Piston', brand:'Brembo', desc:'6-piston monobloc, 380mm rotor', torque_mult:1.80, bias:0.66, mass_add:4.0, compatible:'all' },
+];
+
+// ── DIFFERENTIALS ─────────────────────────────
+const DIFFS = [
+    { id:'stock', name:'Stock Differential', brand:'OEM', desc:'Factory differential', power:null, coast:null, preload:null, compatible:'all' },
+    { id:'cusco_rs', name:'RS 1.5-Way', brand:'Cusco', desc:'1.5-way clutch, street/track', power:0.65, coast:0.30, preload:50, compatible:'all' },
+    { id:'wavetrac', name:'ATB LSD', brand:'Wavetrac', desc:'Gear-type, progressive on decel', power:0.45, coast:0.35, preload:25, compatible:['e46','e36','c6','c5','ap1','ap2','z33','gdb','ct9a'] },
+    { id:'kaaz_15', name:'1.5-Way LSD', brand:'Kaaz', desc:'Strong power lock, mild coast', power:0.75, coast:0.35, preload:60, compatible:'all' },
+    { id:'os_giken', name:'Super Lock', brand:'OS Giken', desc:'Multi-plate, progressive lockup', power:0.85, coast:0.45, preload:70, compatible:['s13','s14','s15','180sx','r32','r33','r34','jza80','a80','z33','fd3s','ae86','ap1','ap2'] },
+    { id:'drexler', name:'Motorsport LSD', brand:'Drexler', desc:'Preload-adjustable, race-grade', power:0.80, coast:0.50, preload:75, compatible:['e46','c6','jza80','a80','fd3s','ap1','ap2','r32','r33','r34'] },
+    { id:'kaaz_2way', name:'2-Way LSD', brand:'Kaaz', desc:'Full 2-way, drift spec', power:0.90, coast:0.55, preload:80, compatible:'all' },
+    { id:'cusco_mz', name:'Type MZ 2-Way', brand:'Cusco', desc:'Full 2-way, competition drift', power:0.95, coast:0.60, preload:90, compatible:'all' },
+    { id:'welded', name:'Welded / Spool', brand:'N/A', desc:'Fully locked (welded or mini spool)', power:1.0, coast:1.0, preload:200, compatible:'all' },
+];
+
+// ── TIRE COMPOUNDS ────────────────────────────
+const COMPOUNDS = [
+    { id:'street', name:'All-Season / Street', grip:1.10, dx:1.28, dy:1.28 },
+    { id:'200tw', name:'200TW (RS4 / Federal 595)', grip:1.25, dx:1.35, dy:1.35 },
+    { id:'semi_slick', name:'Semi-Slick (RE-71RS / AD09)', grip:1.38, dx:1.44, dy:1.44 },
+    { id:'slick', name:'Racing Slick (Hoosier / NT01)', grip:1.50, dx:1.55, dy:1.55 },
+];
+
+// ── CLASS PRESETS ──────────────────────────────
+const CLASS_PRESETS = [
+    { id:'factory', icon:'🏭', label:'Factory', hp:'Stock HP', desc:'OEM feel, no modifications',
+        coilovers:'stock', angle_kit:'stock', brakes:'stock', diff:'stock', compound:'street', engine:'stock', turbo:'none', drivetrain:null },
+    { id:'grassroots', icon:'🔰', label:'Grassroots', hp:'200-350hp', desc:'Budget weekend warrior',
+        coilovers:'bc_br', angle_kit:'megan', brakes:'z32_swap', diff:'cusco_rs', compound:'200tw', engine:'stock', turbo:'none', drivetrain:null },
+    { id:'street', icon:'🏎️', label:'Street', hp:'300-500hp', desc:'Serious street build',
+        coilovers:'ohlins_rt', angle_kit:'wisefab', brakes:'wilwood', diff:'kaaz_15', compound:'semi_slick', engine:'stock', turbo:'small', drivetrain:null },
+    { id:'pro', icon:'🏆', label:'Pro', hp:'500-800hp', desc:'Formula Drift / Pro-Am spec',
+        coilovers:'mca_blue', angle_kit:'wisefab', brakes:'ap_5200', diff:'kaaz_2way', compound:'semi_slick', engine:'stock', turbo:'large', drivetrain:null },
+    { id:'race', icon:'🏁', label:'Race', hp:'350-600hp', desc:'Time attack / endurance',
+        coilovers:'bc_zr', angle_kit:'stock', brakes:'brembo_gt', diff:'os_giken', compound:'slick', engine:'stock', turbo:'medium', drivetrain:null },
+];
+
+// ═══════════════════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════════════════════════════════
-
-let state = {
+// ═══════════════════════════════════════════════════════════════
+const S = {
     step: 1,
-    rawFiles: {},       // filename -> raw text content
-    parsed: {},         // filename -> parsed sections
+    rawFiles: {},       // filename → raw text
+    parsed: {},         // filename → parsed sections (for .ini)
+    lutFiles: {},       // filename → raw text (for .lut)
     stock: {},          // extracted stock values
-    carInfo: {},        // detected car info
+    carInfo: {},
+    suspTypes: { front: 'UNKNOWN', rear: 'UNKNOWN' },
     detectedChassis: null,
-    mode: null,         // 'quick' or 'custom'
+    hasExistingTurbo: false,
+    existingTurbo: null,
+    mode: null,
     classKey: null,
-    selectedParts: { coilovers:'stock', angle_kit:'stock', wheels:'stock', brakes:'stock', diff:'stock', tire_compound:'street', engine_swap:'stock' },
+    sel: {
+        coilovers: 'stock', angle_kit: 'stock', brakes: 'stock', diff: 'stock',
+        compound: 'street', engine: 'stock', turbo: 'none', drivetrain: null,
+    },
     result: null,
 };
 
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
 // CAR DETECTION
-// ═══════════════════════════════════════════════════════════════════
-
-function detectCar(parsed, rawFiles) {
-    const car = parsed['car.ini'] || {};
-    const susp = parsed['suspensions.ini'] || {};
-    const dt = parsed['drivetrain.ini'] || {};
-    const tyres = parsed['tyres.ini'] || {};
-    const brakes = parsed['brakes.ini'] || {};
+// ═══════════════════════════════════════════════════════════════
+function detectCar() {
+    const car = S.parsed['car.ini'] || {};
+    const susp = S.parsed['suspensions.ini'] || {};
+    const dt = S.parsed['drivetrain.ini'] || {};
+    const eng = S.parsed['engine.ini'] || {};
+    const tyres = S.parsed['tyres.ini'] || {};
+    const brakes = S.parsed['brakes.ini'] || {};
 
     const screenName = getVal(car, 'INFO', 'SCREEN_NAME', '') || getVal(car, 'HEADER', 'SCREEN_NAME', '');
     const shortName = getVal(car, 'INFO', 'SHORT_NAME', '');
 
-    // Detect chassis
-    let chassis = null, make = 'Unknown', model = 'Unknown', year = '';
-    const nameToCheck = (screenName + ' ' + shortName).toLowerCase().replace(/[-\s]/g, '');
+    // Detect chassis code
+    let chassis = null, make = 'Unknown', model = screenName || shortName || 'Unknown Car', year = '';
+    const nameLC = (screenName + ' ' + shortName + ' ' + (S.rawFiles['car.ini'] || '')).toLowerCase().replace(/[-_\s]/g, '');
     for (const [code, info] of Object.entries(CHASSIS_CODES)) {
-        if (nameToCheck.includes(code.replace(/[-\s]/g, ''))) {
-            chassis = code; make = info[0]; model = info[1]; year = info[2];
-            break;
+        if (nameLC.includes(code.replace(/[-_\s]/g, ''))) {
+            chassis = code; make = info[0]; model = info[1]; year = info[2]; break;
         }
     }
-    if (!chassis) {
-        for (const [alias, mk] of Object.entries(KNOWN_MAKES)) {
-            if (nameToCheck.includes(alias)) { make = mk; model = screenName || shortName || 'Unknown'; break; }
+
+    // Detect suspension types from raw text
+    S.suspTypes = detectSuspensionTypes(S.rawFiles['suspensions.ini'] || '');
+
+    // Detect existing turbo
+    S.hasExistingTurbo = !!(eng['TURBO_0']);
+    if (S.hasExistingTurbo) {
+        S.existingTurbo = {
+            max_boost: getVal(eng, 'TURBO_0', 'MAX_BOOST', 0),
+            wastegate: getVal(eng, 'TURBO_0', 'WASTEGATE', 0),
+            lag_up: getVal(eng, 'TURBO_0', 'LAG_UP', 0.99),
+            lag_dn: getVal(eng, 'TURBO_0', 'LAG_DN', 0.97),
+            reference: getVal(eng, 'TURBO_0', 'REFERENCE', 5000),
+            gamma: getVal(eng, 'TURBO_0', 'GAMMA', 2.0),
+        };
+    }
+
+    // Detect LSRR for steering modification capability
+    const lsrr = getVal(car, 'CONTROLS', 'LINEAR_STEER_ROD_RATIO', 0);
+    const hasRackLut = !!(getVal(car, 'CONTROLS', 'RACK_TRAVEL_LUT', ''));
+
+    // Read spring rates — handle COSMIC coilover vs standard
+    let springF = getVal(susp, 'FRONT', 'SPRING_RATE', 0);
+    let springR = getVal(susp, 'REAR', 'SPRING_RATE', 0);
+    // For COSMIC, look at FRONT_COILOVER_0 RATE
+    if (springF === 0) springF = getVal(susp, 'FRONT_COILOVER_0', 'RATE', 30000);
+    if (springR === 0) springR = getVal(susp, 'REAR_COILOVER_0', 'RATE', 25000);
+
+    // Read power curve to estimate HP
+    let peakHP = 0;
+    const powerCurve = getVal(eng, 'HEADER', 'POWER_CURVE', 'power.lut');
+    if (S.lutFiles[powerCurve]) {
+        const lut = parseLut(S.lutFiles[powerCurve]);
+        for (const [rpm, torque] of lut) {
+            const hp = torque * rpm / 5252 * 1.34102; // wheel Nm * rpm → hp
+            // Actually AC power.lut is RPM|Torque(Nm) at wheels, so:
+            const hpCalc = (torque * rpm) / 7120.9; // Nm*RPM / 7120.9 = kW → *1.341 = hp
+            // Simpler: hp = torque_Nm * rpm / 7023
+            const hpSimple = torque * rpm / 7023;
+            if (hpSimple > peakHP) peakHP = Math.round(hpSimple);
         }
     }
 
     const stock = {
+        screen_name: screenName || shortName || model,
         total_mass: getVal(car, 'BASIC', 'TOTALMASS', 1300),
         steer_lock: getVal(car, 'CONTROLS', 'STEER_LOCK', 450),
         steer_ratio: getVal(car, 'CONTROLS', 'STEER_RATIO', 16),
-        screen_name: screenName || shortName || 'Unknown Car',
+        lsrr: lsrr,
+        has_rack_lut: hasRackLut,
+        rack_lut_name: getVal(car, 'CONTROLS', 'RACK_TRAVEL_LUT', ''),
+        ffmult: getVal(car, 'CONTROLS', 'FFMULT', 1.5),
         wheelbase: getVal(susp, 'BASIC', 'WHEELBASE', 2.5),
         cg_location: getVal(susp, 'BASIC', 'CG_LOCATION', 0.55),
-        spring_rate_f: getVal(susp, 'FRONT', 'SPRING_RATE', 30000),
-        spring_rate_r: getVal(susp, 'REAR', 'SPRING_RATE', 25000),
+        spring_rate_f: springF,
+        spring_rate_r: springR,
         hub_mass_f: getVal(susp, 'FRONT', 'HUB_MASS', 35),
         hub_mass_r: getVal(susp, 'REAR', 'HUB_MASS', 30),
         track_f: getVal(susp, 'FRONT', 'TRACK', 1.48),
         track_r: getVal(susp, 'REAR', 'TRACK', 1.48),
         arb_f: getVal(susp, 'ARB', 'FRONT', 20000),
         arb_r: getVal(susp, 'ARB', 'REAR', 10000),
-        damp_bump_f: getVal(susp, 'FRONT', 'DAMP_BUMP', 3000),
-        damp_rebound_f: getVal(susp, 'FRONT', 'DAMP_REBOUND', 5000),
-        damp_bump_r: getVal(susp, 'REAR', 'DAMP_BUMP', 2500),
-        damp_rebound_r: getVal(susp, 'REAR', 'DAMP_REBOUND', 4500),
         tire_width_f: getVal(tyres, 'FRONT', 'WIDTH', 0.225),
         tire_width_r: getVal(tyres, 'REAR', 'WIDTH', 0.225),
         tire_radius_f: getVal(tyres, 'FRONT', 'RADIUS', 0.31),
         tire_radius_r: getVal(tyres, 'REAR', 'RADIUS', 0.31),
-        grip_f: getVal(tyres, 'FRONT', 'FRICTION_LIMIT_GRIP', 1.0),
-        dx_ref_f: getVal(tyres, 'FRONT', 'DX_REF', 1.28),
-        dy_ref_f: getVal(tyres, 'FRONT', 'DY_REF', 1.28),
         brake_torque: getVal(brakes, 'DATA', 'MAX_TORQUE', 2000),
         brake_bias: getVal(brakes, 'DATA', 'FRONT_SHARE', 0.62),
         drivetrain_type: getVal(dt, 'TRACTION', 'TYPE', 'RWD'),
         diff_power: getVal(dt, 'DIFFERENTIAL', 'POWER', 0.0),
         diff_coast: getVal(dt, 'DIFFERENTIAL', 'COAST', 0.0),
         diff_preload: getVal(dt, 'DIFFERENTIAL', 'PRELOAD', 0),
-        susp_type_f: getVal(susp, 'FRONT', 'TYPE', 'STRUT'),
-        susp_type_r: getVal(susp, 'REAR', 'TYPE', 'STRUT'),
+        gear_count: getVal(dt, 'GEARS', 'COUNT', 5),
+        final_ratio: getVal(dt, 'GEARS', 'FINAL', 3.7),
+        peak_hp: peakHP,
+        susp_type_f: S.suspTypes.front,
+        susp_type_r: S.suspTypes.rear,
     };
 
-    // Derived values
-    const wdf = stock.cg_location > 0 ? stock.cg_location : 0.55;
-    stock.weight_dist_f = wdf;
-    const sprungTotal = stock.total_mass - (stock.hub_mass_f*2 + stock.hub_mass_r*2);
-    stock.sprung_f_corner = Math.round(sprungTotal * wdf / 2 * 10) / 10;
-    stock.sprung_r_corner = Math.round(sprungTotal * (1-wdf) / 2 * 10) / 10;
-    stock.stock_max_angle = stock.steer_ratio > 0 && stock.steer_lock > 0 ? Math.round(stock.steer_lock / stock.steer_ratio * 10) / 10 : 35;
-    const natFreq = (k, m) => m > 0 && k > 0 ? Math.round((1/(2*Math.PI)) * Math.sqrt(k/m) * 100) / 100 : 0;
-    stock.nat_freq_f = natFreq(stock.spring_rate_f, stock.sprung_f_corner);
-    stock.nat_freq_r = natFreq(stock.spring_rate_r, stock.sprung_r_corner);
+    // Derived
+    stock.weight_dist_f = stock.cg_location > 0 ? stock.cg_location : 0.55;
+    const sprungTotal = stock.total_mass - (stock.hub_mass_f * 2 + stock.hub_mass_r * 2);
+    stock.sprung_f = Math.round(sprungTotal * stock.weight_dist_f / 2 * 10) / 10;
+    stock.sprung_r = Math.round(sprungTotal * (1 - stock.weight_dist_f) / 2 * 10) / 10;
+    stock.max_angle = stock.steer_ratio > 0 ? Math.round(stock.steer_lock / stock.steer_ratio * 10) / 10 : 35;
+    const fn = (k, m) => m > 0 && k > 0 ? Math.round((1/(2*Math.PI)) * Math.sqrt(k/m) * 100) / 100 : 0;
+    stock.freq_f = fn(stock.spring_rate_f, stock.sprung_f);
+    stock.freq_r = fn(stock.spring_rate_r, stock.sprung_r);
 
-    return { chassis, make, model, year, stock, name: screenName || model };
+    S.stock = stock;
+    S.carInfo = { chassis, make, model, year, name: screenName || model };
+    S.detectedChassis = chassis;
+    
+    // Set initial drivetrain to match detected
+    S.sel.drivetrain = stock.drivetrain_type;
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// COMPATIBILITY CHECK
-// ═══════════════════════════════════════════════════════════════════
-
-function isCompatible(part, chassis) {
-    if (!part.compatible || part.compatible.includes('all')) return true;
-    if (!chassis) return true; // Can't filter if unknown
-    return part.compatible.includes(chassis);
+// ═══════════════════════════════════════════════════════════════
+// COMPATIBILITY
+// ═══════════════════════════════════════════════════════════════
+function isCompat(compatList, chassis) {
+    if (!compatList || compatList === 'all') return true;
+    if (!chassis) return true;
+    return compatList.includes(chassis);
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// PHYSICS CALCULATIONS
-// ═══════════════════════════════════════════════════════════════════
-
-function calculatePhysics(stock, parts) {
-    const coilover = COILOVERS[parts.coilovers] || COILOVERS.stock;
-    const angleKit = ANGLE_KITS[parts.angle_kit] || ANGLE_KITS.stock;
-    const wheels = WHEEL_SETUPS[parts.wheels] || WHEEL_SETUPS.stock;
-    const brakeKit = BRAKE_KITS[parts.brakes] || BRAKE_KITS.stock;
-    const diff = DIFF_TYPES[parts.diff] || DIFF_TYPES.stock;
-    const compound = TIRE_COMPOUNDS[parts.tire_compound] || TIRE_COMPOUNDS.street;
-    const engine = ENGINE_SWAPS[parts.engine_swap] || ENGINE_SWAPS.stock;
+// ═══════════════════════════════════════════════════════════════
+// PHYSICS CALCULATION ENGINE
+// ═══════════════════════════════════════════════════════════════
+function calculatePhysics() {
+    const stock = S.stock;
+    const sel = S.sel;
+    
+    const coilover = COILOVERS.find(c => c.id === sel.coilovers) || COILOVERS[0];
+    const angleKit = ANGLE_KITS.find(a => a.id === sel.angle_kit) || ANGLE_KITS[0];
+    const brakeKit = BRAKE_KITS.find(b => b.id === sel.brakes) || BRAKE_KITS[0];
+    const diff = DIFFS.find(d => d.id === sel.diff) || DIFFS[0];
+    const compound = COMPOUNDS.find(c => c.id === sel.compound) || COMPOUNDS[0];
+    const engine = ENGINE_SWAPS.find(e => e.id === sel.engine) || ENGINE_SWAPS[0];
+    const turbo = TURBO_SIZES.find(t => t.id === sel.turbo) || TURBO_SIZES[0];
 
     let totalMass = stock.total_mass;
     let wdf = stock.weight_dist_f;
+    let steerLock = stock.steer_lock;
+    let steerRatio = stock.steer_ratio;
+    let lsrr = stock.lsrr;
 
-    // Engine swap mass/balance changes
-    if (parts.engine_swap !== 'stock' && engine.weight_kg) {
-        // If it's native to this platform, no mass change. Otherwise estimate delta.
-        const isNative = engine.native && state.detectedChassis && engine.native.includes(state.detectedChassis);
-        if (!isNative) {
-            // Rough estimate: assume stock engine ~same category weight, apply delta
-            const stockEngWeight = engine.stock_weight_kg || 180;
-            const delta = engine.weight_kg - stockEngWeight;
-            totalMass += delta;
+    // Engine swap — weight delta
+    // Estimate original engine weight from car mass (rough: ~15-20% of total)
+    if (sel.engine !== 'stock' && engine.weight_kg > 0) {
+        const estOrigWeight = Math.round(stock.total_mass * 0.15); // rough estimate
+        const delta = engine.weight_kg - estOrigWeight;
+        totalMass += delta;
+        wdf += engine.wt_shift;
+        wdf = Math.max(0.38, Math.min(0.65, wdf));
+    }
+
+    // Drivetrain swap
+    const dtChanged = sel.drivetrain && sel.drivetrain !== stock.drivetrain_type;
+    if (dtChanged) {
+        if (sel.drivetrain === 'RWD' && stock.drivetrain_type === 'FWD') {
+            totalMass += 30; // trans tunnel, driveshaft, diff weight
+            wdf -= 0.05; // moves weight rearward
+        } else if (sel.drivetrain === 'AWD') {
+            totalMass += 50; // transfer case, front diff, driveshafts
+            wdf = Math.max(0.45, wdf - 0.02);
         }
-        wdf += engine.weight_dist_shift;
-        wdf = Math.max(0.40, Math.min(0.65, wdf));
     }
 
     // Springs
-    let springF, springR;
-    if (coilover.spring_rate_f_nm) { springF = coilover.spring_rate_f_nm; springR = coilover.spring_rate_r_nm; }
-    else { springF = stock.spring_rate_f * (coilover.spring_rate_f_mult || 1); springR = stock.spring_rate_r * (coilover.spring_rate_r_mult || 1); }
+    let springF = stock.spring_rate_f, springR = stock.spring_rate_r;
+    if (coilover.spring_f > 0) { springF = coilover.spring_f; springR = coilover.spring_r; }
 
     // Hub mass
-    const hubF = stock.hub_mass_f + (brakeKit.mass_add_f_kg || 0) + (angleKit.hub_mass_add_kg || 0);
+    const hubF = stock.hub_mass_f + (brakeKit.mass_add || 0) + (angleKit.hub_add || 0);
     const hubR = stock.hub_mass_r;
 
-    const sprungTotal = totalMass - (hubF*2 + hubR*2);
+    const sprungTotal = totalMass - (hubF * 2 + hubR * 2);
     const sprungF = sprungTotal * wdf / 2;
-    const sprungR = sprungTotal * (1-wdf) / 2;
-
-    const natFreq = (k,m) => m > 0 && k > 0 ? Math.round((1/(2*Math.PI))*Math.sqrt(k/m)*100)/100 : 0;
-    const freqF = natFreq(springF, sprungF);
-    const freqR = natFreq(springR, sprungR);
+    const sprungR = sprungTotal * (1 - wdf) / 2;
+    const fn = (k, m) => m > 0 && k > 0 ? Math.round((1/(2*Math.PI)) * Math.sqrt(k/m) * 100) / 100 : 0;
 
     // Damping
-    const dq = coilover.damping_quality || 'basic';
-    const ratios = { basic:[0.22,0.35], adjustable:[0.25,0.40], advanced:[0.28,0.45] };
-    const [br, rr] = ratios[dq] || ratios.adjustable;
-    const calcDamp = (k, m, bR, rR) => {
+    const dqMap = { basic: [0.22, 0.35], adjustable: [0.25, 0.40], advanced: [0.28, 0.45], race: [0.30, 0.48] };
+    const [bRatio, rRatio] = dqMap[coilover.quality] || dqMap.adjustable;
+    const calcDamp = (k, m, br, rr) => {
         const cc = 2 * Math.sqrt(k * m);
-        return { bump: Math.round(cc*bR), fast_bump: Math.round(cc*bR*0.5), rebound: Math.round(cc*rR), fast_rebound: Math.round(cc*rR*0.5) };
+        return { bump: Math.round(cc * br), rebound: Math.round(cc * rr), fast_bump: Math.round(cc * br * 0.5), fast_rebound: Math.round(cc * rr * 0.5) };
     };
-    const dampF = calcDamp(springF, sprungF, br, rr);
-    const dampR = calcDamp(springR, sprungR, br, rr);
+    const dampF = calcDamp(springF, sprungF, bRatio, rRatio);
+    const dampR = calcDamp(springR, sprungR, bRatio, rRatio);
 
-    // ARB
-    const arbF = Math.round(stock.arb_f * springF / Math.max(stock.spring_rate_f, 1));
-    const arbR = Math.round(stock.arb_r * springR / Math.max(stock.spring_rate_r, 1));
+    // ARB — scale proportionally to spring rate change
+    const arbF = stock.spring_rate_f > 0 ? Math.round(stock.arb_f * springF / stock.spring_rate_f) : stock.arb_f;
+    const arbR = stock.spring_rate_r > 0 ? Math.round(stock.arb_r * springR / stock.spring_rate_r) : stock.arb_r;
 
-    // Steering
-    let maxAngle, steerLock;
-    if (angleKit.max_angle_deg > 0) { maxAngle = angleKit.max_angle_deg; steerLock = maxAngle * stock.steer_ratio; }
-    else { maxAngle = stock.stock_max_angle; steerLock = stock.steer_lock; }
+    // Steering — angle kit
+    let maxAngle = stock.max_angle;
+    if (angleKit.angle > 0) {
+        maxAngle = angleKit.angle;
+        steerLock = Math.round(maxAngle * steerRatio);
+    }
+
+    // Steering ratio change (DWB front only) — for now, keep stock ratio unless angle kit implies it
+    // LSRR scaling: if ratio changes, new_LSRR = old_LSRR × (new_ratio / old_ratio)
+    // Since we're not changing ratio directly in v4, keep LSRR
+    // Rack travel LUT: if steer_lock changes and LUT exists, we need to extend/scale it
 
     // Brakes
     let brakeTorque = stock.brake_torque, brakeBias = stock.brake_bias;
-    if (brakeKit.torque_mult) { brakeTorque = Math.round(stock.brake_torque * brakeKit.torque_mult); brakeBias = brakeKit.bias; }
-
-    // Diff
-    const diffPower = diff.diff_power !== undefined ? diff.diff_power : stock.diff_power;
-    const diffCoast = diff.diff_coast !== undefined ? diff.diff_coast : stock.diff_coast;
-    const diffPreload = diff.diff_preload !== undefined ? diff.diff_preload : stock.diff_preload;
-
-    // Tires
-    const tireWF = wheels.tire_width || stock.tire_width_f;
-    const tireWR = wheels.tire_width || stock.tire_width_r;
-    let tireRF = stock.tire_radius_f, tireRR = stock.tire_radius_r;
-    if (wheels.rim_dia) {
-        const tr = (w, asp, rim) => w * (asp/100) + (rim * 0.0254)/2;
-        tireRF = Math.round(tr(tireWF, wheels.tire_aspect||45, wheels.rim_dia)*10000)/10000;
-        tireRR = Math.round(tr(tireWR, wheels.tire_aspect||45, wheels.rim_dia)*10000)/10000;
+    if (brakeKit.torque_mult > 1) {
+        brakeTorque = Math.round(stock.brake_torque * brakeKit.torque_mult);
+        brakeBias = brakeKit.bias;
     }
 
-    // Comparison
-    const comparison = [
-        {param:"Total Mass", stock:`${stock.total_mass} kg`, modified:`${totalMass} kg`, category:"chassis"},
-        {param:"Weight Dist (F)", stock:`${(stock.weight_dist_f*100).toFixed(1)}%`, modified:`${(wdf*100).toFixed(1)}%`, category:"chassis"},
-        {param:"Spring Rate (F)", stock:`${stock.spring_rate_f.toLocaleString()} N/m`, modified:`${Math.round(springF).toLocaleString()} N/m`, category:"suspension"},
-        {param:"Spring Rate (R)", stock:`${stock.spring_rate_r.toLocaleString()} N/m`, modified:`${Math.round(springR).toLocaleString()} N/m`, category:"suspension"},
-        {param:"Natural Freq (F)", stock:`${stock.nat_freq_f} Hz`, modified:`${freqF} Hz`, category:"suspension"},
-        {param:"Natural Freq (R)", stock:`${stock.nat_freq_r} Hz`, modified:`${freqR} Hz`, category:"suspension"},
-        {param:"ARB (F)", stock:`${stock.arb_f.toLocaleString()} N/m`, modified:`${arbF.toLocaleString()} N/m`, category:"suspension"},
-        {param:"ARB (R)", stock:`${stock.arb_r.toLocaleString()} N/m`, modified:`${arbR.toLocaleString()} N/m`, category:"suspension"},
-        {param:"Hub Mass (F)", stock:`${stock.hub_mass_f} kg`, modified:`${Math.round(hubF*10)/10} kg`, category:"unsprung"},
-        {param:"Max Steering Angle", stock:`${stock.stock_max_angle}°`, modified:`${maxAngle}°`, category:"steering"},
-        {param:"Steer Lock", stock:`${stock.steer_lock}°`, modified:`${Math.round(steerLock)}°`, category:"steering"},
-        {param:"Tire Width (F)", stock:`${(stock.tire_width_f*1000).toFixed(0)}mm`, modified:`${(tireWF*1000).toFixed(0)}mm`, category:"tires"},
-        {param:"Tire Width (R)", stock:`${(stock.tire_width_r*1000).toFixed(0)}mm`, modified:`${(tireWR*1000).toFixed(0)}mm`, category:"tires"},
-        {param:"Grip Level", stock:`${stock.grip_f}`, modified:`${compound.grip_mult}`, category:"tires"},
-        {param:"Brake Torque", stock:`${stock.brake_torque} Nm`, modified:`${brakeTorque} Nm`, category:"brakes"},
-        {param:"Brake Bias", stock:`${(stock.brake_bias*100).toFixed(0)}% F`, modified:`${(brakeBias*100).toFixed(0)}% F`, category:"brakes"},
-        {param:"Diff Power Lock", stock:`${(stock.diff_power*100).toFixed(0)}%`, modified:`${(diffPower*100).toFixed(0)}%`, category:"diff"},
-        {param:"Diff Coast Lock", stock:`${(stock.diff_coast*100).toFixed(0)}%`, modified:`${(diffCoast*100).toFixed(0)}%`, category:"diff"},
-        {param:"Diff Preload", stock:`${stock.diff_preload} Nm`, modified:`${diffPreload} Nm`, category:"diff"},
-    ];
+    // Diff
+    const diffPower = diff.power !== null ? diff.power : stock.diff_power;
+    const diffCoast = diff.coast !== null ? diff.coast : stock.diff_coast;
+    const diffPreload = diff.preload !== null ? diff.preload : stock.diff_preload;
 
-    // INI changes
-    const changes = {
-        "car.ini": { BASIC: { TOTALMASS: totalMass }, CONTROLS: { STEER_LOCK: Math.round(steerLock) } },
-        "suspensions.ini": {
-            BASIC: { CG_LOCATION: Math.round(wdf*1000)/1000 },
-            FRONT: { HUB_MASS: Math.round(hubF*10000)/10000, SPRING_RATE: Math.round(springF) },
-            REAR: { HUB_MASS: Math.round(hubR*10000)/10000, SPRING_RATE: Math.round(springR) },
-            ARB: { FRONT: arbF, REAR: arbR },
-        },
-        "tyres.ini": {
-            FRONT: { WIDTH: tireWF, RADIUS: tireRF, FRICTION_LIMIT_GRIP: compound.grip_mult, DX_REF: compound.dx_ref, DY_REF: compound.dy_ref },
-            REAR: { WIDTH: tireWR, RADIUS: tireRR, FRICTION_LIMIT_GRIP: compound.grip_mult, DX_REF: compound.dx_ref, DY_REF: compound.dy_ref },
-        },
-        "brakes.ini": { DATA: { MAX_TORQUE: brakeTorque, FRONT_SHARE: brakeBias, HANDBRAKE_TORQUE: Math.round(brakeTorque*0.25) } },
-        "drivetrain.ini": { DIFFERENTIAL: { POWER: diffPower, COAST: diffCoast, PRELOAD: diffPreload } },
+    // Turbo — modify engine.ini TURBO_0 section and scale power.lut
+    let turboChanges = null;
+    let powerLutModified = null;
+    let estimatedHP = stock.peak_hp;
+
+    if (sel.turbo !== 'none' && turbo.max_boost > 0) {
+        turboChanges = {
+            MAX_BOOST: turbo.max_boost,
+            WASTEGATE: turbo.wastegate,
+            LAG_UP: turbo.lag_up,
+            LAG_DN: turbo.lag_dn,
+            REFERENCE: turbo.reference,
+            GAMMA: turbo.gamma,
+        };
+        // Scale power.lut by turbo power multiplier
+        const powerCurveName = getVal(S.parsed['engine.ini'] || {}, 'HEADER', 'POWER_CURVE', 'power.lut');
+        if (S.lutFiles[powerCurveName]) {
+            const origLut = parseLut(S.lutFiles[powerCurveName]);
+            // For turbo: engine torque is multiplied by (1 + boost) at full boost
+            // The power.lut already represents NA torque. We scale it by the mult factor
+            // to represent the new base torque that turbo will multiply
+            const scaleFactor = turbo.power_mult;
+            powerLutModified = origLut.map(([rpm, torque]) => [rpm, Math.round(torque * scaleFactor * 100) / 100]);
+            // Recalculate peak HP
+            let peakHP = 0;
+            for (const [rpm, torque] of powerLutModified) {
+                const hp = torque * rpm / 7023;
+                if (hp > peakHP) peakHP = Math.round(hp);
+            }
+            estimatedHP = peakHP;
+        }
+    } else if (sel.engine !== 'stock' && engine.hp > 0) {
+        // Engine swap: scale power curve to match target HP
+        const powerCurveName = getVal(S.parsed['engine.ini'] || {}, 'HEADER', 'POWER_CURVE', 'power.lut');
+        if (S.lutFiles[powerCurveName] && stock.peak_hp > 0) {
+            const origLut = parseLut(S.lutFiles[powerCurveName]);
+            const scaleFactor = engine.hp / stock.peak_hp;
+            powerLutModified = origLut.map(([rpm, torque]) => [rpm, Math.round(torque * scaleFactor * 100) / 100]);
+            estimatedHP = engine.hp;
+        }
+    }
+
+    // Rack travel LUT handling
+    let rackLutModified = null;
+    if (stock.has_rack_lut && steerLock !== stock.steer_lock && S.lutFiles[stock.rack_lut_name]) {
+        const origRackLut = parseLut(S.lutFiles[stock.rack_lut_name]);
+        if (origRackLut.length > 0) {
+            // Scale: extend or compress the LUT to match new steer lock
+            const origMaxDeg = origRackLut[origRackLut.length - 1][0];
+            const scaleFactor = steerLock / stock.steer_lock;
+            // Generate new entries covering 0 to new steerLock
+            rackLutModified = [];
+            const step = origMaxDeg > 0 ? origMaxDeg / (origRackLut.length - 1) : 2.5;
+            const newStep = step; // keep same angular step
+            const numEntries = Math.ceil(steerLock / newStep) + 1;
+            for (let i = 0; i < numEntries; i++) {
+                const deg = Math.min(i * newStep, steerLock);
+                // Interpolate from original LUT
+                const origDeg = deg / scaleFactor;
+                let travel = 0;
+                if (origDeg <= 0) travel = 0;
+                else if (origDeg >= origMaxDeg) {
+                    // Extrapolate linearly from last segment
+                    const lastRate = origRackLut.length > 1 ?
+                        (origRackLut[origRackLut.length-1][1] - origRackLut[origRackLut.length-2][1]) /
+                        (origRackLut[origRackLut.length-1][0] - origRackLut[origRackLut.length-2][0]) : 0;
+                    travel = origRackLut[origRackLut.length-1][1] + lastRate * (origDeg - origMaxDeg);
+                } else {
+                    // Linear interpolation
+                    for (let j = 1; j < origRackLut.length; j++) {
+                        if (origRackLut[j][0] >= origDeg) {
+                            const t = (origDeg - origRackLut[j-1][0]) / (origRackLut[j][0] - origRackLut[j-1][0]);
+                            travel = origRackLut[j-1][1] + t * (origRackLut[j][1] - origRackLut[j-1][1]);
+                            break;
+                        }
+                    }
+                }
+                // Scale travel proportionally — more lock = more total travel
+                rackLutModified.push([Math.round(deg * 100) / 100, Math.round(travel * scaleFactor * 1000000) / 1000000]);
+            }
+        }
+    }
+
+    // Build INI changes
+    const changes = {};
+    
+    // car.ini
+    const carChanges = { BASIC: {}, CONTROLS: {} };
+    if (totalMass !== stock.total_mass) carChanges.BASIC.TOTALMASS = totalMass;
+    if (steerLock !== stock.steer_lock) carChanges.CONTROLS.STEER_LOCK = Math.round(steerLock);
+    if (Object.keys(carChanges.BASIC).length || Object.keys(carChanges.CONTROLS).length) {
+        changes['car.ini'] = {};
+        if (Object.keys(carChanges.BASIC).length) changes['car.ini'].BASIC = carChanges.BASIC;
+        if (Object.keys(carChanges.CONTROLS).length) changes['car.ini'].CONTROLS = carChanges.CONTROLS;
+    }
+
+    // suspensions.ini
+    const susChanges = {};
+    if (wdf !== stock.weight_dist_f) susChanges.BASIC = { CG_LOCATION: Math.round(wdf * 1000) / 1000 };
+    if (hubF !== stock.hub_mass_f) { if (!susChanges.FRONT) susChanges.FRONT = {}; susChanges.FRONT.HUB_MASS = Math.round(hubF * 10000) / 10000; }
+    // Spring rate changes depend on suspension type
+    if (coilover.spring_f > 0) {
+        const isCosmic = S.suspTypes.front.startsWith('COSMIC') || S.suspTypes.rear.startsWith('COSMIC');
+        if (isCosmic) {
+            susChanges.FRONT_COILOVER_0 = { RATE: springF };
+            susChanges.REAR_COILOVER_0 = { RATE: springR };
+        } else {
+            if (!susChanges.FRONT) susChanges.FRONT = {};
+            if (!susChanges.REAR) susChanges.REAR = {};
+            susChanges.FRONT.SPRING_RATE = springF;
+            susChanges.REAR.SPRING_RATE = springR;
+        }
+    }
+    if (arbF !== stock.arb_f || arbR !== stock.arb_r) susChanges.ARB = { FRONT: arbF, REAR: arbR };
+    if (Object.keys(susChanges).length) changes['suspensions.ini'] = susChanges;
+
+    // drivetrain.ini
+    const dtChanges = {};
+    if (diffPower !== stock.diff_power || diffCoast !== stock.diff_coast || diffPreload !== stock.diff_preload) {
+        dtChanges.DIFFERENTIAL = { POWER: diffPower, COAST: diffCoast, PRELOAD: diffPreload };
+    }
+    if (dtChanged && sel.drivetrain) {
+        dtChanges.TRACTION = { TYPE: sel.drivetrain };
+    }
+    if (Object.keys(dtChanges).length) changes['drivetrain.ini'] = dtChanges;
+
+    // brakes.ini
+    if (brakeKit.torque_mult > 1) {
+        changes['brakes.ini'] = { DATA: { MAX_TORQUE: brakeTorque, FRONT_SHARE: brakeBias } };
+    }
+
+    // engine.ini — turbo
+    if (turboChanges) {
+        changes['engine.ini'] = { TURBO_0: turboChanges };
+    }
+
+    // tyres.ini — compound
+    if (sel.compound !== 'street') {
+        changes['tyres.ini'] = {
+            FRONT: { DX_REF: compound.dx, DY_REF: compound.dy },
+            REAR: { DX_REF: compound.dx, DY_REF: compound.dy },
+        };
+    }
+
+    // Comparison data
+    const comparison = [];
+    const cmp = (cat, param, sv, mv, unit='') => {
+        comparison.push({ category: cat, param, stock: `${sv}${unit}`, modified: `${mv}${unit}` });
     };
+    cmp('chassis', 'Total Mass', stock.total_mass, totalMass, ' kg');
+    cmp('chassis', 'Weight Distribution (F)', (stock.weight_dist_f*100).toFixed(1)+'%', (wdf*100).toFixed(1)+'%');
+    cmp('chassis', 'Drivetrain', stock.drivetrain_type, sel.drivetrain || stock.drivetrain_type);
+    cmp('engine', 'Estimated Peak HP', stock.peak_hp || '?', estimatedHP || '?', ' hp');
+    if (turboChanges) {
+        cmp('engine', 'Turbo Max Boost', S.hasExistingTurbo ? S.existingTurbo.max_boost+' bar' : 'N/A', turbo.max_boost+' bar');
+    }
+    cmp('suspension', 'Spring Rate (F)', stock.spring_rate_f.toLocaleString(), Math.round(springF).toLocaleString(), ' N/m');
+    cmp('suspension', 'Spring Rate (R)', stock.spring_rate_r.toLocaleString(), Math.round(springR).toLocaleString(), ' N/m');
+    cmp('suspension', 'Nat. Frequency (F)', stock.freq_f, fn(springF, sprungF), ' Hz');
+    cmp('suspension', 'Nat. Frequency (R)', stock.freq_r, fn(springR, sprungR), ' Hz');
+    cmp('suspension', 'ARB Front', stock.arb_f.toLocaleString(), arbF.toLocaleString(), ' N/m');
+    cmp('suspension', 'ARB Rear', stock.arb_r.toLocaleString(), arbR.toLocaleString(), ' N/m');
+    cmp('unsprung', 'Hub Mass (F)', stock.hub_mass_f, Math.round(hubF*10)/10, ' kg');
+    cmp('steering', 'Steer Lock', stock.steer_lock+'°', Math.round(steerLock)+'°');
+    cmp('steering', 'Max Steering Angle', stock.max_angle+'°', maxAngle+'°');
+    cmp('brakes', 'Brake Torque', stock.brake_torque, brakeTorque, ' Nm');
+    cmp('brakes', 'Brake Bias', (stock.brake_bias*100).toFixed(0)+'% F', (brakeBias*100).toFixed(0)+'% F');
+    cmp('diff', 'Power Lock', (stock.diff_power*100).toFixed(0)+'%', (diffPower*100).toFixed(0)+'%');
+    cmp('diff', 'Coast Lock', (stock.diff_coast*100).toFixed(0)+'%', (diffCoast*100).toFixed(0)+'%');
+    cmp('diff', 'Preload', stock.diff_preload+' Nm', diffPreload+' Nm');
 
-    return {
+    // Generate setup.ini content
+    const setupIni = generateSetupIni();
+
+    S.result = {
+        changes, comparison, powerLutModified, rackLutModified, turboChanges, setupIni,
         summary: {
-            total_mass: totalMass, weight_dist_f: wdf,
-            sprung_f_corner: Math.round(sprungF*10)/10, sprung_r_corner: Math.round(sprungR*10)/10,
-            natural_freq_f: freqF, natural_freq_r: freqR,
-            hub_mass_f: Math.round(hubF*10)/10, hub_mass_r: Math.round(hubR*10)/10,
-            max_angle: maxAngle,
-            engine: engine.name,
-            parts: {
-                coilovers: (COILOVERS[parts.coilovers]||{}).name||'Stock',
-                angle_kit: (ANGLE_KITS[parts.angle_kit]||{}).name||'Stock',
-                wheels: (WHEEL_SETUPS[parts.wheels]||{}).name||'Stock',
-                brakes: (BRAKE_KITS[parts.brakes]||{}).name||'Stock',
-                diff: (DIFF_TYPES[parts.diff]||{}).name||'Stock',
-                tire_compound: compound.name,
-                engine_swap: engine.name,
-            },
+            total_mass: totalMass, wdf, estimated_hp: estimatedHP,
+            freq_f: fn(springF, sprungF), freq_r: fn(springR, sprungR),
+            max_angle: maxAngle, hub_f: Math.round(hubF*10)/10, hub_r: Math.round(hubR*10)/10,
+            coilovers: coilover, angle_kit: angleKit, brakes: brakeKit, diff, compound, engine, turbo,
+            drivetrain: sel.drivetrain || stock.drivetrain_type,
         },
-        changes, comparison,
     };
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// UI
-// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// SETUP.INI GENERATOR
+// ═══════════════════════════════════════════════════════════════
+function generateSetupIni() {
+    const st = S.stock;
+    const ft = S.suspTypes.front;
+    const rt = S.suspTypes.rear;
+    const isCosmic = ft.startsWith('COSMIC') || rt.startsWith('COSMIC');
+    
+    let ini = `[DISPLAY_METHOD]\nSHOW_CLICKS=1\n\n`;
+    
+    // Fuel
+    ini += `[FUEL]\nSHOW_CLICKS=0\nTAB=GENERIC\nNAME=Fuel\nMIN=0\nMAX=50\nSTEP=1\nPOS_X=0.5\nPOS_Y=0\nHELP=More fuel = heavier. Less fuel = lighter.\n\n`;
+    
+    // Brake controls
+    ini += `[BRAKE_POWER_MULT]\nSHOW_CLICKS=0\nTAB=DIFFERENTIAL\nNAME=(Brake Power)\nMIN=5\nMAX=100\nSTEP=5\nPOS_X=0.5\nPOS_Y=2.75\nHELP="Higher = stronger braking. Lower = smoother stops"\n\n`;
+    ini += `[FRONT_BIAS]\nSHOW_CLICKS=0\nTAB=DIFFERENTIAL\nNAME=(Brake Bias)\nMIN=20\nMAX=70\nSTEP=1\nPOS_X=0.5\nPOS_Y=3.75\nHELP="More Front = Stability | More Rear = Rotation"\n\n`;
+    ini += `[STEER_ASSIST]\nSHOW_CLICKS=0\nTAB=DIFFERENTIAL\nNAME=FFB (Less=Heavier)\nMIN=0\nMAX=150\nSTEP=5\nPOS_X=0.5\nPOS_Y=1\nHELP="(-) = Stronger Wheel | (+) = Lighter Wheel"\n\n`;
+
+    // Front setup
+    ini += `; ═══════════ FRONT SETUP ═══════════\n`;
+    
+    if (isCosmic) {
+        // COSMIC front — ride height via preload
+        ini += `[SPRING_PRELOAD_LF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=(Ride Height)\nMIN=-500\nMAX=100\nSTEP=10\nPOS_X=0.5\nPOS_Y=0\nHELP="(+) Higher | (-) Lower"\n\n`;
+        ini += `[SPRING_PRELOAD_RF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=(Ride Height)\nMIN=-500\nMAX=100\nSTEP=10\nPOS_X=0.5\nPOS_Y=0\nHELP="(+) Higher | (-) Lower"\n\n`;
+    }
+
+    // Front springs (LUT-based for adjustable coilovers)
+    ini += `[SPRING_RATE_LF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Spring Rate\nLUT=suspensions_springs_front_drift.lut\nPOS_X=1\nPOS_Y=1\nHELP="(+) Stiffer | (-) Softer"\n\n`;
+    ini += `[SPRING_RATE_RF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Spring Rate\nLUT=suspensions_springs_front_drift.lut\nPOS_X=1\nPOS_Y=1\nHELP="(+) Stiffer | (-) Softer"\n\n`;
+
+    // Front dampers
+    ini += `[DAMPER_BUMP_LF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Bump\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=3\nHELP="(+) Faster weight transfer | (-) Slower"\n\n`;
+    ini += `[DAMPER_BUMP_RF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Bump\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=3\nHELP="(+) Faster weight transfer | (-) Slower"\n\n`;
+    ini += `[DAMPER_REBOUND_LF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Rebound\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=5\nHELP="(+) Keeps nose down | (-) Nose rises faster"\n\n`;
+    ini += `[DAMPER_REBOUND_RF_C0]\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Rebound\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=5\nHELP="(+) Keeps nose down | (-) Nose rises faster"\n\n`;
+
+    // Front ARB
+    ini += `[ARB_F]\nEXTEND=1\nSHOW_CLICKS=0\nTAB=FRONT SETUP\nNAME=Anti-Roll Bar\nLUT=suspensions_stabilizer_front_drift.lut\nPOS_X=0.5\nPOS_Y=7\nHELP="Stiffer = More turn-in | Softer = More front grip"\nDISPLAY_VALUE_IN_BRACKETS=0\n\n`;
+
+    // Front alignment — depends on suspension type
+    if (isCosmic) {
+        // Camber adjustment
+        if (!isStrutFront(ft)) {
+            // DWB: camber via DJ offset
+            ini += `[DJ2_LENGTH_OFFSET_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=(Camber)\nMIN=-500\nMAX=1000\nSTEP=10\nPOS_X=0.5\nPOS_Y=1\nHELP="(-) = More grip | (+) = Less camber"\n\n`;
+            ini += `[DJ2_LENGTH_OFFSET_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=(Camber)\nMIN=-500\nMAX=1000\nSTEP=10\nPOS_X=0.5\nPOS_Y=1\nHELP="(-) = More grip | (+) = Less camber"\n\n`;
+        } else {
+            // Strut: camber via DJ3 (strut camber)
+            ini += `[DJ3_LENGTH_OFFSET_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Strut (Camber 0.1mm)\nMIN=-300\nMAX=300\nSTEP=10\nPOS_X=0\nPOS_Y=1\nHELP="Adjusts front camber"\n\n`;
+            ini += `[DJ3_LENGTH_OFFSET_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Strut (Camber 0.1mm)\nMIN=-300\nMAX=300\nSTEP=10\nPOS_X=1\nPOS_Y=1\nHELP="Adjusts front camber"\n\n`;
+        }
+        
+        // Toe
+        ini += `[STEER_JOINT_0_LENGTH_OFFSET_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Steer (Toe 0.1mm)\nMIN=-300\nMAX=300\nSTEP=1\nPOS_X=0\nPOS_Y=3\nHELP="(+) Toe Out | (-) Toe In"\n\n`;
+        ini += `[STEER_JOINT_0_LENGTH_OFFSET_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Steer (Toe 0.1mm)\nMIN=-300\nMAX=300\nSTEP=1\nPOS_X=1\nPOS_Y=3\nHELP="(+) Toe Out | (-) Toe In"\n\n`;
+
+        // Caster (strut types have DJ4)
+        if (isStrutFront(ft)) {
+            ini += `[DJ4_LENGTH_OFFSET_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Strut (Caster 0.1mm)\nMIN=0\nMAX=200\nSTEP=10\nPOS_X=0\nPOS_Y=4\nHELP="(+) More self-steer"\n\n`;
+            ini += `[DJ4_LENGTH_OFFSET_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Strut (Caster 0.1mm)\nMIN=0\nMAX=200\nSTEP=10\nPOS_X=1\nPOS_Y=4\nHELP="(+) More self-steer"\n\n`;
+        }
+    } else {
+        // Standard suspension — basic camber/toe
+        ini += `[CAMBER_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Camber\nMIN=-5\nMAX=0\nSTEP=0.1\nPOS_X=0\nPOS_Y=0\nHELP=HELP_LF_CAMBER\n\n`;
+        ini += `[CAMBER_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Camber\nMIN=-5\nMAX=0\nSTEP=0.1\nPOS_X=1\nPOS_Y=0\nHELP=HELP_RF_CAMBER\n\n`;
+        ini += `[TOE_OUT_LF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Toe\nMIN=-1\nMAX=1\nSTEP=0.05\nPOS_X=0\nPOS_Y=1\nHELP=HELP_LF_TOE\n\n`;
+        ini += `[TOE_OUT_RF]\nSHOW_CLICKS=0\nTAB=ALIGNMENT FRONT\nNAME=Toe\nMIN=-1\nMAX=1\nSTEP=0.05\nPOS_X=1\nPOS_Y=1\nHELP=HELP_RF_TOE\n\n`;
+    }
+
+    // Rear setup
+    ini += `; ═══════════ REAR SETUP ═══════════\n`;
+    
+    if (isCosmic) {
+        ini += `[SPRING_PRELOAD_LR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=(Ride Height)\nMIN=-500\nMAX=100\nSTEP=10\nPOS_X=0.5\nPOS_Y=0\nHELP="(+) Higher | (-) Lower"\n\n`;
+        ini += `[SPRING_PRELOAD_RR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=(Ride Height)\nMIN=-500\nMAX=100\nSTEP=10\nPOS_X=0.5\nPOS_Y=0\nHELP="(+) Higher | (-) Lower"\n\n`;
+    }
+
+    ini += `[SPRING_RATE_LR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Spring Rate\nLUT=suspensions_springs_rear_drift.lut\nPOS_X=1\nPOS_Y=1\nHELP="(+) Stiffer | (-) Softer"\n\n`;
+    ini += `[SPRING_RATE_RR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Spring Rate\nLUT=suspensions_springs_rear_drift.lut\nPOS_X=1\nPOS_Y=1\nHELP="(+) Stiffer | (-) Softer"\n\n`;
+
+    ini += `[DAMPER_BUMP_LR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Bump\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=3\nHELP="(+) Stiffer hit | (-) Smoother"\n\n`;
+    ini += `[DAMPER_BUMP_RR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Bump\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=3\nHELP="(+) Stiffer hit | (-) Smoother"\n\n`;
+    ini += `[DAMPER_REBOUND_LR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Rebound\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=5\nHELP="(+) Slower squat recovery | (-) Faster"\n\n`;
+    ini += `[DAMPER_REBOUND_RR_C0]\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Rebound\nMIN=0\nMAX=20\nSTEP=1\nDEFAULT=10\nPOS_X=1\nPOS_Y=5\nHELP="(+) Slower squat recovery | (-) Faster"\n\n`;
+
+    ini += `[ARB_R]\nEXTEND=1\nSHOW_CLICKS=0\nTAB=REAR SETUP\nNAME=Anti-Roll Bar\nLUT=suspensions_stabilizer_rear_drift.lut\nPOS_X=0.5\nPOS_Y=7\nHELP="Stiffer = Faster transition | Softer = More rear stability"\nDISPLAY_VALUE_IN_BRACKETS=0\n\n`;
+
+    // Rear alignment
+    if (isCosmic && !isAxleRear(rt)) {
+        // Multi-link / DWB rear: camber + toe adjustable
+        ini += `[STEER_JOINT_0_LENGTH_OFFSET_LR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=(Toe 0.1mm)\nMIN=-200\nMAX=200\nSTEP=1\nPOS_X=0.5\nPOS_Y=2\nHELP="(-) Stable | (+) Looser"\n\n`;
+        ini += `[STEER_JOINT_0_LENGTH_OFFSET_RR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=(Toe 0.1mm)\nMIN=-200\nMAX=200\nSTEP=1\nPOS_X=0.5\nPOS_Y=2\nHELP="(-) Stable | (+) Looser"\n\n`;
+    } else if (isCosmic && isAxleRear(rt)) {
+        // Solid axle: no camber/toe. Maybe panhard height
+    } else {
+        // Standard rear
+        ini += `[CAMBER_LR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=Camber\nMIN=-5\nMAX=0\nSTEP=0.1\nPOS_X=0\nPOS_Y=0\nHELP=HELP_LR_CAMBER\n\n`;
+        ini += `[CAMBER_RR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=Camber\nMIN=-5\nMAX=0\nSTEP=0.1\nPOS_X=1\nPOS_Y=0\nHELP=HELP_RR_CAMBER\n\n`;
+        ini += `[TOE_OUT_LR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=Toe\nMIN=-1\nMAX=1\nSTEP=0.05\nPOS_X=0\nPOS_Y=1\nHELP=HELP_LR_TOE\n\n`;
+        ini += `[TOE_OUT_RR]\nSHOW_CLICKS=0\nTAB=ALIGNMENT REAR\nNAME=Toe\nMIN=-1\nMAX=1\nSTEP=0.05\nPOS_X=1\nPOS_Y=1\nHELP=HELP_RR_TOE\n\n`;
+    }
+
+    // Diff setup
+    ini += `; ═══════════ DIFFERENTIAL ═══════════\n`;
+    ini += `[DIFF_RAMP_POWER]\nSHOW_CLICKS=0\nTAB=DIFFERENTIAL\nNAME=Diff Power\nLUT=drivetrain_diff_power.lut\nPOS_X=0.5\nPOS_Y=6\nHELP=HELP_DIFF_POWER\n\n`;
+    ini += `[DIFF_PRELOAD_EXT]\nSHOW_CLICKS=0\nTAB=DIFFERENTIAL\nNAME=Diff Preload\nLUT=drivetrain_diff_preload.lut\nPOS_X=0.5\nPOS_Y=7\nHELP=HELP_DIFF_PRELOAD\n\n`;
+
+    return ini;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI RENDERING
+// ═══════════════════════════════════════════════════════════════
 
 function goStep(n) {
-    state.step = n;
+    S.step = n;
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById('step'+n).classList.add('active');
-    document.querySelectorAll('.progress-dot').forEach(d => {
+    document.getElementById('step' + n).classList.add('active');
+    document.querySelectorAll('.progress-step').forEach(d => {
         const ds = +d.dataset.step;
-        d.className = 'progress-dot' + (ds<n?' done':ds===n?' current':'');
+        d.className = 'progress-step' + (ds < n ? ' done' : ds === n ? ' current' : '');
     });
-    window.scrollTo({top:0,behavior:'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Drop zone
+function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Drop zone ─────────────────────────────────
 const dz = document.getElementById('dropZone');
 const fileInput = document.getElementById('fileInput');
 const folderInput = document.getElementById('folderInput');
+
 dz.addEventListener('click', e => { if (e.shiftKey) folderInput.click(); else fileInput.click(); });
 dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
 dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
@@ -778,7 +1190,7 @@ folderInput.addEventListener('change', e => processFiles(Array.from(e.target.fil
 
 async function handleDrop(dt) {
     const items = dt.items;
-    if (items && items.length > 0 && items[0].webkitGetAsEntry) {
+    if (items?.length > 0 && items[0].webkitGetAsEntry) {
         const allFiles = [];
         const promises = [];
         for (const item of items) {
@@ -797,235 +1209,518 @@ function traverseEntry(entry, result) {
             entry.file(f => { f._path = entry.fullPath; result.push(f); resolve(); });
         } else if (entry.isDirectory) {
             const reader = entry.createReader();
-            reader.readEntries(async entries => {
-                for (const e of entries) await traverseEntry(e, result);
-                resolve();
-            });
+            const readAll = (entries = []) => {
+                reader.readEntries(async batch => {
+                    if (batch.length === 0) {
+                        for (const e of entries) await traverseEntry(e, result);
+                        resolve();
+                    } else {
+                        readAll([...entries, ...batch]);
+                    }
+                });
+            };
+            readAll();
         } else resolve();
     });
 }
 
 async function processFiles(files) {
-    const iniFiles = files.filter(f => {
+    const relevant = files.filter(f => {
         const n = (f._path || f.webkitRelativePath || f.name).toLowerCase();
         return n.endsWith('.ini') || n.endsWith('.lut');
     });
-    if (!iniFiles.length) {
-        setDropMsg('❌', 'No .ini files found!', 'Try again with different files');
-        setTimeout(() => setDropMsg('📁', "Drop your car's data folder here", 'Drag & drop a folder or individual .ini files'), 3000);
+    if (!relevant.length) {
+        setDropMsg('❌', 'No .ini or .lut files found', 'Make sure you drop the data/ folder');
+        setTimeout(() => setDropMsg('📁', "Drop your car's data/ folder here", 'Drag the entire data folder, or select individual files'), 3000);
         return;
     }
-    setDropMsg('⏳', `Reading ${iniFiles.length} files...`, 'Parsing physics data...');
+    setDropMsg('⏳', `Reading ${relevant.length} files...`, 'Parsing physics data...');
     dz.classList.add('loading');
 
-    state.rawFiles = {};
-    state.parsed = {};
-    for (const f of iniFiles) {
+    S.rawFiles = {};
+    S.parsed = {};
+    S.lutFiles = {};
+    for (const f of relevant) {
         const name = f.name.toLowerCase();
         const text = await f.text();
-        state.rawFiles[name] = text;
-        if (name.endsWith('.ini')) state.parsed[name] = parseIni(text);
+        S.rawFiles[name] = text;
+        if (name.endsWith('.ini')) S.parsed[name] = parseIni(text);
+        if (name.endsWith('.lut')) S.lutFiles[name] = text;
     }
 
-    if (!state.parsed['car.ini'] && !state.parsed['suspensions.ini']) {
+    // Also store lut filenames referenced in INIs that might have different casing
+    for (const f of relevant) {
+        const name = f.name;
+        const text = await f.text();
+        if (name.endsWith('.lut') && !S.lutFiles[name]) S.lutFiles[name] = text;
+    }
+
+    if (!S.parsed['car.ini'] && !S.parsed['suspensions.ini']) {
         setDropMsg('❌', 'No car.ini or suspensions.ini found', 'Make sure you upload from the data/ folder');
         dz.classList.remove('loading');
-        setTimeout(() => setDropMsg('📁', "Drop your car's data folder here", 'Drag & drop a folder or individual .ini files'), 3000);
+        setTimeout(() => setDropMsg('📁', "Drop your car's data/ folder here", 'Drag the entire data folder, or select individual files'), 3000);
         return;
     }
 
-    const detected = detectCar(state.parsed, state.rawFiles);
-    state.stock = detected.stock;
-    state.carInfo = detected;
-    state.detectedChassis = detected.chassis;
-
+    detectCar();
     dz.classList.remove('loading');
-    setDropMsg('🏎️', `✅ ${detected.name} — ${Object.keys(state.rawFiles).length} files loaded`, 'Proceeding to build selection...');
 
-    state.selectedParts = { coilovers:'stock', angle_kit:'stock', wheels:'stock', brakes:'stock', diff:'stock', tire_compound:'street', engine_swap:'stock' };
-    state.mode = null;
-    state.classKey = null;
+    const fileCount = Object.keys(S.rawFiles).length;
+    setDropMsg('✅', `${S.carInfo.name} — ${fileCount} files loaded`, 'Proceeding to configuration...');
 
-    setTimeout(() => { renderCarBanner(); goStep(2); }, 600);
+    // Reset selections
+    S.sel = { coilovers:'stock', angle_kit:'stock', brakes:'stock', diff:'stock', compound:'street', engine:'stock', turbo:'none', drivetrain: S.stock.drivetrain_type };
+    S.mode = null;
+    S.classKey = null;
+
+    setTimeout(() => { renderStep2(); goStep(2); }, 500);
 }
 
 function setDropMsg(icon, title, sub) {
-    dz.querySelector('.icon').textContent = icon;
-    dz.querySelector('.title').textContent = title;
-    dz.querySelector('.subtitle').textContent = sub;
+    dz.querySelector('.dz-icon').textContent = icon;
+    dz.querySelector('.dz-title').textContent = title;
+    dz.querySelector('.dz-sub').textContent = sub;
 }
 
-function renderCarBanner() {
-    const s = state.stock; const c = state.carInfo;
-    document.getElementById('carBanner').innerHTML = `
-        <div>
-            <div class="name">${c.name || c.model || 'Unknown Car'}</div>
-            <div class="detail">${c.make} ${c.model}${c.chassis ? ' · '+c.chassis.toUpperCase() : ''}${c.year ? ' · '+c.year : ''}</div>
-        </div>
-        <div class="stats">
-            <span class="stat">${s.total_mass} kg</span>
-            <span class="stat">${s.drivetrain_type}</span>
-            <span class="stat">${(s.weight_dist_f*100).toFixed(0)}/${(100-s.weight_dist_f*100).toFixed(0)} F/R</span>
-        </div>`;
-    // Reset mode display
-    document.getElementById('modeSelect').style.display = 'grid';
+// ── Step 2 rendering ──────────────────────────
+function renderStep2() {
+    renderCarBanner('carBanner');
+    renderDetectionCard();
     document.getElementById('quickBuild').style.display = 'none';
     document.getElementById('customBuild').style.display = 'none';
     document.getElementById('generateBtn').style.display = 'none';
-    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('modeSelect').style.display = 'grid';
+    
+    // Mode card click handlers
+    document.querySelectorAll('.mode-card').forEach(card => {
+        card.onclick = () => selectMode(card.dataset.mode);
+    });
+}
+
+function renderCarBanner(id) {
+    const s = S.stock;
+    const c = S.carInfo;
+    document.getElementById(id).innerHTML = `
+        <div>
+            <div class="cb-name">${c.name || c.model}</div>
+            <div class="cb-detail">${c.make} ${c.model}${c.chassis ? ' · ' + c.chassis.toUpperCase() : ''}${c.year ? ' · ' + c.year : ''}</div>
+        </div>
+        <div class="cb-stats">
+            <span class="cb-stat"><b>${s.total_mass}</b> kg</span>
+            <span class="cb-stat"><b>${s.drivetrain_type}</b></span>
+            <span class="cb-stat"><b>${(s.weight_dist_f*100).toFixed(0)}</b>/<b>${(100-s.weight_dist_f*100).toFixed(0)}</b> F/R</span>
+            ${s.peak_hp ? `<span class="cb-stat"><b>~${s.peak_hp}</b> hp</span>` : ''}
+        </div>`;
+}
+
+function renderDetectionCard() {
+    const s = S.stock;
+    const ft = S.suspTypes.front;
+    const rt = S.suspTypes.rear;
+    const fileCount = Object.keys(S.rawFiles).length;
+    const lutCount = Object.keys(S.lutFiles).length;
+    
+    document.getElementById('detectionCard').innerHTML = `
+        <div class="detect-card">
+            <h3>🔍 Detected Configuration</h3>
+            <div class="detect-grid">
+                <div class="detect-item"><div class="di-label">Front Suspension</div><div class="di-value highlight">${suspTypeName(ft)}</div></div>
+                <div class="detect-item"><div class="di-label">Rear Suspension</div><div class="di-value highlight">${suspTypeName(rt)}</div></div>
+                <div class="detect-item"><div class="di-label">Steer Lock / Ratio</div><div class="di-value">${s.steer_lock}° / ${s.steer_ratio}:1</div></div>
+                <div class="detect-item"><div class="di-label">LSRR</div><div class="di-value">${s.lsrr || 'N/A'}</div></div>
+                <div class="detect-item"><div class="di-label">Wheelbase</div><div class="di-value">${s.wheelbase}m</div></div>
+                <div class="detect-item"><div class="di-label">Spring (F / R)</div><div class="di-value">${Math.round(s.spring_rate_f/9.81)} / ${Math.round(s.spring_rate_r/9.81)} kg/mm</div></div>
+                <div class="detect-item"><div class="di-label">Hub Mass (F / R)</div><div class="di-value">${s.hub_mass_f} / ${s.hub_mass_r} kg</div></div>
+                <div class="detect-item"><div class="di-label">Turbo</div><div class="di-value">${S.hasExistingTurbo ? `Yes (${S.existingTurbo.max_boost} bar)` : 'No'}</div></div>
+                <div class="detect-item"><div class="di-label">Files Loaded</div><div class="di-value">${fileCount} ini · ${lutCount} lut</div></div>
+                ${isDWBFront(ft) ? '<div class="detect-item"><div class="di-label">Steer Ratio Change</div><div class="di-value highlight">✅ Available (DWB)</div></div>' : ''}
+                ${isAxleRear(rt) ? '<div class="detect-item"><div class="di-label">Rear Camber/Toe</div><div class="di-value" style="color:var(--red)">❌ Solid Axle</div></div>' : ''}
+            </div>
+        </div>`;
 }
 
 function selectMode(mode) {
-    state.mode = mode;
-    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
-    event.currentTarget.classList.add('selected');
+    S.mode = mode;
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.toggle('selected', c.dataset.mode === mode));
     document.getElementById('generateBtn').style.display = 'inline-flex';
 
     if (mode === 'quick') {
         document.getElementById('quickBuild').style.display = 'block';
         document.getElementById('customBuild').style.display = 'none';
-        renderClassGrid();
+        renderQuickBuild();
     } else {
         document.getElementById('quickBuild').style.display = 'none';
         document.getElementById('customBuild').style.display = 'block';
-        renderCustomParts();
+        renderCustomBuild();
     }
 }
 
-function renderClassGrid() {
-    const grid = document.getElementById('classGrid');
-    grid.innerHTML = '';
-    for (const [key, cls] of Object.entries(CLASS_PRESETS)) {
-        const div = document.createElement('div');
-        div.className = 'class-card' + (state.classKey === key ? ' selected' : '');
-        div.innerHTML = `<div class="class-name">${cls.label}</div><div class="class-hp">${cls.hp}</div><div class="class-desc">${cls.desc}</div>`;
-        div.onclick = () => {
-            state.classKey = key;
-            // Map class preset to parts selection
-            state.selectedParts = {
-                coilovers: cls.coilovers, angle_kit: cls.angle_kit, wheels: cls.wheels,
-                brakes: cls.brakes, diff: cls.diff, tire_compound: cls.tire_compound, engine_swap: cls.engine_swap,
-            };
-            renderClassGrid();
-        };
-        grid.appendChild(div);
+function renderQuickBuild() {
+    let html = '<h2 style="color:var(--cyan);margin-bottom:16px;font-size:1.1em">Select Build Class</h2>';
+    html += '<div class="class-grid">';
+    for (const cls of CLASS_PRESETS) {
+        const sel = S.classKey === cls.id;
+        html += `<div class="class-card${sel ? ' selected' : ''}" onclick="selectClass('${cls.id}')">
+            <div class="cc-icon">${cls.icon}</div>
+            <div class="cc-name">${cls.label}</div>
+            <div class="cc-hp">${cls.hp}</div>
+            <div class="cc-desc">${cls.desc}</div>
+        </div>`;
     }
+    html += '</div>';
+    document.getElementById('quickBuild').innerHTML = html;
 }
 
-function renderCustomParts() {
-    const grid = document.getElementById('partsGrid');
-    grid.innerHTML = '';
-    const chassis = state.detectedChassis;
-
-    const groups = [
-        { key:'coilovers', title:'🔧 Coilovers', data:COILOVERS, pk:'coilovers',
-            spec: c => c.spring_rate_f_nm ? `${Math.round(c.spring_rate_f_nm/9810)}/${Math.round(c.spring_rate_r_nm/9810)} kg/mm` : 'Stock rates' },
-        { key:'angle_kits', title:'🔄 Angle Kit', data:ANGLE_KITS, pk:'angle_kit',
-            spec: c => c.max_angle_deg > 0 ? `${c.max_angle_deg}° max` : 'Stock angle' },
-        { key:'engine_swaps', title:'🔥 Engine Swap', data:ENGINE_SWAPS, pk:'engine_swap',
-            spec: c => c.weight_kg ? `${c.weight_kg}kg, ×${c.power_mult} power` : 'No change' },
-        { key:'wheels', title:'🛞 Wheels & Tires', data:WHEEL_SETUPS, pk:'wheels',
-            spec: c => c.rim_dia ? `${c.rim_dia}×${c.rim_width} ET${c.offset_mm}` : 'Stock' },
-        { key:'brakes', title:'🛑 Brakes', data:BRAKE_KITS, pk:'brakes',
-            spec: c => c.torque_mult ? `+${Math.round((c.torque_mult-1)*100)}% torque` : 'Stock' },
-        { key:'diffs', title:'⚙️ Differential', data:DIFF_TYPES, pk:'diff',
-            spec: c => c.diff_power !== undefined ? `${Math.round(c.diff_power*100)}% lock` : 'Stock' },
-        { key:'compounds', title:'🏁 Tire Compound', data:TIRE_COMPOUNDS, pk:'tire_compound',
-            spec: c => `Grip: ${c.grip_mult.toFixed(2)}` },
-    ];
-
-    for (const g of groups) {
-        const div = document.createElement('div');
-        div.className = 'part-group';
-        div.innerHTML = `<h3>${g.title}</h3>`;
-        for (const [id, part] of Object.entries(g.data)) {
-            const compat = isCompatible(part, chassis);
-            const sel = state.selectedParts[g.pk] === id;
-            const opt = document.createElement('div');
-            opt.className = 'part-option' + (sel ? ' selected' : '') + (!compat ? ' disabled' : '');
-            opt.innerHTML = `<div class="part-name">${part.name}</div>
-                <div class="part-desc">${part.description||''}</div>
-                <div class="part-spec">${g.spec(part)}</div>`;
-            if (compat) opt.onclick = () => { state.selectedParts[g.pk] = id; renderCustomParts(); };
-            div.appendChild(opt);
-        }
-        grid.appendChild(div);
+function selectClass(id) {
+    S.classKey = id;
+    const cls = CLASS_PRESETS.find(c => c.id === id);
+    if (cls) {
+        S.sel.coilovers = cls.coilovers;
+        S.sel.angle_kit = cls.angle_kit;
+        S.sel.brakes = cls.brakes;
+        S.sel.diff = cls.diff;
+        S.sel.compound = cls.compound;
+        S.sel.engine = cls.engine;
+        S.sel.turbo = cls.turbo;
     }
+    renderQuickBuild();
 }
 
+function renderCustomBuild() {
+    const chassis = S.detectedChassis;
+    let html = '';
+
+    // Drivetrain selector
+    html += `<div class="section-hdr"><h2>⚙️ Drivetrain Layout</h2></div>`;
+    html += `<div class="dt-selector">`;
+    for (const dt of ['FWD', 'RWD', 'AWD']) {
+        const sel = (S.sel.drivetrain || S.stock.drivetrain_type) === dt;
+        const isStock = dt === S.stock.drivetrain_type;
+        const note = isStock ? 'Current' : (dt === 'RWD' ? '+30kg, CoG shift' : dt === 'AWD' ? '+50kg, DCCD system' : 'Layout change');
+        html += `<div class="dt-card${sel ? ' selected' : ''}" onclick="selectDrivetrain('${dt}')">
+            <div class="dtc-icon">${dt === 'FWD' ? '🔧' : dt === 'RWD' ? '🏎️' : '🦾'}</div>
+            <div class="dtc-name">${dt}</div>
+            <div class="dtc-note">${note}</div>
+        </div>`;
+    }
+    html += '</div>';
+
+    // Engine swap
+    html += renderPartGroup('🔥 Engine Swap', ENGINE_SWAPS, 'engine', chassis, e => 
+        e.id === 'stock' ? 'Keep original' : `${e.weight_kg}kg · ${e.hp}hp stock`
+    );
+
+    // Turbo
+    html += `<div class="section-hdr"><h2>🌀 Turbo</h2>${S.hasExistingTurbo ? '<span class="sh-badge">Car has existing turbo</span>' : ''}</div>`;
+    html += `<div class="turbo-grid">`;
+    for (const t of TURBO_SIZES) {
+        const sel = S.sel.turbo === t.id;
+        html += `<div class="turbo-card${sel ? ' selected' : ''}" onclick="selectPart('turbo','${t.id}');renderCustomBuild()">
+            <div class="tc-icon">${t.icon}</div>
+            <div class="tc-name">${t.name}</div>
+            <div class="tc-spec">${t.spec}</div>
+            <div class="tc-desc">${t.desc}</div>
+        </div>`;
+    }
+    html += '</div>';
+
+    // Coilovers
+    html += '<div class="parts-section"><div class="section-hdr"><h2>🔧 Suspension & Handling</h2></div><div class="parts-grid">';
+    html += renderPartGroupInner('Coilovers', COILOVERS, 'coilovers', chassis, c => 
+        c.spring_f > 0 ? `${Math.round(c.spring_f/9810)}/${Math.round(c.spring_r/9810)} kg/mm · ${c.quality}` : 'Stock rates'
+    );
+    html += renderPartGroupInner('Angle Kit', ANGLE_KITS, 'angle_kit', chassis, a => 
+        a.angle > 0 ? `${a.angle}° max · +${a.hub_add}kg hub` : 'Stock angle'
+    );
+    html += '</div></div>';
+
+    // Brakes + Diff
+    html += '<div class="parts-section"><div class="section-hdr"><h2>🛑 Brakes & Differential</h2></div><div class="parts-grid">';
+    html += renderPartGroupInner('Brakes', BRAKE_KITS, 'brakes', chassis, b => 
+        b.torque_mult > 1 ? `+${Math.round((b.torque_mult-1)*100)}% torque · +${b.mass_add}kg` : 'Stock'
+    );
+    html += renderPartGroupInner('Differential', DIFFS, 'diff', chassis, d => 
+        d.power !== null ? `${Math.round(d.power*100)}% power · ${Math.round(d.coast*100)}% coast` : 'Stock'
+    );
+    html += '</div></div>';
+
+    // Tire compound
+    html += '<div class="parts-section"><div class="section-hdr"><h2>🏁 Tire Compound</h2></div><div class="parts-grid">';
+    html += renderPartGroupInner('Compound', COMPOUNDS, 'compound', chassis, c => `Grip: ${c.grip.toFixed(2)}x`);
+    html += '</div></div>';
+
+    document.getElementById('customBuild').innerHTML = html;
+}
+
+function renderPartGroup(title, items, selKey, chassis, specFn) {
+    return `<div class="section-hdr"><h2>${title}</h2></div>` + 
+        `<div class="parts-grid">${renderPartGroupInner(title, items, selKey, chassis, specFn)}</div>`;
+}
+
+function renderPartGroupInner(title, items, selKey, chassis, specFn) {
+    let html = `<div class="part-group"><h3>${title}</h3>`;
+    for (const item of items) {
+        const compat = isCompat(item.compatible, chassis);
+        const sel = S.sel[selKey] === item.id;
+        html += `<div class="part-option${sel ? ' selected' : ''}${!compat ? ' disabled' : ''}" 
+            onclick="selectPart('${selKey}','${item.id}');renderCustomBuild()">
+            <div class="po-brand">${item.brand || ''}</div>
+            <div class="po-name">${item.name}</div>
+            <div class="po-desc">${item.desc || ''}</div>
+            <div class="po-spec">${specFn(item)}</div>
+        </div>`;
+    }
+    html += '</div>';
+    return html;
+}
+
+function selectPart(key, val) { S.sel[key] = val; }
+function selectDrivetrain(dt) { S.sel.drivetrain = dt; renderCustomBuild(); }
+
+// ── Generate ──────────────────────────────────
 function generatePhysics() {
-    if (state.mode === 'quick' && !state.classKey) { alert('Please select a class first!'); return; }
-    state.result = calculatePhysics(state.stock, state.selectedParts);
+    if (S.mode === 'quick' && !S.classKey) { toast('Please select a class first!'); return; }
+    calculatePhysics();
     renderResults();
     goStep(3);
 }
 
+// ── Step 3 rendering ──────────────────────────
 function renderResults() {
-    const r = state.result; const sm = r.summary; const c = state.carInfo;
-    const partsList = Object.values(sm.parts).filter(v => v !== 'Stock Suspension' && v !== 'Stock Steering' && v !== 'Stock Wheels & Tires' && v !== 'Stock Brakes' && v !== 'Stock Differential' && v !== 'Stock Engine' && v !== 'All-Season / Street');
+    const r = S.result;
+    const sm = r.summary;
+    const c = S.carInfo;
+
+    // Banner
+    const partNames = [sm.coilovers, sm.angle_kit, sm.brakes, sm.diff, sm.engine, sm.turbo]
+        .filter(p => p && p.id !== 'stock' && p.id !== 'none')
+        .map(p => `${p.brand} ${p.name}`);
     document.getElementById('resultBanner').innerHTML = `
         <div>
-            <div class="name">${c.name || c.model}${sm.engine !== 'Stock Engine' ? ' — '+sm.engine+' Swap' : ''}</div>
-            <div class="detail">${partsList.join(' · ') || 'Stock configuration'}</div>
+            <div class="cb-name">${c.name}${sm.engine.id !== 'stock' ? ' — ' + sm.engine.name + ' Swap' : ''}</div>
+            <div class="cb-detail">${partNames.join(' · ') || 'Stock configuration'}</div>
+        </div>
+        <div class="cb-stats">
+            <span class="cb-stat"><b>${sm.total_mass}</b> kg</span>
+            <span class="cb-stat"><b>${sm.drivetrain}</b></span>
+            <span class="cb-stat"><b>~${sm.estimated_hp || '?'}</b> hp</span>
         </div>`;
 
-    document.getElementById('summaryGrid').innerHTML = [
-        ['Mass', sm.total_mass, 'kg'],
-        ['Wt Dist', `${(sm.weight_dist_f*100).toFixed(1)}/${(100-sm.weight_dist_f*100).toFixed(1)}`, 'F/R'],
-        ['Nat Freq F', sm.natural_freq_f, 'Hz'],
-        ['Nat Freq R', sm.natural_freq_r, 'Hz'],
-        ['Max Angle', sm.max_angle, '°'],
-        ['Hub F', sm.hub_mass_f, 'kg'],
-        ['Hub R', sm.hub_mass_r, 'kg'],
-    ].map(([l,v,u]) => `<div class="summary-card"><div class="label">${l}</div><div class="value">${v} <span class="unit">${u}</span></div></div>`).join('');
+    // Summary cards
+    const delta = (nv, ov) => {
+        if (typeof nv !== 'number' || typeof ov !== 'number') return '';
+        const d = nv - ov;
+        if (Math.abs(d) < 0.01) return '<div class="sc-delta neutral">—</div>';
+        return `<div class="sc-delta ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : ''}${d.toFixed(1)}</div>`;
+    };
+    const cards = [
+        ['Mass', sm.total_mass, 'kg', delta(sm.total_mass, S.stock.total_mass)],
+        ['Wt Dist', `${(sm.wdf*100).toFixed(1)}/${(100-sm.wdf*100).toFixed(1)}`, 'F/R', ''],
+        ['Est. HP', sm.estimated_hp || '?', 'hp', ''],
+        ['Freq F', sm.freq_f, 'Hz', delta(sm.freq_f, S.stock.freq_f)],
+        ['Freq R', sm.freq_r, 'Hz', delta(sm.freq_r, S.stock.freq_r)],
+        ['Max Angle', sm.max_angle, '°', delta(sm.max_angle, S.stock.max_angle)],
+        ['Hub F', sm.hub_f, 'kg', delta(sm.hub_f, S.stock.hub_mass_f)],
+    ];
+    document.getElementById('summaryGrid').innerHTML = cards.map(([l, v, u, d]) =>
+        `<div class="summary-card"><div class="sc-label">${l}</div><div class="sc-value">${v} <span class="sc-unit">${u}</span></div>${d}</div>`
+    ).join('');
 
-    const cats = {chassis:'Chassis',suspension:'Suspension',unsprung:'Unsprung Mass',steering:'Steering',tires:'Tires & Wheels',brakes:'Brakes',diff:'Differential'};
+    // Files list
+    const modifiedFiles = Object.keys(r.changes);
+    const addedFiles = [];
+    if (r.powerLutModified) addedFiles.push('power.lut (scaled)');
+    if (r.rackLutModified) addedFiles.push(S.stock.rack_lut_name + ' (scaled)');
+    if (r.setupIni) addedFiles.push('setup.ini (generated)');
+
+    let filesHtml = '<div class="files-list"><h3>📦 Output Files</h3>';
+    for (const f of modifiedFiles) {
+        filesHtml += `<div class="file-item"><span class="fi-icon">📝</span><span class="fi-name">${f}</span><span class="fi-status modified">Modified</span></div>`;
+    }
+    for (const f of addedFiles) {
+        filesHtml += `<div class="file-item"><span class="fi-icon">➕</span><span class="fi-name">${f}</span><span class="fi-status added">Generated</span></div>`;
+    }
+    // Unmodified files
+    for (const f of Object.keys(S.rawFiles)) {
+        if (!modifiedFiles.includes(f) && !f.endsWith('.lut')) {
+            filesHtml += `<div class="file-item"><span class="fi-icon">📄</span><span class="fi-name">${f}</span><span class="fi-status copied">Copied</span></div>`;
+        }
+    }
+    filesHtml += '</div>';
+    document.getElementById('filesList').innerHTML = filesHtml;
+
+    // Comparison tables
+    const cats = {
+        chassis: 'Chassis', engine: 'Engine', suspension: 'Suspension',
+        unsprung: 'Unsprung Mass', steering: 'Steering', brakes: 'Brakes', diff: 'Differential'
+    };
     const tables = document.getElementById('comparisonTables');
     tables.innerHTML = '';
     for (const [ck, cn] of Object.entries(cats)) {
         const items = r.comparison.filter(c => c.category === ck);
         if (!items.length) continue;
-        const sec = document.createElement('div');
-        sec.className = 'comp-section';
-        let h = `<h3>${cn}</h3><table><tr><th>Parameter</th><th>Stock</th><th>Modified</th></tr>`;
+        let h = `<div class="comp-section"><h3>${cn}</h3><table><tr><th>Parameter</th><th>Stock</th><th>Modified</th></tr>`;
         for (const it of items) {
             const ch = it.stock !== it.modified;
-            h += `<tr><td>${it.param}</td><td class="stock">${it.stock}</td><td class="${ch?'changed':'stock'}">${it.modified}</td></tr>`;
+            h += `<tr><td>${it.param}</td><td class="stock">${it.stock}</td><td class="${ch ? 'changed' : 'stock'}">${it.modified}</td></tr>`;
         }
-        sec.innerHTML = h + '</table>';
-        tables.appendChild(sec);
+        tables.innerHTML += h + '</table></div>';
     }
 }
 
+// ── Download ──────────────────────────────────
 async function downloadZip() {
-    const r = state.result;
+    const r = S.result;
     const zip = new JSZip();
     const dataFolder = zip.folder('data');
 
     // Apply changes to raw files
-    for (const [fname, content] of Object.entries(state.rawFiles)) {
+    for (const [fname, content] of Object.entries(S.rawFiles)) {
         let modified = content;
         if (r.changes[fname]) {
-            modified = applyChanges(content, r.changes[fname]);
+            modified = applyIniChanges(content, r.changes[fname]);
         }
         dataFolder.file(fname, modified);
     }
 
+    // LUT files — copy all, but replace modified ones
+    for (const [fname, content] of Object.entries(S.lutFiles)) {
+        if (!S.rawFiles[fname]) { // Don't double-add
+            dataFolder.file(fname, content);
+        }
+    }
+
+    // Modified power.lut
+    if (r.powerLutModified) {
+        const powerCurveName = getVal(S.parsed['engine.ini'] || {}, 'HEADER', 'POWER_CURVE', 'power.lut');
+        dataFolder.file(powerCurveName, lutToString(r.powerLutModified));
+    }
+
+    // Modified rack travel LUT
+    if (r.rackLutModified && S.stock.rack_lut_name) {
+        dataFolder.file(S.stock.rack_lut_name, lutToString(r.rackLutModified));
+    }
+
+    // Turbo section — if adding new turbo to engine.ini that didn't have one
+    if (r.turboChanges && !S.hasExistingTurbo && S.rawFiles['engine.ini']) {
+        let engContent = S.rawFiles['engine.ini'];
+        if (r.changes['engine.ini']) {
+            engContent = applyIniChanges(engContent, r.changes['engine.ini']);
+        }
+        // Append TURBO_0 section if not present
+        if (!/\[TURBO_0\]/i.test(engContent)) {
+            engContent += `\n\n[TURBO_0]\nMAX_BOOST=${r.turboChanges.MAX_BOOST}\nWASTEGATE=${r.turboChanges.WASTEGATE}\nLAG_UP=${r.turboChanges.LAG_UP}\nLAG_DN=${r.turboChanges.LAG_DN}\nREFERENCE=${r.turboChanges.REFERENCE}\nGAMMA=${r.turboChanges.GAMMA}\n`;
+        }
+        dataFolder.file('engine.ini', engContent);
+    }
+
+    // Generated setup.ini
+    if (r.setupIni) {
+        dataFolder.file('setup.ini', r.setupIni);
+    }
+
+    // Include spring/ARB/damper LUT files from reference
+    const springLutF = `AE86 Stock (3kg/mm) | 29430\nS13 Stock (4kg/mm) | 39240\nS14 Stock (5kg/mm) | 49050\nFD3S Stock (6kg/mm) | 58860\nChallenger Stock (350 lbs/in) | 45141\nCorvette Stock (400 lbs/in) | 51571\nCamaro Stock (450 lbs/in) | 58860\nMustang Stock (500 lbs/in) | 64431\nAE86 Drift (7kg/mm) | 68670\nCamaro Drift (550 lbs/in) | 70862\nMustang Drift (600 lbs/in) | 78480\nE46 Drift (8kg/mm) | 78480\nS Chassis Drift (9kg/mm) | 88290\nFD3S Drift (10kg/mm) | 98100\nCamaro Drift (700 lbs/in) | 90192\nCorvette Drift (12kg/mm) | 117720\nCorvette Track (14kg/mm) | 137340`;
+    const springLutR = `AE86 Stock (2kg/mm) | 19620\nS13 Stock (3kg/mm) | 29430\nS14 Stock (4kg/mm) | 39240\nFD3S Stock (5kg/mm) | 49050\nChallenger Stock (300 lbs/in) | 38711\nCorvette Stock (350 lbs/in) | 45141\nCamaro Stock (400 lbs/in) | 51571\nMustang Stock (450 lbs/in) | 58860\nAE86 Drift (6kg/mm) | 58860\nCamaro Drift (500 lbs/in) | 64431\nE46 Drift (7kg/mm) | 68670\nMustang Drift (550 lbs/in) | 70862\nS Chassis Drift (8kg/mm) | 78480\nFD3S Drift (9kg/mm) | 88290\nCorvette Drift (10kg/mm) | 98100\nCorvette Track (12kg/mm) | 117720`;
+    const arbLutF = `None | 0\n0.500 in | 0\nAE86 Stock (0.625 in) | 18750\nS13 Stock | 16812\nS14 Stock (0.750 in) | 37500\nFD3S Stock | 43693\nE36 Stock (0.875 in) | 56250\nMustang Stock (1.000 in) | 75000\nCamaro Stock (1.125 in) | 93750\nCorvette Stock (1.250 in) | 112500`;
+    const arbLutR = `None | 0\n0.500 in | 8404\nAE86 Stock (0.625 in) | 18750\nS13 Stock (0.750 in) | 37500\nS14 Stock (0.875 in) | 56250\nFD3S Stock (1.000 in) | 75000\nE36 Stock (1.125 in) | 93750\nMustang Stock (1.250 in) | 112500\nCamaro Stock (1.375 in) | 131250\nCorvette Stock (1.500 in) | 150000`;
+
+    // Only include LUT files if they're not already in the data
+    if (!S.lutFiles['suspensions_springs_front_drift.lut']) dataFolder.file('suspensions_springs_front_drift.lut', springLutF);
+    if (!S.lutFiles['suspensions_springs_rear_drift.lut']) dataFolder.file('suspensions_springs_rear_drift.lut', springLutR);
+    if (!S.lutFiles['suspensions_stabilizer_front_drift.lut']) dataFolder.file('suspensions_stabilizer_front_drift.lut', arbLutF);
+    if (!S.lutFiles['suspensions_stabilizer_rear_drift.lut']) dataFolder.file('suspensions_stabilizer_rear_drift.lut', arbLutR);
+
+    // AWD files if drivetrain changed to AWD
+    if (S.sel.drivetrain === 'AWD' && S.stock.drivetrain_type !== 'AWD') {
+        // Include DCCD lua scripts
+        dataFolder.file('script.lua', DCCD_SCRIPT);
+        dataFolder.file('script_dccd.lua', DCCD_MODULE);
+        dataFolder.file('ctrl_centre_diff.ini', DCCD_CENTRE_INI);
+        dataFolder.file('ctrl_front_diff.ini', DCCD_FRONT_INI);
+    }
+
     // README
-    const carName = state.stock.screen_name || 'Unknown';
-    let readme = `RealiSimHQ Physics Modifications\n================================\nCar: ${carName}\nMass: ${r.summary.total_mass} kg\n\nSelected Parts:\n`;
-    for (const [k,v] of Object.entries(r.summary.parts)) readme += `  ${k}: ${v}\n`;
-    readme += `\nPhysics Summary:\n  Natural Freq: ${r.summary.natural_freq_f} / ${r.summary.natural_freq_r} Hz\n  Max Angle: ${r.summary.max_angle}°\n\nInstructions:\n  1. Back up your original data/ folder first!\n  2. Extract this zip into your AC car's folder\n  3. When prompted, choose OVERWRITE to replace existing files\n  4. The data/ folder contents will replace the car's physics files\n`;
+    const carName = S.stock.screen_name || 'Unknown';
+    let readme = `RealiSimHQ Physics Tool — Modification Output\n${'═'.repeat(50)}\n\n`;
+    readme += `Car: ${carName}\n`;
+    readme += `Generated: ${new Date().toISOString().split('T')[0]}\n\n`;
+    readme += `Parts Installed:\n`;
+    const sm = r.summary;
+    if (sm.coilovers.id !== 'stock') readme += `  Coilovers: ${sm.coilovers.brand} ${sm.coilovers.name}\n`;
+    if (sm.angle_kit.id !== 'stock') readme += `  Angle Kit: ${sm.angle_kit.brand} ${sm.angle_kit.name}\n`;
+    if (sm.brakes.id !== 'stock') readme += `  Brakes: ${sm.brakes.brand} ${sm.brakes.name}\n`;
+    if (sm.diff.id !== 'stock') readme += `  Differential: ${sm.diff.brand} ${sm.diff.name}\n`;
+    if (sm.engine.id !== 'stock') readme += `  Engine: ${sm.engine.brand} ${sm.engine.name}\n`;
+    if (sm.turbo.id !== 'none') readme += `  Turbo: ${sm.turbo.name} (${sm.turbo.max_boost} bar)\n`;
+    readme += `  Tire Compound: ${sm.compound.name}\n`;
+    readme += `  Drivetrain: ${sm.drivetrain}\n`;
+    readme += `\nPhysics Summary:\n`;
+    readme += `  Total Mass: ${sm.total_mass} kg\n`;
+    readme += `  Weight Dist: ${(sm.wdf*100).toFixed(1)}% front\n`;
+    readme += `  Natural Freq: ${sm.freq_f} / ${sm.freq_r} Hz (F/R)\n`;
+    readme += `  Max Steering Angle: ${sm.max_angle}°\n`;
+    readme += `  Estimated HP: ~${sm.estimated_hp || '?'}\n`;
+    readme += `\n${'─'.repeat(50)}\nInstallation Instructions:\n`;
+    readme += `  1. BACK UP your original data/ folder first!\n`;
+    readme += `  2. Extract the data/ folder from this zip\n`;
+    readme += `  3. Copy into: assettocorsa/content/cars/YOUR_CAR/\n`;
+    readme += `  4. Choose OVERWRITE when prompted\n`;
+    readme += `  5. The modified physics files will replace the originals\n`;
+    readme += `\n⚠️  Always keep a backup of your original files!\n`;
+    readme += `\nGenerated by RealiSimHQ Physics Tool v4.0\n`;
     zip.file('README.txt', readme);
 
-    const blob = await zip.generateAsync({type:'blob'});
+    const blob = await zip.generateAsync({ type: 'blob' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `RealiSimHQ_${carName.replace(/[^a-zA-Z0-9]/g,'_')}_physics.zip`;
+    a.download = `RealiSimHQ_${carName.replace(/[^a-zA-Z0-9]/g, '_')}_physics.zip`;
     a.click();
     URL.revokeObjectURL(url);
+    toast('📦 Download started!');
 }
+
+// ── AWD / DCCD script content ─────────────────
+const DCCD_SCRIPT = `-- Main modular script loader
+local function safe_require(name)
+    local ok, mod = pcall(require, name)
+    if not ok then ac.log("Module not found: " .. name) return nil end
+    return mod
+end
+local dccd = safe_require("script_dccd")
+function script.update(dt)
+    if type(dccd) == "table" and dccd.rundccd then dccd.rundccd(dt) end
+end`;
+
+const DCCD_MODULE = `-- script_dccd.lua — DCCD controller
+if car.isAIControlled then return nil end
+local counter = 0
+local prev_extraB = car.extraB
+local prev_extraC = car.extraC
+local dccd_ratio = 0.0
+local function updateDCCDLock()
+    dccd_ratio = counter / 5.0
+    car:setGripExtra(0, dccd_ratio)
+end
+local function rundccd(dt)
+    if car.extraC ~= prev_extraC then
+        counter = counter + 1
+        prev_extraC = car.extraC
+        updateDCCDLock()
+    end
+    if car.extraB ~= prev_extraB then
+        counter = counter - 1
+        prev_extraB = car.extraB
+        updateDCCDLock()
+    end
+    counter = math.max(0, math.min(5, counter))
+end
+return { rundccd = rundccd }`;
+
+const DCCD_CENTRE_INI = `[CONTROLLER_0]\nINPUT=GRIP_EXTRA_0\nLUT=(|0=0|1=13|2=20|3=50|4=80|5=99|)\nFILTER=0.95\nUP_LIMIT=100\nDOWN_LIMIT=0`;
+const DCCD_FRONT_INI = `[CONTROLLER_0]\nINPUT=GRIP_EXTRA_0\nLUT=(|0=13|1=13|2=13|3=13|4=19|5=25|)\nFILTER=0.95\nUP_LIMIT=100\nDOWN_LIMIT=0`;
+
 </script>
 </body>
 </html>
