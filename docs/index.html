@@ -305,12 +305,10 @@ const COILOVERS = {
 const ANGLE_KITS = {
     stock: { name:"Stock Steering", brand:"OEM", max_angle_deg:0, description:"Factory steering geometry",
         hub_mass_add_kg:0, compatible:["all"] },
-    wisefab_lock: { name:"Wisefab Lock Kit", brand:"Wisefab", max_angle_deg:65,
-        description:"Full kit — new knuckles, extended LCA, tie rods", hub_mass_add_kg:2.5,
-        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.jza80] },
-    wisefab_fd: { name:"Wisefab FD Kit", brand:"Wisefab", max_angle_deg:60,
-        description:"Full front knuckle replacement", hub_mass_add_kg:3.0,
-        compatible:[...PLATFORM.fd3s] },
+    wisefab: { name:"Wisefab Lock Kit", brand:"Wisefab", max_angle_deg:70,
+        description:"Full kit — new knuckles, extended LCA, tie rods. 70° max angle.",
+        ackermann_pct:30, hub_mass_add_kg:2.5,
+        compatible:[...PLATFORM.s_chassis,...PLATFORM.e46,...PLATFORM.z33,...PLATFORM.skyline_r,...PLATFORM.jza80,...PLATFORM.fd3s] },
     megan_angle: { name:"Megan Racing Angle Kit", brand:"Megan Racing", max_angle_deg:50,
         description:"Tie rod + lower arm spacer kit", hub_mass_add_kg:1.0,
         compatible:[...PLATFORM.s_chassis,...PLATFORM.z33,...PLATFORM.ae86] },
@@ -447,9 +445,9 @@ const CLASS_PRESETS = {
     grassroots: { label:"Grassroots", hp:"180-350hp", desc:"Budget build, weekend warrior",
         coilovers:"bc_br",angle_kit:"megan_angle",wheels:"17x9_215",brakes:"z32_swap",diff:"cusco_rs",tire_compound:"200tw",engine_swap:"stock" },
     street: { label:"Street", hp:"240-500hp", desc:"Serious street build",
-        coilovers:"ohlins_rt",angle_kit:"wisefab_lock",wheels:"17x9_235",brakes:"wilwood_dynapro",diff:"kaaz_15",tire_compound:"semi_slick",engine_swap:"stock" },
+        coilovers:"ohlins_rt",angle_kit:"wisefab",wheels:"17x9_235",brakes:"wilwood_dynapro",diff:"kaaz_15",tire_compound:"semi_slick",engine_swap:"stock" },
     pro: { label:"Pro", hp:"500-800hp", desc:"Formula Drift / Pro-Am spec",
-        coilovers:"mca_blue",angle_kit:"wisefab_lock",wheels:"18x10_265",brakes:"ap_5200",diff:"kaaz_2way",tire_compound:"slick",engine_swap:"stock" },
+        coilovers:"mca_blue",angle_kit:"wisefab",wheels:"18x10_265",brakes:"ap_5200",diff:"kaaz_2way",tire_compound:"slick",engine_swap:"stock" },
     race: { label:"Race", hp:"300-600hp", desc:"Time attack / endurance",
         coilovers:"bc_zr",angle_kit:"stock",wheels:"18x95_255",brakes:"brembo_gt",diff:"os_giken",tire_compound:"slick",engine_swap:"stock" },
 };
@@ -1017,7 +1015,7 @@ async function downloadZip() {
     const carName = state.stock.screen_name || 'Unknown';
     let readme = `RealiSimHQ Physics Modifications\n================================\nCar: ${carName}\nMass: ${r.summary.total_mass} kg\n\nSelected Parts:\n`;
     for (const [k,v] of Object.entries(r.summary.parts)) readme += `  ${k}: ${v}\n`;
-    readme += `\nPhysics Summary:\n  Natural Freq: ${r.summary.natural_freq_f} / ${r.summary.natural_freq_r} Hz\n  Max Angle: ${r.summary.max_angle}°\n\nInstructions:\n  1. Extract this zip into your AC car's folder\n  2. The data/ folder will overlay the car's physics\n  3. Back up your original data/ folder first!\n`;
+    readme += `\nPhysics Summary:\n  Natural Freq: ${r.summary.natural_freq_f} / ${r.summary.natural_freq_r} Hz\n  Max Angle: ${r.summary.max_angle}°\n\nInstructions:\n  1. Back up your original data/ folder first!\n  2. Extract this zip into your AC car's folder\n  3. When prompted, choose OVERWRITE to replace existing files\n  4. The data/ folder contents will replace the car's physics files\n`;
     zip.file('README.txt', readme);
 
     const blob = await zip.generateAsync({type:'blob'});
