@@ -140,23 +140,34 @@ async function handleFileUpload(items) {
     
     try {
         const files = [];
-        const entries = [];
         
+        // First try webkitGetAsEntry for folder support
+        let usedEntries = false;
         for (let item of items) {
             if (item.kind === 'file') {
                 const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                 if (entry) {
-                    entries.push(entry);
-                } else {
-                    files.push(item.getAsFile());
+                    await traverseEntry(entry, files, '');
+                    usedEntries = true;
                 }
             }
         }
         
-        if (entries.length > 0) {
-            for (const entry of entries) {
-                await traverseEntry(entry, files, '');
+        // Fallback: if no entries worked, grab raw files
+        if (!usedEntries || files.length === 0) {
+            for (let item of items) {
+                if (item.kind === 'file') {
+                    const f = item.getAsFile();
+                    if (f) files.push(f);
+                }
             }
+        }
+        
+        console.log(`[Swapper] Found ${files.length} files:`, files.map(f => f._fullPath || f.name));
+        
+        if (files.length === 0) {
+            alert('No files found. Try dragging individual .ini files or a .zip instead.');
+            return;
         }
         
         // Check if any file is a ZIP
@@ -277,10 +288,13 @@ async function processCarFiles(files) {
         }
     }
     
+    console.log('[Swapper] Parsed files:', Object.keys(State.originalCar.files));
+    
     extractMetadata();
     
     if (!State.originalCar.files['car.ini'] || !State.originalCar.files['suspensions.ini'] || !State.originalCar.files['tyres.ini']) {
-        alert('Missing required files (car.ini, suspensions.ini, tyres.ini). Please upload a data folder or ZIP containing these files.');
+        const found = Object.keys(State.originalCar.files).join(', ') || 'none';
+        alert(`Missing required files. Found: ${found}\n\nNeed: car.ini, suspensions.ini, tyres.ini\n\nTry dragging the contents of your data folder, or zip it first.`);
         return;
     }
     
