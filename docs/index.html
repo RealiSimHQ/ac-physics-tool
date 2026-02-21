@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AiO Drift Physics Swapper | RealiSimHQ</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="branding">
+                <h1>RealiSimHQ</h1>
+                <p class="tagline">AiO Drift Physics Swapper</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="intro" class="intro">
+            <h2>Transform Your Car's Physics</h2>
+            <p>Swap your Assetto Corsa car's physics with professional drift carpacks. Drag your car's data folder below to get started.</p>
+        </section>
+
+        <!-- Step 1: Upload -->
+        <section id="upload-section" class="step active">
+            <h3><span class="step-number">1</span> Upload Your Car Data</h3>
+            <div id="drop-zone" class="drop-zone">
+                <div class="drop-zone-content">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p>Drag & drop your car's <strong>data/</strong> folder here</p>
+                    <p class="hint">or click to browse</p>
+                </div>
+                <input type="file" id="file-input" webkitdirectory directory multiple hidden>
+            </div>
+            <div id="car-info" class="car-info hidden">
+                <h4>Car Detected</h4>
+                <div class="info-grid">
+                    <div><strong>Name:</strong> <span id="car-name">-</span></div>
+                    <div><strong>Weight:</strong> <span id="car-mass">-</span> kg</div>
+                    <div><strong>Wheelbase:</strong> <span id="car-wheelbase">-</span> m</div>
+                    <div><strong>Track (F/R):</strong> <span id="car-track">-</span> m</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Select Pack -->
+        <section id="pack-section" class="step">
+            <h3><span class="step-number">2</span> Choose a Carpack</h3>
+            <div id="pack-grid" class="pack-grid">
+                <!-- Carpack cards will be inserted here -->
+            </div>
+        </section>
+
+        <!-- Step 3: Match & Download -->
+        <section id="download-section" class="step">
+            <h3><span class="step-number">3</span> Matched Donor Car</h3>
+            <div id="match-info" class="match-info">
+                <div class="match-card">
+                    <h4 id="donor-name">-</h4>
+                    <div class="info-grid">
+                        <div><strong>Weight:</strong> <span id="donor-mass">-</span> kg</div>
+                        <div><strong>Wheelbase:</strong> <span id="donor-wheelbase">-</span> m</div>
+                        <div><strong>Match Score:</strong> <span id="match-score">-</span>%</div>
+                    </div>
+                </div>
+            </div>
+            <button id="download-btn" class="btn-primary">
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download Physics Swap
+            </button>
+        </section>
+
+        <footer class="footer">
+            <p>Powered by RealiSimHQ | For Assetto Corsa drift mods</p>
+        </footer>
+    </main>
+
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p id="loading-text">Processing...</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

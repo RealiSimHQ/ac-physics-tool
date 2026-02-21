@@ -1,0 +1,32 @@
+[
+  {
+    "id": "BDC",
+    "name": "BDC",
+    "carCount": 10
+  },
+  {
+    "id": "DWG",
+    "name": "DWG",
+    "carCount": 6
+  },
+  {
+    "id": "Gravy_Garage",
+    "name": "Gravy Garage",
+    "carCount": 7
+  },
+  {
+    "id": "NNTS",
+    "name": "NNTS",
+    "carCount": 6
+  },
+  {
+    "id": "Swarm",
+    "name": "Swarm",
+    "carCount": 22
+  },
+  {
+    "id": "WDTS",
+    "name": "WDTS",
+    "carCount": 11
+  }
+]
