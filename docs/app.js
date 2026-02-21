@@ -141,39 +141,59 @@ async function handleFileUpload(items) {
     try {
         const files = [];
         
-        // First try webkitGetAsEntry for folder support
-        let usedEntries = false;
-        for (let item of items) {
+        // Collect all entries first
+        const entries = [];
+        const rawFiles = [];
+        
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
             if (item.kind === 'file') {
                 const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                 if (entry) {
+                    entries.push(entry);
+                }
+                // Always also grab the raw file as fallback
+                const f = item.getAsFile();
+                if (f) rawFiles.push(f);
+            }
+        }
+        
+        // Try to traverse directory entries
+        if (entries.length > 0) {
+            for (const entry of entries) {
+                if (entry.isDirectory) {
+                    console.log('[Swapper] Traversing directory:', entry.name);
                     await traverseEntry(entry, files, '');
-                    usedEntries = true;
+                } else if (entry.isFile) {
+                    await traverseEntry(entry, files, '');
                 }
             }
         }
         
-        // Fallback: if no entries worked, grab raw files
-        if (!usedEntries || files.length === 0) {
-            for (let item of items) {
-                if (item.kind === 'file') {
-                    const f = item.getAsFile();
-                    if (f) files.push(f);
-                }
-            }
+        console.log(`[Swapper] After traversal: ${files.length} files`);
+        
+        // If traversal gave us nothing, use raw files
+        if (files.length === 0 && rawFiles.length > 0) {
+            console.log('[Swapper] Falling back to raw files:', rawFiles.map(f => f.name));
+            files.push(...rawFiles);
         }
         
-        console.log(`[Swapper] Found ${files.length} files:`, files.map(f => f._fullPath || f.name));
+        console.log(`[Swapper] Total ${files.length} files:`, files.map(f => f._fullPath || f.name));
         
         if (files.length === 0) {
             alert('No files found. Try dragging individual .ini files or a .zip instead.');
             return;
         }
         
-        // Check if any file is a ZIP
+        // Check for archives
         const zipFile = files.find(f => f.name.toLowerCase().endsWith('.zip'));
+        const szFile = files.find(f => f.name.toLowerCase().endsWith('.7z'));
+        const rarFile = files.find(f => f.name.toLowerCase().endsWith('.rar'));
+        
         if (zipFile) {
             await processZipFile(zipFile);
+        } else if (szFile || rarFile) {
+            alert('Please extract your .7z or .rar file first, then drag the extracted data folder or files here.\n\nAlternatively, re-pack as a .zip file.');
         } else {
             await processCarFiles(files);
         }
@@ -205,38 +225,51 @@ async function handleFilesArray(fileList) {
     }
 }
 
+function readAllEntries(reader) {
+    return new Promise((resolve, reject) => {
+        const allEntries = [];
+        const readBatch = () => {
+            reader.readEntries((batch) => {
+                if (batch.length === 0) {
+                    resolve(allEntries);
+                } else {
+                    allEntries.push(...batch);
+                    readBatch();
+                }
+            }, reject);
+        };
+        readBatch();
+    });
+}
+
+function getFileFromEntry(fileEntry) {
+    return new Promise((resolve, reject) => {
+        fileEntry.file(resolve, reject);
+    });
+}
+
 async function traverseEntry(entry, files, path) {
     if (entry.isFile) {
-        return new Promise((resolve) => {
-            entry.file((file) => {
-                // Store the full path so we can find files in subdirectories
-                file._fullPath = path + file.name;
-                files.push(file);
-                resolve();
-            });
-        });
+        try {
+            const file = await getFileFromEntry(entry);
+            file._fullPath = path + file.name;
+            files.push(file);
+        } catch (err) {
+            console.warn('[Swapper] Could not read file:', entry.fullPath, err);
+        }
     } else if (entry.isDirectory) {
         const reader = entry.createReader();
         const newPath = path + entry.name + '/';
         
-        // readEntries may not return all entries at once — must loop
-        return new Promise((resolve) => {
-            const allEntries = [];
-            const readBatch = () => {
-                reader.readEntries(async (batch) => {
-                    if (batch.length === 0) {
-                        for (let childEntry of allEntries) {
-                            await traverseEntry(childEntry, files, newPath);
-                        }
-                        resolve();
-                    } else {
-                        allEntries.push(...batch);
-                        readBatch();
-                    }
-                });
-            };
-            readBatch();
-        });
+        try {
+            const childEntries = await readAllEntries(reader);
+            console.log(`[Swapper] Directory "${entry.name}" has ${childEntries.length} entries`);
+            for (const childEntry of childEntries) {
+                await traverseEntry(childEntry, files, newPath);
+            }
+        } catch (err) {
+            console.warn('[Swapper] Could not read directory:', entry.fullPath, err);
+        }
     }
 }
 
