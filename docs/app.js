@@ -140,19 +140,35 @@ async function handleFileUpload(items) {
     
     try {
         const files = [];
+        const entries = [];
+        
         for (let item of items) {
             if (item.kind === 'file') {
-                const entry = item.webkitGetAsEntry();
+                const entry = item.webkitGetAsEntry ? item.webkitGetAsEntry() : null;
                 if (entry) {
-                    await traverseDirectory(entry, files);
+                    entries.push(entry);
+                } else {
+                    files.push(item.getAsFile());
                 }
             }
         }
         
-        await processCarFiles(files);
+        if (entries.length > 0) {
+            for (const entry of entries) {
+                await traverseEntry(entry, files, '');
+            }
+        }
+        
+        // Check if any file is a ZIP
+        const zipFile = files.find(f => f.name.toLowerCase().endsWith('.zip'));
+        if (zipFile) {
+            await processZipFile(zipFile);
+        } else {
+            await processCarFiles(files);
+        }
     } catch (error) {
         console.error('Upload error:', error);
-        alert('Error reading files. Please try again.');
+        alert('Error reading files: ' + error.message);
     } finally {
         hideLoading();
     }
@@ -163,53 +179,116 @@ async function handleFilesArray(fileList) {
     
     try {
         const files = Array.from(fileList);
-        await processCarFiles(files);
+        
+        const zipFile = files.find(f => f.name.toLowerCase().endsWith('.zip'));
+        if (zipFile) {
+            await processZipFile(zipFile);
+        } else {
+            await processCarFiles(files);
+        }
     } catch (error) {
         console.error('Upload error:', error);
-        alert('Error reading files. Please try again.');
+        alert('Error reading files: ' + error.message);
     } finally {
         hideLoading();
     }
 }
 
-async function traverseDirectory(entry, files) {
+async function traverseEntry(entry, files, path) {
     if (entry.isFile) {
         return new Promise((resolve) => {
             entry.file((file) => {
+                // Store the full path so we can find files in subdirectories
+                file._fullPath = path + file.name;
                 files.push(file);
                 resolve();
             });
         });
     } else if (entry.isDirectory) {
         const reader = entry.createReader();
+        const newPath = path + entry.name + '/';
+        
+        // readEntries may not return all entries at once — must loop
         return new Promise((resolve) => {
-            reader.readEntries(async (entries) => {
-                for (let childEntry of entries) {
-                    await traverseDirectory(childEntry, files);
-                }
-                resolve();
-            });
+            const allEntries = [];
+            const readBatch = () => {
+                reader.readEntries(async (batch) => {
+                    if (batch.length === 0) {
+                        for (let childEntry of allEntries) {
+                            await traverseEntry(childEntry, files, newPath);
+                        }
+                        resolve();
+                    } else {
+                        allEntries.push(...batch);
+                        readBatch();
+                    }
+                });
+            };
+            readBatch();
         });
     }
+}
+
+async function processZipFile(file) {
+    showLoading('Extracting ZIP...');
+    const arrayBuffer = await file.arrayBuffer();
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    
+    const fileMap = {};
+    
+    for (const [zipPath, zipEntry] of Object.entries(zip.files)) {
+        if (zipEntry.dir) continue;
+        
+        const fileName = zipPath.split('/').pop().toLowerCase();
+        if (!fileName) continue;
+        
+        // Read as text for .ini/.lut/.rto, skip binary junk
+        if (fileName.endsWith('.ini') || fileName.endsWith('.lut') || fileName.endsWith('.rto')) {
+            const content = await zipEntry.async('string');
+            fileMap[fileName] = content;
+        }
+    }
+    
+    State.originalCar.files = fileMap;
+    State.originalCar.metadata = {};
+    
+    extractMetadata();
+    
+    if (!State.originalCar.files['car.ini'] || !State.originalCar.files['suspensions.ini'] || !State.originalCar.files['tyres.ini']) {
+        alert('Missing required files (car.ini, suspensions.ini, tyres.ini). Make sure your ZIP contains these files.');
+        return;
+    }
+    
+    displayCarInfo();
+    activateStep('pack-section');
 }
 
 async function processCarFiles(files) {
     State.originalCar.files = {};
     State.originalCar.metadata = {};
     
-    // Read all files
+    // Read all files — accept any .ini/.lut/.rto regardless of folder structure
     for (const file of files) {
         const fileName = file.name.toLowerCase();
-        const filePath = file.webkitRelativePath || file.name;
         
-        // Check if in data/ folder
-        if (filePath.includes('/data/') || filePath.startsWith('data/')) {
+        if (fileName.endsWith('.ini') || fileName.endsWith('.lut') || fileName.endsWith('.rto')) {
             const content = await file.text();
             State.originalCar.files[fileName] = content;
         }
     }
     
-    // Extract metadata
+    extractMetadata();
+    
+    if (!State.originalCar.files['car.ini'] || !State.originalCar.files['suspensions.ini'] || !State.originalCar.files['tyres.ini']) {
+        alert('Missing required files (car.ini, suspensions.ini, tyres.ini). Please upload a data folder or ZIP containing these files.');
+        return;
+    }
+    
+    displayCarInfo();
+    activateStep('pack-section');
+}
+
+function extractMetadata() {
     if (State.originalCar.files['car.ini']) {
         const carData = INIParser.parse(State.originalCar.files['car.ini']);
         
@@ -253,15 +332,6 @@ async function processCarFiles(files) {
             State.originalCar.metadata.radiusRear = parseFloat(tyresData.REAR.RADIUS) || 0;
         }
     }
-    
-    // Validate
-    if (!State.originalCar.files['car.ini'] || !State.originalCar.files['suspensions.ini'] || !State.originalCar.files['tyres.ini']) {
-        alert('Missing required files (car.ini, suspensions.ini, tyres.ini). Please upload a complete data folder.');
-        return;
-    }
-    
-    displayCarInfo();
-    activateStep('pack-section');
 }
 
 function displayCarInfo() {
