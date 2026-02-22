@@ -13,6 +13,8 @@
     --accent-cyan: #00d9ff;
     --accent-cyan-glow: rgba(0, 217, 255, 0.3);
     --accent-purple: #a855f7;
+    --accent-gold: #fbbf24;
+    --accent-gold-glow: rgba(251, 191, 36, 0.4);
     --border: #2d3748;
     --success: #10b981;
     --radius: 12px;
@@ -47,15 +49,13 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
 }
 
 .site-logo {
-    height: 180px;
+    height: 260px;
     width: auto;
     object-fit: contain;
-    border-radius: 8px;
-    mix-blend-mode: lighten;
 }
 
 header h1 {
@@ -211,56 +211,116 @@ header h1 {
     margin-bottom: 4px;
 }
 
-.pack-card .car-count {
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-}
-
-/* Match Info */
-.match-card {
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(168, 85, 247, 0.1));
-    border: 2px solid var(--accent-cyan);
-    border-radius: var(--radius);
-    padding: 24px;
-    margin-bottom: 24px;
-}
-
-.match-card h4 {
-    font-size: 1.3rem;
-    color: var(--accent-cyan);
-    margin-bottom: 16px;
-}
-
-/* Buttons */
-.btn-primary {
-    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-    color: white;
+/* Download Button — Golden Yellow */
+.btn-download {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
+    color: #0a0e14;
     border: none;
     border-radius: var(--radius);
-    padding: 14px 28px;
-    font-size: 1rem;
-    font-weight: 600;
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px var(--accent-cyan-glow);
+    gap: 12px;
+    box-shadow: 0 4px 20px var(--accent-gold-glow);
+    width: 100%;
+    justify-content: center;
 }
 
-.btn-primary:hover {
+.btn-download:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px var(--accent-cyan-glow);
+    box-shadow: 0 6px 30px var(--accent-gold-glow);
+    background: linear-gradient(135deg, #fbbf24, #fcd34d, #fbbf24);
 }
 
-.btn-primary:disabled {
+.btn-download:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
+}
+
+.btn-download.flashing {
+    animation: flashGradient 0.4s ease infinite alternate;
+}
+
+@keyframes flashGradient {
+    0% { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); }
+    100% { background: linear-gradient(135deg, #ec4899, #8b5cf6, #3b82f6); }
 }
 
 .btn-icon {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
+}
+
+/* Download Celebration Overlay */
+.download-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 20, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.download-celebration {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+}
+
+.pack-logo-ring {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: pulseRing 1.5s ease-in-out infinite;
+    border: 4px solid var(--accent-cyan);
+    box-shadow: 0 0 30px var(--accent-cyan-glow), 0 0 60px var(--accent-gold-glow);
+}
+
+@keyframes pulseRing {
+    0%, 100% {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 30px var(--accent-cyan-glow), 0 0 60px rgba(251, 191, 36, 0.1);
+    }
+    50% {
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 30px var(--accent-gold-glow), 0 0 60px rgba(0, 217, 255, 0.1);
+    }
+}
+
+.download-pack-logo {
+    max-width: 140px;
+    max-height: 140px;
+    object-fit: contain;
+    filter: brightness(1.1);
+}
+
+.download-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* Loading Overlay */
@@ -320,6 +380,9 @@ header h1 {
     .info-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    .site-logo {
+        height: 160px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -331,5 +394,8 @@ header h1 {
     }
     header h1 {
         font-size: 1.4rem;
+    }
+    .site-logo {
+        height: 120px;
     }
 }

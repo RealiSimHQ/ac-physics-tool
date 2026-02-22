@@ -9,7 +9,7 @@
 <body>
     <header>
         <div class="container header-content">
-            <img src="realisimhq-logo.jpg" alt="RealiSimHQ" class="site-logo">
+            <img src="realisimhq-logo.png" alt="RealiSimHQ" class="site-logo">
             <h1>Drift Physics Exchange</h1>
         </div>
     </header>
@@ -48,20 +48,9 @@
             </div>
         </section>
 
-        <!-- Step 3: Match & Download -->
+        <!-- Step 3: Download (no match info, just button) -->
         <section id="download-section" class="step">
-            <h3>Matched Donor Car</h3>
-            <div id="match-info" class="match-info">
-                <div class="match-card">
-                    <h4 id="donor-name">-</h4>
-                    <div class="info-grid">
-                        <div><strong>Weight:</strong> <span id="donor-mass">-</span> kg</div>
-                        <div><strong>Wheelbase:</strong> <span id="donor-wheelbase">-</span> m</div>
-                        <div><strong>Match Score:</strong> <span id="match-score">-</span>%</div>
-                    </div>
-                </div>
-            </div>
-            <button id="download-btn" class="btn-primary">
+            <button id="download-btn" class="btn-download">
                 <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
@@ -73,6 +62,16 @@
             <p>RealiSimHQ — Drift Physics Exchange</p>
         </footer>
     </main>
+
+    <!-- Download celebration overlay -->
+    <div id="download-overlay" class="download-overlay hidden">
+        <div class="download-celebration">
+            <div class="pack-logo-ring">
+                <img id="download-pack-logo" src="" alt="" class="download-pack-logo">
+            </div>
+            <p class="download-text">Generating physics swap...</p>
+        </div>
+    </div>
 
     <div id="loading-overlay" class="loading-overlay hidden">
         <div class="spinner"></div>

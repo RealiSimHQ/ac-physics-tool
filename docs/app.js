@@ -453,16 +453,25 @@ function findBestMatch() {
 }
 
 function displayMatch(donor, score) {
-    const matchPercent = Math.max(0, Math.min(100, 100 - (score * 33))).toFixed(0);
-    
-    document.getElementById('donor-name').textContent = donor.carId.replace(/_/g, ' ');
-    document.getElementById('donor-mass').textContent = donor.metadata.mass?.toFixed(0) || '-';
-    document.getElementById('donor-wheelbase').textContent = donor.metadata.wheelbase?.toFixed(2) || '-';
-    document.getElementById('match-score').textContent = matchPercent;
+    // Match info removed from UI — data stays in State for swap
 }
 
 async function generateSwap() {
-    showLoading('Generating physics swap...');
+    const btn = document.getElementById('download-btn');
+    btn.classList.add('flashing');
+    btn.disabled = true;
+    
+    // Show celebration overlay with pack logo
+    const overlay = document.getElementById('download-overlay');
+    const packLogo = document.getElementById('download-pack-logo');
+    const dlText = overlay.querySelector('.download-text');
+    
+    if (State.selectedPack) {
+        packLogo.src = `logos/${State.selectedPack.logo}`;
+        packLogo.alt = State.selectedPack.packName;
+    }
+    dlText.textContent = 'Generating physics swap...';
+    overlay.classList.remove('hidden');
     
     try {
         const zip = new JSZip();
@@ -501,13 +510,23 @@ async function generateSwap() {
         // Generate and download
         const blob = await zip.generateAsync({ type: 'blob' });
         const packName = State.selectedPack.packName.replace(/ /g, '_');
+        
+        dlText.textContent = 'Download complete!';
         downloadBlob(blob, `data_${packName}.zip`);
+        
+        // Keep celebration visible for 2.5s then fade out
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+            btn.classList.remove('flashing');
+            btn.disabled = false;
+        }, 2500);
         
     } catch (error) {
         console.error('Swap generation error:', error);
         alert('Error generating swap. Please try again.');
-    } finally {
-        hideLoading();
+        overlay.classList.add('hidden');
+        btn.classList.remove('flashing');
+        btn.disabled = false;
     }
 }
 
