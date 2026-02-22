@@ -730,7 +730,10 @@ function showDownloadModal(blob, filename) {
     `;
     document.body.appendChild(modal);
 
-    // After 5s: fire the download, then close modal
+    // Click backdrop to close
+    modal.querySelector('.dm-backdrop').addEventListener('click', closeDownloadModal);
+
+    // After 5s: fire the download
     setTimeout(() => {
         const ring = modal.querySelector('.dm-logo-ring');
         ring.classList.remove('preparing');
@@ -740,7 +743,6 @@ function showDownloadModal(blob, filename) {
         // Small delay so they see the green ring before the file picker covers it
         setTimeout(() => {
             downloadBlob(blob, filename);
-            closeDownloadModal();
         }, 600);
     }, 5000);
 }
