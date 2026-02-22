@@ -629,7 +629,12 @@ function swapCarIni(originalContent, donorContent) {
     if (original.GRAPHICS) result.GRAPHICS = { ...original.GRAPHICS };
     if (original.RIDE) result.RIDE = { ...original.RIDE };
     
-    // Everything else (CONTROLS, FUEL, FUELTANK, PIT_STOP, etc) stays from donor
+    // FUELTANK: donor base, but keep original POSITION (physical location in the car body)
+    if (original.FUELTANK && result.FUELTANK) {
+        if (original.FUELTANK.POSITION) result.FUELTANK.POSITION = original.FUELTANK.POSITION;
+    }
+    
+    // Everything else (CONTROLS, FUEL, PIT_STOP, etc) stays from donor
     
     return INIParser.serialize(result);
 }
