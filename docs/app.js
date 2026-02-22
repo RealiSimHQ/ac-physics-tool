@@ -717,27 +717,8 @@ function showDownloadModal(blob, filename) {
             <div class="dm-logo-ring preparing">
                 <img src="${logoUrl}" alt="${State.selectedPack.packName}" class="dm-pack-logo">
             </div>
-            <h2 class="dm-title">Preparing your download&hellip;</h2>
+            <h2 class="dm-title">Your ${State.selectedPack.packName} swap is ready</h2>
             <p class="dm-subtitle">${State.selectedPack.packName} &rarr; <span style="color:var(--accent-cyan)">${State.originalCar.metadata.name || 'your car'}</span></p>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    // After 5s: trigger download + reveal support
-    setTimeout(() => {
-        downloadBlob(blob, filename);
-
-        const ring = modal.querySelector('.dm-logo-ring');
-        ring.classList.remove('preparing');
-        ring.classList.add('done');
-
-        modal.querySelector('.dm-title').textContent = 'Download started';
-        modal.querySelector('.dm-subtitle').innerHTML =
-            'Extract the zip into your car\u2019s <code>data/</code> folder and hit the track.';
-
-        const support = document.createElement('div');
-        support.className = 'dm-support-reveal';
-        support.innerHTML = `
             <div class="dm-divider"></div>
             <p class="dm-cta">If this saved you time, consider giving back.</p>
             <div class="dm-links">
@@ -745,9 +726,22 @@ function showDownloadModal(blob, filename) {
                 <a href="https://paypal.me/PodcastPrimates" target="_blank" class="support-btn tip-btn">Leave a Tip</a>
             </div>
             <p style="font-size:0.85rem;color:var(--text-secondary);opacity:0.5;margin-top:12px;">100% of tips go toward building more tools for the community</p>
-            <button class="dm-close" onclick="closeDownloadModal()">Close</button>
-        `;
-        modal.querySelector('.dm-card').appendChild(support);
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // After 5s: fire the download, then close modal
+    setTimeout(() => {
+        const ring = modal.querySelector('.dm-logo-ring');
+        ring.classList.remove('preparing');
+        ring.classList.add('done');
+        modal.querySelector('.dm-title').textContent = 'Starting download\u2026';
+
+        // Small delay so they see the green ring before the file picker covers it
+        setTimeout(() => {
+            downloadBlob(blob, filename);
+            closeDownloadModal();
+        }, 600);
     }, 5000);
 }
 
