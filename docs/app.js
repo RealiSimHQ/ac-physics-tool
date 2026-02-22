@@ -410,7 +410,9 @@ async function selectPack(pack) {
         
         // Load pack data
         const response = await fetch(`data/${pack.id}.json`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         State.selectedPack = await response.json();
+        State.selectedPack.logo = `${pack.id}.${pack.id === 'NNTS' ? 'jpg' : 'png'}`;
         
         // Find best match
         findBestMatch();

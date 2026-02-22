@@ -212,9 +212,10 @@ header h1 {
 }
 
 /* Download Button — Golden Yellow */
+#download-btn,
 .btn-download {
-    background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b);
-    color: #0a0e14;
+    background: linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b) !important;
+    color: #0a0e14 !important;
     border: none;
     border-radius: var(--radius);
     padding: 18px 40px;
