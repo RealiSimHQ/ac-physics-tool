@@ -601,7 +601,7 @@ function swapCarIni(originalContent, donorContent) {
     const result = JSON.parse(JSON.stringify(donor));
     
     // Override HEADER from original (unless BDC which needs extended-2)
-    if (State.selectedPack.packName !== 'BDC' && original.HEADER) {
+    if (State.selectedPack.packName !== 'BDC' && State.selectedPack.packName !== 'BDC v6' && original.HEADER) {
         result.HEADER = { ...original.HEADER };
     }
     
