@@ -536,20 +536,18 @@ function swapCarIni(originalContent, donorContent) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
-    const result = {};
+    // Start with deep copy of donor — donor is the base for everything
+    const result = JSON.parse(JSON.stringify(donor));
     
-    // Keep original header (unless BDC)
-    if (State.selectedPack.packName === 'BDC' && donor.HEADER) {
-        result.HEADER = donor.HEADER;
-    } else if (original.HEADER) {
-        result.HEADER = original.HEADER;
+    // Override HEADER from original (unless BDC which needs extended-2)
+    if (State.selectedPack.packName !== 'BDC' && original.HEADER) {
+        result.HEADER = { ...original.HEADER };
     }
     
-    // Keep original INFO
-    if (original.INFO) result.INFO = original.INFO;
+    // Keep original INFO (car name etc)
+    if (original.INFO) result.INFO = { ...original.INFO };
     
-    // BASIC: keep mass, inertia, graphics from original
-    result.BASIC = { ...donor.BASIC };
+    // BASIC: donor base, override only geometry-dependent values from original
     if (original.BASIC) {
         if (original.BASIC.TOTALMASS) result.BASIC.TOTALMASS = original.BASIC.TOTALMASS;
         if (original.BASIC.INERTIA) result.BASIC.INERTIA = original.BASIC.INERTIA;
@@ -557,15 +555,11 @@ function swapCarIni(originalContent, donorContent) {
         if (original.BASIC.GRAPHICS_PITCH_ROTATION) result.BASIC.GRAPHICS_PITCH_ROTATION = original.BASIC.GRAPHICS_PITCH_ROTATION;
     }
     
-    // Keep original GRAPHICS and RIDE
-    if (original.GRAPHICS) result.GRAPHICS = original.GRAPHICS;
-    if (original.RIDE) result.RIDE = original.RIDE;
+    // Keep original GRAPHICS and RIDE (visual/geometry dependent)
+    if (original.GRAPHICS) result.GRAPHICS = { ...original.GRAPHICS };
+    if (original.RIDE) result.RIDE = { ...original.RIDE };
     
-    // Full CONTROLS from donor
-    if (donor.CONTROLS) result.CONTROLS = donor.CONTROLS;
-    if (donor.FUEL) result.FUEL = donor.FUEL;
-    if (donor.FUELTANK) result.FUELTANK = donor.FUELTANK;
-    if (donor.PIT_STOP) result.PIT_STOP = donor.PIT_STOP;
+    // Everything else (CONTROLS, FUEL, FUELTANK, PIT_STOP, etc) stays from donor
     
     return INIParser.serialize(result);
 }
@@ -574,7 +568,8 @@ function swapSuspensionsIni(originalContent, donorContent) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
-    const result = { ...donor };
+    // Deep copy donor as base
+    const result = JSON.parse(JSON.stringify(donor));
     
     // Keep original wheelbase and CG
     if (original.BASIC) {
@@ -609,7 +604,8 @@ function swapTyresIni(originalContent, donorContent) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
-    const result = { ...donor };
+    // Deep copy donor as base
+    const result = JSON.parse(JSON.stringify(donor));
     
     // Keep original RADIUS and RIM_RADIUS in all FRONT*/REAR* sections
     for (const section of Object.keys(result)) {
