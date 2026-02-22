@@ -164,12 +164,13 @@ header h1 {
 
 /* Pack Grid — all on one row */
 .pack-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    display: flex;
     gap: 12px;
 }
 
 .pack-card {
+    flex: 1;
+    min-width: 0;
     background: var(--bg-dark);
     border: 2px solid var(--border);
     border-radius: var(--radius);
@@ -310,7 +311,10 @@ header h1 {
 /* Responsive */
 @media (max-width: 900px) {
     .pack-grid {
-        grid-template-columns: repeat(3, 1fr);
+        flex-wrap: wrap;
+    }
+    .pack-card {
+        flex: 0 0 calc(33% - 8px);
     }
     .info-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -318,8 +322,8 @@ header h1 {
 }
 
 @media (max-width: 600px) {
-    .pack-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .pack-card {
+        flex: 0 0 calc(50% - 6px);
     }
     .info-grid {
         grid-template-columns: 1fr;
