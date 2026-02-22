@@ -593,6 +593,22 @@ header h1 {
     to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+.dm-site-logo {
+    width: 220px;
+    height: auto;
+    margin: -20px auto 16px;
+    display: block;
+    animation: dropBounce 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+}
+
+@keyframes dropBounce {
+    0%   { opacity: 0; transform: translateY(-80px) scale(0.8); }
+    50%  { opacity: 1; transform: translateY(8px) scale(1.03); }
+    70%  { transform: translateY(-4px) scale(0.98); }
+    85%  { transform: translateY(2px) scale(1.01); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .dm-logo-ring {
     width: 120px;
     height: 120px;

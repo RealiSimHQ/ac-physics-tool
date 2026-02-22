@@ -714,6 +714,7 @@ function showDownloadModal(blob, filename) {
     modal.innerHTML = `
         <div class="dm-backdrop"></div>
         <div class="dm-card">
+            <img src="realisimhq-logo.png" alt="RealiSimHQ" class="dm-site-logo">
             <div class="dm-logo-ring preparing">
                 <img src="${logoUrl}" alt="${State.selectedPack.packName}" class="dm-pack-logo">
             </div>
