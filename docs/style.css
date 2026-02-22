@@ -51,10 +51,11 @@ header {
 }
 
 .site-logo {
-    height: 60px;
+    height: 180px;
     width: auto;
     object-fit: contain;
     border-radius: 8px;
+    mix-blend-mode: lighten;
 }
 
 header h1 {
