@@ -41,11 +41,53 @@
             </div>
         </section>
 
+        <!-- Collapsed upload dropdown (shown after car detected) -->
+        <div id="upload-dropdown" class="collapsible-dropdown hidden">
+            <div class="dropdown-header" id="upload-dropdown-header">
+                <span class="dropdown-check">✓</span>
+                <span class="dropdown-label" id="upload-dropdown-label">Car loaded</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            <div class="dropdown-body hidden" id="upload-dropdown-body">
+                <div id="drop-zone-mini" class="drop-zone mini">
+                    <div class="drop-zone-content">
+                        <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p>Drop a different car here</p>
+                    </div>
+                    <input type="file" id="file-input-mini" webkitdirectory directory multiple hidden>
+                </div>
+            </div>
+        </div>
+
         <!-- Step 2: Select Pack -->
         <section id="pack-section" class="step">
             <h3>Choose a Carpack</h3>
-            <div id="pack-grid" class="pack-grid">
+            <div id="pack-grid" class="pack-grid"></div>
+        </section>
+
+        <!-- Collapsed pack dropdown (shown after pack selected) -->
+        <div id="pack-dropdown" class="collapsible-dropdown hidden">
+            <div class="dropdown-header" id="pack-dropdown-header">
+                <span class="dropdown-check">✓</span>
+                <img id="pack-dropdown-logo" class="dropdown-pack-logo" src="" alt="">
+                <span class="dropdown-label" id="pack-dropdown-label">Pack selected</span>
+                <span class="dropdown-arrow">▼</span>
             </div>
+            <div class="dropdown-body hidden" id="pack-dropdown-body">
+                <div id="pack-grid-mini" class="pack-grid"></div>
+            </div>
+        </div>
+
+        <!-- Generate Button (above advanced) -->
+        <section id="generate-section" class="step">
+            <button id="download-btn" class="btn-download btn-pulse-ready">
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Start Physics Generator
+            </button>
         </section>
 
         <!-- Advanced Settings -->
@@ -71,17 +113,7 @@
             </div>
         </section>
 
-        <!-- Step 3: Download -->
-        <section id="download-section" class="step">
-            <button id="download-btn" class="btn-download">
-                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-                Download Physics Swap
-            </button>
-        </section>
-
-        <!-- Post-download support section -->
+        <!-- Post-download support section (fallback) -->
         <section id="support-section" class="support-section hidden">
             <div class="support-content">
                 <h3>Physics swapped successfully</h3>

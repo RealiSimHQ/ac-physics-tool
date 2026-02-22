@@ -704,6 +704,145 @@ header h1 {
     color: var(--text-primary);
 }
 
+/* ── Collapsible Dropdowns ── */
+.collapsible-dropdown {
+    background: var(--bg-card);
+    border: 2px solid var(--accent-cyan);
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    overflow: hidden;
+    animation: fadeSlideUp 0.35s ease both;
+}
+
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dropdown-header:hover {
+    background: rgba(0, 217, 255, 0.05);
+}
+
+.dropdown-check {
+    color: var(--success);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.dropdown-label {
+    flex: 1;
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.dropdown-pack-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border);
+}
+
+.dropdown-arrow {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.dropdown-body {
+    padding: 0 20px 16px;
+}
+
+.drop-zone.mini {
+    padding: 16px;
+}
+
+.drop-zone.mini .upload-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 6px;
+}
+
+.drop-zone.mini p {
+    font-size: 0.9rem;
+}
+
+/* ── Ta-Da Entrance ── */
+.tada-entrance {
+    animation: tadaPulse 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes tadaPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+        box-shadow: none;
+    }
+    40% {
+        opacity: 1;
+        transform: scale(1.02) translateY(0);
+    }
+    55% {
+        box-shadow:
+            0 0 20px var(--accent-gold-glow),
+            0 0 40px rgba(0, 217, 255, 0.15),
+            0 0 60px rgba(168, 85, 247, 0.1);
+    }
+    70% {
+        transform: scale(0.99);
+        box-shadow:
+            0 0 30px var(--accent-gold-glow),
+            0 0 50px rgba(0, 217, 255, 0.2),
+            0 0 80px rgba(168, 85, 247, 0.15),
+            0 0 100px rgba(255, 105, 180, 0.1);
+    }
+    85% {
+        transform: scale(1.005);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        box-shadow: 0 0 20px var(--accent-cyan-glow);
+    }
+}
+
+/* ── Slide Up Entrance ── */
+.slide-up-entrance {
+    animation: slideUpBounce 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes slideUpBounce {
+    0% { opacity: 0; transform: translateY(30px); }
+    70% { transform: translateY(-4px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Generate Button Pulse ── */
+.btn-pulse-active {
+    animation: generatePulse 2s ease-in-out infinite;
+}
+
+@keyframes generatePulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px var(--accent-gold-glow);
+    }
+    50% {
+        box-shadow:
+            0 4px 25px var(--accent-gold-glow),
+            0 0 40px rgba(0, 217, 255, 0.2),
+            0 0 60px rgba(168, 85, 247, 0.15);
+    }
+}
+
 /* Loading Overlay */
 .loading-overlay {
     position: fixed;

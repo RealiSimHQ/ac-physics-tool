@@ -321,7 +321,7 @@ async function processZipFile(file) {
     }
     
     displayCarInfo();
-    activateStep('pack-section');
+    collapseUploadShowPacks();
 }
 
 async function processCarFiles(files) {
@@ -349,7 +349,108 @@ async function processCarFiles(files) {
     }
     
     displayCarInfo();
-    activateStep('pack-section');
+    collapseUploadShowPacks();
+}
+
+function collapseUploadShowPacks() {
+    // Hide full upload section
+    deactivateStep('upload-section');
+    document.getElementById('upload-section').classList.add('hidden');
+
+    // Show collapsed upload dropdown
+    const dd = document.getElementById('upload-dropdown');
+    dd.classList.remove('hidden');
+    document.getElementById('upload-dropdown-label').textContent =
+        State.originalCar.metadata.name || 'Car loaded';
+
+    // Toggle dropdown open/close
+    document.getElementById('upload-dropdown-header').onclick = () => {
+        document.getElementById('upload-dropdown-body').classList.toggle('hidden');
+        dd.querySelector('.dropdown-arrow').classList.toggle('open');
+    };
+
+    // Setup mini drop zone
+    setupMiniDropZone();
+
+    // Show pack section with ta-da
+    const packSection = document.getElementById('pack-section');
+    packSection.classList.add('active');
+    packSection.classList.add('tada-entrance');
+
+    // Reset pack dropdown / generate if re-uploading
+    document.getElementById('pack-dropdown').classList.add('hidden');
+    deactivateStep('generate-section');
+    deactivateStep('advanced-section');
+}
+
+function setupMiniDropZone() {
+    const dz = document.getElementById('drop-zone-mini');
+    const fi = document.getElementById('file-input-mini');
+    if (!dz || dz._setup) return;
+    dz._setup = true;
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        dz.classList.remove('drag-over');
+        await handleFileUpload(e.dataTransfer.items);
+    });
+    fi.addEventListener('change', async (e) => {
+        await handleFilesArray(e.target.files);
+    });
+}
+
+function collapsePacksShowGenerate() {
+    // Hide full pack section
+    deactivateStep('pack-section');
+    document.getElementById('pack-section').classList.add('hidden');
+
+    // Show collapsed pack dropdown
+    const dd = document.getElementById('pack-dropdown');
+    dd.classList.remove('hidden');
+    const packId = State.selectedPack.packName.replace(/ /g, '_');
+    const logoExt = packId === 'NNTS' ? 'jpg' : 'png';
+    document.getElementById('pack-dropdown-logo').src = `logos/${packId}.${logoExt}`;
+    document.getElementById('pack-dropdown-label').textContent = State.selectedPack.packName;
+
+    // Toggle dropdown open/close
+    document.getElementById('pack-dropdown-header').onclick = () => {
+        const body = document.getElementById('pack-dropdown-body');
+        body.classList.toggle('hidden');
+        dd.querySelector('.dropdown-arrow').classList.toggle('open');
+    };
+
+    // Render mini pack grid inside dropdown
+    renderPackGridInto(document.getElementById('pack-grid-mini'));
+
+    // Show generate button with slide-up + pulse
+    const genSection = document.getElementById('generate-section');
+    genSection.classList.add('active');
+    genSection.classList.add('slide-up-entrance');
+    document.getElementById('download-btn').classList.add('btn-pulse-active');
+
+    // Show advanced
+    activateStep('advanced-section');
+}
+
+function renderPackGridInto(container) {
+    container.innerHTML = '';
+    State.packs.forEach(pack => {
+        const card = document.createElement('div');
+        card.className = 'pack-card';
+        if (State.selectedPack && State.selectedPack.packName.replace(/ /g, '_') === pack.id) {
+            card.classList.add('selected');
+        }
+        card.dataset.packId = pack.id;
+        const logoExt = pack.id === 'NNTS' ? 'jpg' : 'png';
+        card.innerHTML = `
+            <img src="logos/${pack.id}.${logoExt}" alt="${pack.name}" class="pack-logo">
+            <h4>${pack.name}</h4>
+        `;
+        card.addEventListener('click', () => selectPack(pack));
+        container.appendChild(card);
+    });
 }
 
 function extractMetadata() {
@@ -437,8 +538,8 @@ async function selectPack(pack) {
         // Find best match
         findBestMatch();
         
-        activateStep('advanced-section');
-        activateStep('download-section');
+        // Collapse packs into dropdown, show generate button
+        collapsePacksShowGenerate();
     } catch (error) {
         console.error('Failed to load pack:', error);
         alert('Failed to load carpack data.');
@@ -501,6 +602,7 @@ function displayMatch(donor, score) {
 
 async function generateSwap() {
     const btn = document.getElementById('download-btn');
+    btn.classList.remove('btn-pulse-active');
     btn.classList.add('flashing');
     btn.disabled = true;
     
@@ -678,10 +780,11 @@ function swapTyresIni(originalContent, donorContent) {
 }
 
 function activateStep(stepId) {
-    document.querySelectorAll('.step').forEach(step => {
-        step.classList.remove('active');
-    });
     document.getElementById(stepId).classList.add('active');
+}
+
+function deactivateStep(stepId) {
+    document.getElementById(stepId).classList.remove('active');
 }
 
 function showLoading(text = 'Loading...') {
