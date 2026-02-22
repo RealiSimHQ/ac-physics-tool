@@ -75,6 +75,7 @@ header h1 {
     border: 1px solid var(--accent-cyan);
     border-radius: var(--radius);
     margin-bottom: 16px;
+    animation: fadeSlideUp 0.35s ease both;
 }
 
 .car-info h4 {
@@ -329,31 +330,114 @@ header h1 {
 
 /* (celebration overlay removed) */
 
-/* Support Section */
-.support-section {
-    background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(168, 85, 247, 0.08));
-    border: 2px solid var(--accent-cyan);
-    border-radius: var(--radius);
-    padding: 32px;
-    margin-bottom: 24px;
-    text-align: center;
-    animation: fadeSlideIn 0.5s ease;
-}
-
-@keyframes fadeSlideIn {
-    from { opacity: 0; transform: translateY(20px); }
+/* ── Subtle Animations ── */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-.support-content h3 {
-    font-size: 1.4rem;
-    color: var(--success);
-    margin-bottom: 8px;
+@keyframes borderPulse {
+    0%, 100% { border-color: var(--accent-cyan); box-shadow: 0 0 20px var(--accent-cyan-glow); }
+    50% { border-color: var(--accent-purple); box-shadow: 0 0 20px rgba(168, 85, 247, 0.25); }
 }
 
-.support-content p {
+@keyframes scanline {
+    0% { background-position: 0 -100%; }
+    100% { background-position: 0 200%; }
+}
+
+.step.active {
+    animation: fadeSlideUp 0.4s ease both;
+}
+
+.pack-card {
+    animation: fadeSlideUp 0.35s ease both;
+}
+.pack-card:nth-child(1) { animation-delay: 0.03s; }
+.pack-card:nth-child(2) { animation-delay: 0.06s; }
+.pack-card:nth-child(3) { animation-delay: 0.09s; }
+.pack-card:nth-child(4) { animation-delay: 0.12s; }
+.pack-card:nth-child(5) { animation-delay: 0.15s; }
+.pack-card:nth-child(6) { animation-delay: 0.18s; }
+.pack-card:nth-child(7) { animation-delay: 0.21s; }
+
+.pack-card.selected {
+    animation: borderPulse 3s ease infinite;
+}
+
+.btn-download {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-download::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(255,255,255,0.12) 50%, transparent 60%);
+    background-size: 100% 300%;
+    animation: scanline 3s ease infinite;
+    pointer-events: none;
+}
+
+/* ── Support Section ── */
+.support-section {
+    position: relative;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: var(--radius);
+    padding: 40px 32px;
+    margin-bottom: 24px;
+    text-align: center;
+    animation: fadeSlideUp 0.5s ease both;
+    overflow: hidden;
+}
+
+/* Animated gradient border */
+.support-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+    padding: 2px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-gold), var(--accent-cyan));
+    background-size: 300% 300%;
+    animation: gradientShift 6s ease infinite;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Subtle top-glow accent */
+.support-section::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+    opacity: 0.6;
+}
+
+.support-content h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--success), var(--accent-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+}
+
+.support-content .support-instruction {
     color: var(--text-secondary);
-    margin-bottom: 16px;
+    margin-bottom: 24px;
+    font-size: 1rem;
 }
 
 .support-content code {
@@ -361,6 +445,22 @@ header h1 {
     padding: 2px 8px;
     border-radius: 4px;
     color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+.support-divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+    margin: 20px auto;
+    border-radius: 2px;
+}
+
+.support-cta {
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 16px;
 }
 
 .support-links {
@@ -371,44 +471,60 @@ header h1 {
 }
 
 .support-btn {
-    padding: 14px 28px;
+    padding: 16px 32px;
     border-radius: var(--radius);
-    font-size: 1rem;
+    font-size: 1.05rem;
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 0.02em;
+}
+
+.support-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.support-btn:hover::before {
+    left: 100%;
 }
 
 .patreon-btn {
-    background: linear-gradient(135deg, #ff424d, #e8383f);
+    background: linear-gradient(135deg, #ff424d, #c0392b);
     color: white;
-    box-shadow: 0 4px 15px rgba(255, 66, 77, 0.3);
+    box-shadow: 0 4px 20px rgba(255, 66, 77, 0.25);
 }
 
 .patreon-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(255, 66, 77, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(255, 66, 77, 0.4);
 }
 
 .tip-btn {
-    background: linear-gradient(135deg, #0070ba, #003087);
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 112, 186, 0.3);
+    background: linear-gradient(135deg, var(--accent-gold), #e8a317);
+    color: #0a0e14;
+    box-shadow: 0 4px 20px var(--accent-gold-glow);
 }
 
 .tip-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0, 112, 186, 0.4);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(251, 191, 36, 0.5);
 }
 
 .support-sub {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
-    opacity: 0.7;
+    opacity: 0.5;
     margin-bottom: 0 !important;
+    margin-top: 8px;
 }
 
 /* Loading Overlay */
