@@ -214,6 +214,21 @@ header h1 {
     box-shadow: 0 0 12px var(--accent-cyan-glow);
 }
 
+.pack-card.gold-selected {
+    border-color: var(--accent-gold);
+    pointer-events: auto;
+}
+
+.pack-card.gold-selected .pack-logo {
+    border-color: var(--accent-gold);
+    animation: goldRingPulse 2s ease-in-out infinite;
+}
+
+@keyframes goldRingPulse {
+    0%, 100% { box-shadow: 0 0 8px var(--accent-gold-glow); border-color: var(--accent-gold); }
+    50% { box-shadow: 0 0 22px var(--accent-gold-glow), 0 0 40px rgba(251, 191, 36, 0.15); border-color: #fcd34d; }
+}
+
 .pack-card h4 {
     font-size: 0.9rem;
     margin-bottom: 4px;

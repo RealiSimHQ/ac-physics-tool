@@ -402,27 +402,13 @@ function setupMiniDropZone() {
 }
 
 function collapsePacksShowGenerate() {
-    // Hide full pack section
-    deactivateStep('pack-section');
-    document.getElementById('pack-section').classList.add('hidden');
-
-    // Show collapsed pack dropdown
-    const dd = document.getElementById('pack-dropdown');
-    dd.classList.remove('hidden');
+    // Add gold pulse ring to selected pack card
+    document.querySelectorAll('.pack-card').forEach(card => {
+        card.classList.remove('gold-selected');
+    });
     const packId = State.selectedPack.packName.replace(/ /g, '_');
-    const logoExt = packId === 'NNTS' ? 'jpg' : 'png';
-    document.getElementById('pack-dropdown-logo').src = `logos/${packId}.${logoExt}`;
-    document.getElementById('pack-dropdown-label').textContent = State.selectedPack.packName;
-
-    // Toggle dropdown open/close
-    document.getElementById('pack-dropdown-header').onclick = () => {
-        const body = document.getElementById('pack-dropdown-body');
-        body.classList.toggle('hidden');
-        dd.querySelector('.dropdown-arrow').classList.toggle('open');
-    };
-
-    // Render mini pack grid inside dropdown
-    renderPackGridInto(document.getElementById('pack-grid-mini'));
+    const selectedCard = document.querySelector(`[data-pack-id="${packId}"]`);
+    if (selectedCard) selectedCard.classList.add('gold-selected');
 
     // Show generate button with slide-up + pulse
     const genSection = document.getElementById('generate-section');
