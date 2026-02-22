@@ -518,27 +518,27 @@ async function generateSwap() {
         
         // Swap car.ini
         const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini']);
-        zip.file('car.ini', carIni);
+        zip.file('data/car.ini', carIni);
         
         // Swap suspensions.ini
         const suspIni = swapSuspensionsIni(original.files['suspensions.ini'], donor.files['suspensions.ini']);
-        zip.file('suspensions.ini', suspIni);
+        zip.file('data/suspensions.ini', suspIni);
         
         // Swap tyres.ini
         const tyresIni = swapTyresIni(original.files['tyres.ini'], donor.files['tyres.ini']);
-        zip.file('tyres.ini', tyresIni);
+        zip.file('data/tyres.ini', tyresIni);
         
         // Engine files from engine source (may differ from donor)
         const engineFiles = ['engine.ini', 'drivetrain.ini'];
         for (const fileName of engineFiles) {
             if (engineSource.files[fileName]) {
-                zip.file(fileName, engineSource.files[fileName]);
+                zip.file('data/' + fileName, engineSource.files[fileName]);
             }
         }
         // Engine .lut files (power.lut, engine_map*.lut etc) from engine source
         for (const [fileName, content] of Object.entries(engineSource.files)) {
             if (fileName.endsWith('.lut') && (fileName.startsWith('power') || fileName.startsWith('engine') || fileName.startsWith('throttle'))) {
-                zip.file(fileName, content);
+                zip.file('data/' + fileName, content);
             }
         }
         
@@ -547,14 +547,14 @@ async function generateSwap() {
                               'damage.ini', 'drs.ini', 'escmode.ini'];
         for (const fileName of otherPhysics) {
             if (donor.files[fileName]) {
-                zip.file(fileName, donor.files[fileName]);
+                zip.file('data/' + fileName, donor.files[fileName]);
             }
         }
         
         // Copy remaining .lut and .rto files from donor (skip engine ones already added)
         for (const [fileName, content] of Object.entries(donor.files)) {
-            if ((fileName.endsWith('.lut') || fileName.endsWith('.rto')) && !zip.files[fileName]) {
-                zip.file(fileName, content);
+            if ((fileName.endsWith('.lut') || fileName.endsWith('.rto')) && !zip.files['data/' + fileName]) {
+                zip.file('data/' + fileName, content);
             }
         }
         
