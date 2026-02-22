@@ -705,82 +705,50 @@ function downloadBlob(blob, filename) {
 }
 
 function showDownloadModal(blob, filename) {
-    // Get pack logo
     const packId = State.selectedPack.packName.replace(/ /g, '_');
     const logoExt = packId === 'NNTS' ? 'jpg' : 'png';
     const logoUrl = `logos/${packId}.${logoExt}`;
-    
-    // Create modal
+
     const modal = document.createElement('div');
     modal.id = 'download-modal';
     modal.innerHTML = `
         <div class="dm-backdrop"></div>
         <div class="dm-card">
-            <img src="${logoUrl}" alt="${State.selectedPack.packName}" class="dm-pack-logo">
-            <h2 class="dm-title">Your physics swap is ready</h2>
-            <p class="dm-subtitle">${State.selectedPack.packName} → <span style="color:var(--accent-cyan)">${State.originalCar.metadata.name || 'your car'}</span></p>
+            <div class="dm-logo-ring preparing">
+                <img src="${logoUrl}" alt="${State.selectedPack.packName}" class="dm-pack-logo">
+            </div>
+            <h2 class="dm-title">Preparing your download&hellip;</h2>
+            <p class="dm-subtitle">${State.selectedPack.packName} &rarr; <span style="color:var(--accent-cyan)">${State.originalCar.metadata.name || 'your car'}</span></p>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // After 5s: trigger download + reveal support
+    setTimeout(() => {
+        downloadBlob(blob, filename);
+
+        const ring = modal.querySelector('.dm-logo-ring');
+        ring.classList.remove('preparing');
+        ring.classList.add('done');
+
+        modal.querySelector('.dm-title').textContent = 'Download started';
+        modal.querySelector('.dm-subtitle').innerHTML =
+            'Extract the zip into your car\u2019s <code>data/</code> folder and hit the track.';
+
+        const support = document.createElement('div');
+        support.className = 'dm-support-reveal';
+        support.innerHTML = `
             <div class="dm-divider"></div>
             <p class="dm-cta">If this saved you time, consider giving back.</p>
             <div class="dm-links">
                 <a href="https://www.patreon.com/RealiSimHQ" target="_blank" class="support-btn patreon-btn">Support on Patreon</a>
                 <a href="https://paypal.me/PodcastPrimates" target="_blank" class="support-btn tip-btn">Leave a Tip</a>
             </div>
-            <div class="dm-countdown">
-                <div class="dm-progress-bar"><div class="dm-progress-fill"></div></div>
-                <p class="dm-timer-text">Download starts in <span id="dm-seconds">5</span>s</p>
-            </div>
-            <button class="dm-skip" onclick="triggerDownloadNow()">Download now</button>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    
-    // Store blob for download
-    window._pendingDownload = { blob, filename };
-    
-    // Countdown
-    let seconds = 5;
-    const counter = document.getElementById('dm-seconds');
-    const interval = setInterval(() => {
-        seconds--;
-        if (counter) counter.textContent = seconds;
-        if (seconds <= 0) {
-            clearInterval(interval);
-            triggerDownloadNow();
-        }
-    }, 1000);
-    
-    window._downloadInterval = interval;
-}
-
-function triggerDownloadNow() {
-    if (window._downloadInterval) {
-        clearInterval(window._downloadInterval);
-        window._downloadInterval = null;
-    }
-    const { blob, filename } = window._pendingDownload || {};
-    if (blob) {
-        downloadBlob(blob, filename);
-        window._pendingDownload = null;
-    }
-    // Transition modal to completed state
-    const modal = document.getElementById('download-modal');
-    if (modal) {
-        const card = modal.querySelector('.dm-card');
-        const countdown = modal.querySelector('.dm-countdown');
-        const skip = modal.querySelector('.dm-skip');
-        if (countdown) countdown.remove();
-        if (skip) skip.remove();
-        
-        // Add close button and done message
-        const done = document.createElement('div');
-        done.className = 'dm-done';
-        done.innerHTML = `
-            <p style="color:var(--success); font-weight:700; font-size:1.1rem; margin-top:16px;">✓ Download started</p>
-            <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">Extract the zip into your car's data/ folder and hit the track.</p>
+            <p style="font-size:0.85rem;color:var(--text-secondary);opacity:0.5;margin-top:12px;">100% of tips go toward building more tools for the community</p>
             <button class="dm-close" onclick="closeDownloadModal()">Close</button>
         `;
-        card.appendChild(done);
-    }
+        modal.querySelector('.dm-card').appendChild(support);
+    }, 5000);
 }
 
 function closeDownloadModal() {
