@@ -561,8 +561,18 @@ function swapCarIni(originalContent, donorContent) {
     if (original.GRAPHICS) result.GRAPHICS = original.GRAPHICS;
     if (original.RIDE) result.RIDE = original.RIDE;
     
-    // Take donor CONTROLS, FUEL, FUELTANK, PIT_STOP
-    if (donor.CONTROLS) result.CONTROLS = donor.CONTROLS;
+    // CONTROLS: use donor as base but keep original STEER_LOCK and STEER_RATIO
+    // since original steer geometry (WBCAR_STEER/WBTYRE_STEER) is preserved
+    if (donor.CONTROLS) {
+        result.CONTROLS = { ...donor.CONTROLS };
+        if (original.CONTROLS) {
+            if (original.CONTROLS.STEER_LOCK !== undefined) result.CONTROLS.STEER_LOCK = original.CONTROLS.STEER_LOCK;
+            if (original.CONTROLS.STEER_RATIO !== undefined) result.CONTROLS.STEER_RATIO = original.CONTROLS.STEER_RATIO;
+            if (original.CONTROLS.LINEAR_STEER_ROD_RATIO !== undefined) result.CONTROLS.LINEAR_STEER_ROD_RATIO = original.CONTROLS.LINEAR_STEER_ROD_RATIO;
+        }
+    } else if (original.CONTROLS) {
+        result.CONTROLS = original.CONTROLS;
+    }
     if (donor.FUEL) result.FUEL = donor.FUEL;
     if (donor.FUELTANK) result.FUELTANK = donor.FUELTANK;
     if (donor.PIT_STOP) result.PIT_STOP = donor.PIT_STOP;
