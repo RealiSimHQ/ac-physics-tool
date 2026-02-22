@@ -3,60 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AiO Drift Physics Swapper | RealiSimHQ</title>
+    <title>Drift Physics Exchange | RealiSimHQ</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="container">
-            <div class="branding">
-                <h1>RealiSimHQ</h1>
-                <p class="tagline">AiO Drift Physics Swapper</p>
-            </div>
+        <div class="container header-content">
+            <img src="realisimhq-logo.jpg" alt="RealiSimHQ" class="site-logo">
+            <h1>Drift Physics Exchange</h1>
         </div>
     </header>
 
     <main class="container">
-        <section id="intro" class="intro">
-            <h2>Transform Your Car's Physics</h2>
-            <p>Swap your Assetto Corsa car's physics with professional drift carpacks. Drag your car's data folder below to get started.</p>
-        </section>
+
+        <!-- Car Info (shown after detection, above drop zone) -->
+        <div id="car-info" class="car-info hidden">
+            <h4>Car Detected</h4>
+            <div class="info-grid">
+                <div><strong>Name:</strong> <span id="car-name">-</span></div>
+                <div><strong>Weight:</strong> <span id="car-mass">-</span> kg</div>
+                <div><strong>Wheelbase:</strong> <span id="car-wheelbase">-</span> m</div>
+                <div><strong>Track (F/R):</strong> <span id="car-track">-</span> m</div>
+            </div>
+        </div>
 
         <!-- Step 1: Upload -->
         <section id="upload-section" class="step active">
-            <h3><span class="step-number">1</span> Upload Your Car Data</h3>
             <div id="drop-zone" class="drop-zone">
                 <div class="drop-zone-content">
                     <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <p>Drag & drop your <strong>car folder</strong>, <strong>data folder</strong>, or <strong>.zip</strong> here<br><small style="opacity:0.5">For .7z or .rar — extract first, then drag the folder</small></p>
-                    <p class="hint">or click to browse</p>
+                    <p>Drag & drop your <strong>car folder</strong>, <strong>data folder</strong>, or <strong>.zip</strong> here</p>
+                    <p class="hint">or click to browse<br><small style="opacity:0.5">For .7z or .rar — extract first, then drag the folder</small></p>
                 </div>
                 <input type="file" id="file-input" webkitdirectory directory multiple hidden>
-            </div>
-            <div id="car-info" class="car-info hidden">
-                <h4>Car Detected</h4>
-                <div class="info-grid">
-                    <div><strong>Name:</strong> <span id="car-name">-</span></div>
-                    <div><strong>Weight:</strong> <span id="car-mass">-</span> kg</div>
-                    <div><strong>Wheelbase:</strong> <span id="car-wheelbase">-</span> m</div>
-                    <div><strong>Track (F/R):</strong> <span id="car-track">-</span> m</div>
-                </div>
             </div>
         </section>
 
         <!-- Step 2: Select Pack -->
         <section id="pack-section" class="step">
-            <h3><span class="step-number">2</span> Choose a Carpack</h3>
+            <h3>Choose a Carpack</h3>
             <div id="pack-grid" class="pack-grid">
-                <!-- Carpack cards will be inserted here -->
             </div>
         </section>
 
         <!-- Step 3: Match & Download -->
         <section id="download-section" class="step">
-            <h3><span class="step-number">3</span> Matched Donor Car</h3>
+            <h3>Matched Donor Car</h3>
             <div id="match-info" class="match-info">
                 <div class="match-card">
                     <h4 id="donor-name">-</h4>
@@ -76,7 +70,7 @@
         </section>
 
         <footer class="footer">
-            <p>Powered by RealiSimHQ | For Assetto Corsa drift mods</p>
+            <p>RealiSimHQ — Drift Physics Exchange</p>
         </footer>
     </main>
 
