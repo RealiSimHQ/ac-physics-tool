@@ -610,7 +610,6 @@ function swapCarIni(originalContent, donorContent) {
     
     // BASIC: donor base, override only geometry-dependent values from original
     if (original.BASIC) {
-        if (original.BASIC.TOTALMASS) result.BASIC.TOTALMASS = original.BASIC.TOTALMASS;
         if (original.BASIC.INERTIA) result.BASIC.INERTIA = original.BASIC.INERTIA;
         if (original.BASIC.GRAPHICS_OFFSET) {
             // Keep original X,Z but donor Y (height)
