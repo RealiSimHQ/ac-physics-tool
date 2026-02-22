@@ -571,11 +571,16 @@ function swapSuspensionsIni(originalContent, donorContent) {
         if (original[section]) {
             if (!result[section]) result[section] = {};
             for (const key of keepKeys) {
-                if (original[section][key]) {
+                if (original[section][key] !== undefined) {
                     result[section][key] = original[section][key];
                 }
             }
         }
+    }
+    
+    // Keep original GRAPHICS_OFFSETS section entirely
+    if (original.GRAPHICS_OFFSETS) {
+        result.GRAPHICS_OFFSETS = { ...original.GRAPHICS_OFFSETS };
     }
     
     return INIParser.serialize(result);
