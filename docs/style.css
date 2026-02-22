@@ -716,8 +716,9 @@ header h1 {
 
 .dropdown-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
     padding: 14px 20px;
     cursor: pointer;
     transition: background 0.2s ease;
@@ -727,6 +728,12 @@ header h1 {
     background: rgba(0, 217, 255, 0.05);
 }
 
+.dropdown-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .dropdown-check {
     color: var(--success);
     font-weight: 700;
@@ -734,15 +741,14 @@ header h1 {
 }
 
 .dropdown-label {
-    flex: 1;
     font-weight: 600;
     font-size: 1rem;
     color: var(--text-primary);
 }
 
 .dropdown-pack-logo {
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid var(--border);
