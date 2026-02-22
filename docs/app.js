@@ -551,7 +551,16 @@ function swapCarIni(originalContent, donorContent) {
     if (original.BASIC) {
         if (original.BASIC.TOTALMASS) result.BASIC.TOTALMASS = original.BASIC.TOTALMASS;
         if (original.BASIC.INERTIA) result.BASIC.INERTIA = original.BASIC.INERTIA;
-        if (original.BASIC.GRAPHICS_OFFSET) result.BASIC.GRAPHICS_OFFSET = original.BASIC.GRAPHICS_OFFSET;
+        if (original.BASIC.GRAPHICS_OFFSET) {
+            // Keep original X,Z but donor Y (height)
+            const origParts = original.BASIC.GRAPHICS_OFFSET.split(',').map(s => s.trim());
+            const donorParts = (result.BASIC.GRAPHICS_OFFSET || '0,0,0').split(',').map(s => s.trim());
+            if (origParts.length >= 3 && donorParts.length >= 3) {
+                result.BASIC.GRAPHICS_OFFSET = `${origParts[0]}, ${donorParts[1]}, ${origParts[2]}`;
+            } else {
+                result.BASIC.GRAPHICS_OFFSET = original.BASIC.GRAPHICS_OFFSET;
+            }
+        }
         if (original.BASIC.GRAPHICS_PITCH_ROTATION) result.BASIC.GRAPHICS_PITCH_ROTATION = original.BASIC.GRAPHICS_PITCH_ROTATION;
     }
     
