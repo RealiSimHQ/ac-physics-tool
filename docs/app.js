@@ -96,7 +96,7 @@ function renderPackGrid() {
         card.innerHTML = `
             <img src="logos/${pack.id}.${logoExt}" alt="${pack.name}" class="pack-logo">
             <h4>${pack.name}</h4>
-            <p class="car-count">${pack.carCount} donor cars</p>
+<!-- -->
         `;
         
         card.addEventListener('click', () => selectPack(pack));
