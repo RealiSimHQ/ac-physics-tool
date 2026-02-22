@@ -48,7 +48,30 @@
             </div>
         </section>
 
-        <!-- Step 3: Download (no match info, just button) -->
+        <!-- Advanced Settings -->
+        <section id="advanced-section" class="step">
+            <div class="advanced-toggle" id="advanced-toggle">
+                <h3>
+                    <span class="toggle-arrow">▶</span> Advanced Settings
+                </h3>
+            </div>
+            <div id="advanced-panel" class="advanced-panel hidden">
+                <div class="advanced-row">
+                    <label for="donor-select">Donor Car</label>
+                    <select id="donor-select">
+                        <option value="">Auto (best match)</option>
+                    </select>
+                </div>
+                <div class="advanced-row">
+                    <label for="engine-select">Engine Source</label>
+                    <select id="engine-select">
+                        <option value="">Same as donor car</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: Download -->
         <section id="download-section" class="step">
             <button id="download-btn" class="btn-download">
                 <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">

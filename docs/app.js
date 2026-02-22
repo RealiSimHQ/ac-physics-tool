@@ -133,6 +133,23 @@ function setupEventListeners() {
     });
     
     document.getElementById('download-btn').addEventListener('click', generateSwap);
+    
+    // Advanced settings toggle
+    document.getElementById('advanced-toggle').addEventListener('click', () => {
+        const panel = document.getElementById('advanced-panel');
+        const arrow = document.querySelector('.toggle-arrow');
+        panel.classList.toggle('hidden');
+        arrow.classList.toggle('open');
+    });
+    
+    // Donor car manual selection
+    document.getElementById('donor-select').addEventListener('change', (e) => {
+        if (e.target.value && State.selectedPack) {
+            State.matchedDonor = { carId: e.target.value, ...State.selectedPack.cars[e.target.value] };
+        } else {
+            findBestMatch();
+        }
+    });
 }
 
 async function handleFileUpload(items) {
@@ -414,15 +431,39 @@ async function selectPack(pack) {
         State.selectedPack = await response.json();
         State.selectedPack.logo = `${pack.id}.${pack.id === 'NNTS' ? 'jpg' : 'png'}`;
         
+        // Populate advanced dropdowns
+        populateAdvancedDropdowns();
+        
         // Find best match
         findBestMatch();
         
+        activateStep('advanced-section');
         activateStep('download-section');
     } catch (error) {
         console.error('Failed to load pack:', error);
         alert('Failed to load carpack data.');
     } finally {
         hideLoading();
+    }
+}
+
+function populateAdvancedDropdowns() {
+    const donorSelect = document.getElementById('donor-select');
+    const engineSelect = document.getElementById('engine-select');
+    
+    // Clear and add default options
+    donorSelect.innerHTML = '<option value="">Auto (best match)</option>';
+    engineSelect.innerHTML = '<option value="">Same as donor car</option>';
+    
+    if (!State.selectedPack || !State.selectedPack.cars) return;
+    
+    // Sort car names alphabetically
+    const carIds = Object.keys(State.selectedPack.cars).sort();
+    
+    for (const carId of carIds) {
+        const name = carId.replace(/_/g, ' ');
+        donorSelect.innerHTML += `<option value="${carId}">${name}</option>`;
+        engineSelect.innerHTML += `<option value="${carId}">${name}</option>`;
     }
 }
 
@@ -480,6 +521,13 @@ async function generateSwap() {
         const donor = State.matchedDonor;
         const original = State.originalCar;
         
+        // Check for engine source override
+        const engineSelectVal = document.getElementById('engine-select').value;
+        let engineSource = donor;
+        if (engineSelectVal && State.selectedPack.cars[engineSelectVal]) {
+            engineSource = { carId: engineSelectVal, ...State.selectedPack.cars[engineSelectVal] };
+        }
+        
         // Swap car.ini
         const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini']);
         zip.file('car.ini', carIni);
@@ -492,19 +540,32 @@ async function generateSwap() {
         const tyresIni = swapTyresIni(original.files['tyres.ini'], donor.files['tyres.ini']);
         zip.file('tyres.ini', tyresIni);
         
-        // Copy all other physics files from donor
-        const physicsFiles = ['engine.ini', 'drivetrain.ini', 'brakes.ini', 'electronics.ini', 
-                             'aero.ini', 'setup.ini', 'damage.ini', 'drs.ini', 'escmode.ini'];
+        // Engine files from engine source (may differ from donor)
+        const engineFiles = ['engine.ini', 'drivetrain.ini'];
+        for (const fileName of engineFiles) {
+            if (engineSource.files[fileName]) {
+                zip.file(fileName, engineSource.files[fileName]);
+            }
+        }
+        // Engine .lut files (power.lut, engine_map*.lut etc) from engine source
+        for (const [fileName, content] of Object.entries(engineSource.files)) {
+            if (fileName.endsWith('.lut') && (fileName.startsWith('power') || fileName.startsWith('engine') || fileName.startsWith('throttle'))) {
+                zip.file(fileName, content);
+            }
+        }
         
-        for (const fileName of physicsFiles) {
+        // Copy remaining physics files from donor
+        const otherPhysics = ['brakes.ini', 'electronics.ini', 'aero.ini', 'setup.ini', 
+                              'damage.ini', 'drs.ini', 'escmode.ini'];
+        for (const fileName of otherPhysics) {
             if (donor.files[fileName]) {
                 zip.file(fileName, donor.files[fileName]);
             }
         }
         
-        // Copy all .lut and .rto files from donor
+        // Copy remaining .lut and .rto files from donor (skip engine ones already added)
         for (const [fileName, content] of Object.entries(donor.files)) {
-            if (fileName.endsWith('.lut') || fileName.endsWith('.rto')) {
+            if ((fileName.endsWith('.lut') || fileName.endsWith('.rto')) && !zip.files[fileName]) {
                 zip.file(fileName, content);
             }
         }
