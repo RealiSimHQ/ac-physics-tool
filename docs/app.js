@@ -562,14 +562,10 @@ async function generateSwap() {
         const blob = await zip.generateAsync({ type: 'blob' });
         const packName = State.selectedPack.packName.replace(/ /g, '_');
         
-        downloadBlob(blob, `data_${packName}.zip`);
-        
-        // Show support section
-        document.getElementById('support-section').classList.remove('hidden');
-        document.getElementById('support-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
+        // Show interstitial modal BEFORE download
         btn.classList.remove('flashing');
         btn.disabled = false;
+        showDownloadModal(blob, `data_${packName}.zip`);
         
     } catch (error) {
         console.error('Swap generation error:', error);
@@ -706,6 +702,93 @@ function downloadBlob(blob, filename) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+function showDownloadModal(blob, filename) {
+    // Get pack logo
+    const packId = State.selectedPack.packName.replace(/ /g, '_');
+    const logoExt = packId === 'NNTS' ? 'jpg' : 'png';
+    const logoUrl = `logos/${packId}.${logoExt}`;
+    
+    // Create modal
+    const modal = document.createElement('div');
+    modal.id = 'download-modal';
+    modal.innerHTML = `
+        <div class="dm-backdrop"></div>
+        <div class="dm-card">
+            <img src="${logoUrl}" alt="${State.selectedPack.packName}" class="dm-pack-logo">
+            <h2 class="dm-title">Your physics swap is ready</h2>
+            <p class="dm-subtitle">${State.selectedPack.packName} → <span style="color:var(--accent-cyan)">${State.originalCar.metadata.name || 'your car'}</span></p>
+            <div class="dm-divider"></div>
+            <p class="dm-cta">If this saved you time, consider giving back.</p>
+            <div class="dm-links">
+                <a href="https://www.patreon.com/RealiSimHQ" target="_blank" class="support-btn patreon-btn">Support on Patreon</a>
+                <a href="https://paypal.me/PodcastPrimates" target="_blank" class="support-btn tip-btn">Leave a Tip</a>
+            </div>
+            <div class="dm-countdown">
+                <div class="dm-progress-bar"><div class="dm-progress-fill"></div></div>
+                <p class="dm-timer-text">Download starts in <span id="dm-seconds">5</span>s</p>
+            </div>
+            <button class="dm-skip" onclick="triggerDownloadNow()">Download now</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Store blob for download
+    window._pendingDownload = { blob, filename };
+    
+    // Countdown
+    let seconds = 5;
+    const counter = document.getElementById('dm-seconds');
+    const interval = setInterval(() => {
+        seconds--;
+        if (counter) counter.textContent = seconds;
+        if (seconds <= 0) {
+            clearInterval(interval);
+            triggerDownloadNow();
+        }
+    }, 1000);
+    
+    window._downloadInterval = interval;
+}
+
+function triggerDownloadNow() {
+    if (window._downloadInterval) {
+        clearInterval(window._downloadInterval);
+        window._downloadInterval = null;
+    }
+    const { blob, filename } = window._pendingDownload || {};
+    if (blob) {
+        downloadBlob(blob, filename);
+        window._pendingDownload = null;
+    }
+    // Transition modal to completed state
+    const modal = document.getElementById('download-modal');
+    if (modal) {
+        const card = modal.querySelector('.dm-card');
+        const countdown = modal.querySelector('.dm-countdown');
+        const skip = modal.querySelector('.dm-skip');
+        if (countdown) countdown.remove();
+        if (skip) skip.remove();
+        
+        // Add close button and done message
+        const done = document.createElement('div');
+        done.className = 'dm-done';
+        done.innerHTML = `
+            <p style="color:var(--success); font-weight:700; font-size:1.1rem; margin-top:16px;">✓ Download started</p>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin-top:4px;">Extract the zip into your car's data/ folder and hit the track.</p>
+            <button class="dm-close" onclick="closeDownloadModal()">Close</button>
+        `;
+        card.appendChild(done);
+    }
+}
+
+function closeDownloadModal() {
+    const modal = document.getElementById('download-modal');
+    if (modal) {
+        modal.classList.add('dm-fade-out');
+        setTimeout(() => modal.remove(), 300);
+    }
 }
 
 // Initialize on load
