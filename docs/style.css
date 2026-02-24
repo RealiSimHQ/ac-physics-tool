@@ -940,3 +940,22 @@ header h1 {
         height: 80px;
     }
 }
+
+/* Patreon Gate */
+.patreon-gate { margin-bottom: 24px; }
+.gate-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px; text-align: center;
+}
+.gate-card h3 { font-size: 1.3rem; margin-bottom: 12px; }
+.gate-card p { color: var(--text-secondary); margin-bottom: 20px; }
+.btn-patreon {
+    padding: 14px 40px; font-size: 1.05rem; font-weight: 700;
+    border: none; border-radius: var(--radius); cursor: pointer;
+    background: #ff424d; color: #fff;
+    transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 66, 77, 0.3);
+}
+.btn-patreon:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(255, 66, 77, 0.4); }
+.gate-sub { font-size: 0.85rem; margin-top: 16px; }
+.gate-sub a { color: var(--accent-cyan); text-decoration: none; }
+.patron-welcome { color: var(--success); font-size: 0.9rem; margin-bottom: 16px; text-align: center; }

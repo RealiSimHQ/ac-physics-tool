@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging in... | RealiSimHQ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0e14 0%, #0f1419 100%);
+            color: #e6e8eb; min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .card { text-align: center; padding: 48px; }
+        .spinner {
+            width: 48px; height: 48px; border: 4px solid #2d3748;
+            border-top-color: #00d9ff; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 24px;
+        }
+        h2 { color: #00d9ff; margin-bottom: 8px; }
+        p { color: #9ca3af; }
+        .error { color: #ef4444; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="spinner" id="spinner"></div>
+        <h2 id="title">Verifying Patreon membership...</h2>
+        <p id="message">Please wait</p>
+    </div>
+    <script>
+        const WORKER_URL = 'https://realisimhq-auth.paddy-bot-00.workers.dev';
+        // Note: redirect URI for this tool is ac-physics-tool
+
+        async function handleCallback() {
+            const params = new URLSearchParams(window.location.search);
+            const code = params.get('code');
+            const error = params.get('error');
+
+            if (error) {
+                showError('Patreon login was cancelled or denied.');
+                return;
+            }
+            if (!code) {
+                showError('No authorization code received.');
+                return;
+            }
+
+            try {
+                const resp = await fetch(`${WORKER_URL}/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, redirect_uri: window.location.origin + window.location.pathname })
+                });
+
+                const data = await resp.json();
+
+                if (data.authorized) {
+                    // Store session
+                    sessionStorage.setItem('patreon_authorized', 'true');
+                    sessionStorage.setItem('patreon_name', data.name || 'Patron');
+                    sessionStorage.setItem('patreon_until', Date.now() + (4 * 60 * 60 * 1000)); // 4hr session
+                    window.location.href = './';
+                } else {
+                    showError(data.message || 'You need an active Patreon subscription to use this tool.');
+                }
+            } catch (e) {
+                showError('Failed to verify membership. Please try again.');
+                console.error(e);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('title').textContent = 'Access Denied';
+            document.getElementById('title').classList.add('error');
+            document.getElementById('message').textContent = msg;
+            document.getElementById('message').innerHTML = msg + '<br><br><a href="https://www.patreon.com/RealiSimHQ" style="color:#00d9ff;">Subscribe on Patreon</a> · <a href="./" style="color:#9ca3af;">Back</a>';
+        }
+
+        handleCallback();
+    </script>
+</body>
+</html>

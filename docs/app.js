@@ -1,6 +1,41 @@
 // AC Physics Swapper - Client-side app
 // RealiSimHQ 2026
 
+// ─── Patreon Auth ───
+const PATREON_CLIENT_ID = 'vq1EOHIoQ_2p_R0SVEcW3FRYvbMkcwMX1utj5hcvipJ3_1sSPethC5KM2FoiHZgS';
+const PATREON_REDIRECT = 'https://realisimhq.github.io/ac-physics-tool/callback.html';
+
+function patreonLogin() {
+    const url = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(PATREON_REDIRECT)}&scope=identity%20identity%5Bemail%5D%20identity.memberships`;
+    window.location.href = url;
+}
+
+function checkPatreonSession() {
+    const auth = sessionStorage.getItem('patreon_authorized');
+    const until = parseInt(sessionStorage.getItem('patreon_until') || '0');
+    if (auth === 'true' && Date.now() < until) return sessionStorage.getItem('patreon_name') || 'Patron';
+    return null;
+}
+
+function initPatreonGate() {
+    const patron = checkPatreonSession();
+    const gate = document.getElementById('patreon-gate');
+    const uploadSection = document.getElementById('upload-section');
+    if (patron) {
+        gate.classList.add('hidden');
+        const welcome = document.createElement('div');
+        welcome.className = 'patron-welcome';
+        welcome.textContent = `Welcome, ${patron}! 🎉`;
+        gate.parentNode.insertBefore(welcome, document.getElementById('car-info'));
+    } else {
+        uploadSection.classList.remove('active');
+        uploadSection.style.display = 'none';
+        document.getElementById('pack-section').style.display = 'none';
+        document.getElementById('generate-section').style.display = 'none';
+        document.getElementById('advanced-section').style.display = 'none';
+    }
+}
+
 const State = {
     packs: [],
     selectedPack: null,
@@ -846,4 +881,4 @@ function closeDownloadModal() {
 }
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => { init(); initPatreonGate(); });
