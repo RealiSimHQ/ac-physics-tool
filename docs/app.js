@@ -17,6 +17,14 @@ function checkPatreonSession() {
     return null;
 }
 
+function hasUsedTrial() {
+    return localStorage.getItem('dpe_trial_used') === 'true';
+}
+
+function markTrialUsed() {
+    localStorage.setItem('dpe_trial_used', 'true');
+}
+
 function initPatreonGate() {
     const patron = checkPatreonSession();
     const gate = document.getElementById('patreon-gate');
@@ -27,12 +35,20 @@ function initPatreonGate() {
         welcome.className = 'patron-welcome';
         welcome.textContent = `Welcome, ${patron}! 🎉`;
         gate.parentNode.insertBefore(welcome, document.getElementById('car-info'));
+    } else if (!hasUsedTrial()) {
+        // Free trial
+        gate.innerHTML = `<div class="gate-card" style="border-color:var(--accent-cyan);padding:20px;">
+            <p style="margin:0;color:var(--accent-cyan);">🎁 <strong>Free Trial</strong> — Generate one physics pack free. <a href="https://www.patreon.com/checkout/RealiSimHQ?rid=26118508" target="_blank" style="color:var(--accent-gold);">Subscribe for unlimited access</a></p>
+        </div>`;
     } else {
+        // Trial used
         uploadSection.classList.remove('active');
         uploadSection.style.display = 'none';
         document.getElementById('pack-section').style.display = 'none';
         document.getElementById('generate-section').style.display = 'none';
         document.getElementById('advanced-section').style.display = 'none';
+        gate.querySelector('h3').textContent = '🔒 Trial Used';
+        gate.querySelector('p').textContent = 'You\'ve used your free generation. Subscribe to continue using the tool.';
     }
 }
 
@@ -688,6 +704,7 @@ async function generateSwap() {
         // Show interstitial modal BEFORE download
         btn.classList.remove('flashing');
         btn.disabled = false;
+        if (!checkPatreonSession()) markTrialUsed();
         showDownloadModal(blob, `data_${packName}.zip`);
         
     } catch (error) {
@@ -845,12 +862,8 @@ function showDownloadModal(blob, filename) {
             <h2 class="dm-title">Your ${State.selectedPack.packName} swap is ready</h2>
             <p class="dm-subtitle">${State.selectedPack.packName} &rarr; <span style="color:var(--accent-cyan)">${State.originalCar.metadata.name || 'your car'}</span></p>
             <div class="dm-divider"></div>
-            <p class="dm-cta">If this saved you time, consider giving back.</p>
-            <div class="dm-links">
-                <a href="https://www.patreon.com/RealiSimHQ" target="_blank" class="support-btn patreon-btn">Support on Patreon</a>
-                <a href="https://paypal.me/PodcastPrimates" target="_blank" class="support-btn tip-btn">Leave a Tip</a>
-            </div>
-            <p style="font-size:0.85rem;color:var(--text-secondary);opacity:0.5;margin-top:12px;">100% of tips go toward building more tools for the community</p>
+            <p class="dm-cta" style="font-size:1.1rem;">Thank you for your continued support! 🙏</p>
+            <p style="color:var(--text-secondary);margin-top:8px;">Have fun out there. 🏎️💨</p>
         </div>
     `;
     document.body.appendChild(modal);
