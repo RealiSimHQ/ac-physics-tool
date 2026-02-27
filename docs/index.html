@@ -146,6 +146,86 @@
             </div>
         </section>
 
+        <!-- Advanced Visual Settings -->
+        <section id="visual-section" class="step">
+            <div class="adjust-dropdown">
+                <div class="adjust-dropdown-header" id="visual-toggle">
+                    <span class="adjust-dropdown-label">⚙️ Advanced Visual Settings</span>
+                    <span class="adjust-dropdown-arrow" id="visual-arrow">▼</span>
+                </div>
+                <div class="adjust-dropdown-body hidden" id="visual-body">
+                    <div style="display:flex;flex-direction:column;gap:16px;">
+
+                        <!-- Car Body Height -->
+                        <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                            <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Car Body Height (Visual)</h4>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                                <button onclick="adjHeight(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                                <button onclick="adjHeight(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <div onclick="resetHeight()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                    <span id="adj-height-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
+                                </div>
+                                <button onclick="adjHeight(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <button onclick="adjHeight(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            </div>
+                        </div>
+
+                        <!-- Front Track Width -->
+                        <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                            <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Front Track Width (Visual)</h4>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                                <button onclick="adjFrontWidth(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                                <button onclick="adjFrontWidth(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <div onclick="resetFrontWidth()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                    <span id="adj-fwidth-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
+                                </div>
+                                <button onclick="adjFrontWidth(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <button onclick="adjFrontWidth(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            </div>
+                        </div>
+
+                        <!-- Rear Track Width -->
+                        <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                            <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Rear Track Width (Visual)</h4>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                                <button onclick="adjRearWidth(-0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                                <button onclick="adjRearWidth(-0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <div onclick="resetRearWidth()" style="flex:1;max-width:160px;height:56px;background:#0a0e14;border:2px solid #2d3748;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                                    <span id="adj-rwidth-val" style="font-family:monospace;font-size:1.3rem;font-weight:700;color:#a78bfa;">0"</span>
+                                </div>
+                                <button onclick="adjRearWidth(0.003125)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                                <button onclick="adjRearWidth(0.02500)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                            </div>
+                        </div>
+
+                        <!-- Body Pitch Rotation -->
+                        <div style="background:#0f1419;border-radius:16px;padding:20px;">
+                            <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.85rem;margin:0 0 16px;">Body Pitch Rotation</h4>
+                            <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+                                <button onclick="adjPitch(-5)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">5°</button>
+                                <button onclick="adjPitch(-1)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1°</button>
+                                <div id="pitch-knob" onclick="resetPitch()" style="width:120px;height:120px;cursor:pointer;flex-shrink:0;" onmousedown="startPitchDrag(event)" ontouchstart="startPitchDrag(event)">
+                                    <svg width="120" height="120" viewBox="0 0 120 120">
+                                        <circle cx="60" cy="60" r="54" fill="#0a0e14" stroke="#2d3748" stroke-width="2"/>
+                                        <line x1="60" y1="6" x2="60" y2="16" stroke="#2d3748" stroke-width="1"/>
+                                        <line x1="60" y1="104" x2="60" y2="114" stroke="#2d3748" stroke-width="1"/>
+                                        <line id="pitch-line" x1="8" y1="60" x2="112" y2="60" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" transform="rotate(0, 60, 60)"/>
+                                        <circle cx="60" cy="60" r="5" fill="#a78bfa" opacity="0.9"/>
+                                    </svg>
+                                </div>
+                                <button onclick="adjPitch(1)" style="width:48px;height:48px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1°</button>
+                                <button onclick="adjPitch(5)" style="width:56px;height:56px;border:1px solid #2d3748;border-radius:14px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">5°</button>
+                            </div>
+                            <div style="text-align:center;margin-top:10px;">
+                                <span id="adj-pitch-val" style="font-family:monospace;font-size:1.2rem;font-weight:700;color:#a78bfa;">0°</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Post-download support section (fallback) -->
         <section id="support-section" class="support-section hidden">
             <div class="support-content">

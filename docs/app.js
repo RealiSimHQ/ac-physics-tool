@@ -433,6 +433,7 @@ function collapseUploadShowPacks() {
     document.getElementById('pack-dropdown').classList.add('hidden');
     deactivateStep('generate-section');
     deactivateStep('advanced-section');
+    deactivateStep('visual-section');
 }
 
 function setupMiniDropZone() {
@@ -470,6 +471,7 @@ function collapsePacksShowGenerate() {
 
     // Show advanced
     activateStep('advanced-section');
+    activateStep('visual-section');
 }
 
 function renderPackGridInto(container) {
@@ -656,12 +658,15 @@ async function generateSwap() {
             engineSource = { carId: engineSelectVal, ...State.selectedPack.cars[engineSelectVal] };
         }
         
+        // Get visual adjustments
+        const adj = getVisualAdjustments();
+        
         // Swap car.ini
-        const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini']);
+        const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini'], adj);
         zip.file('data/car.ini', carIni);
         
         // Swap suspensions.ini
-        const suspIni = swapSuspensionsIni(original.files['suspensions.ini'], donor.files['suspensions.ini']);
+        const suspIni = swapSuspensionsIni(original.files['suspensions.ini'], donor.files['suspensions.ini'], adj);
         zip.file('data/suspensions.ini', suspIni);
         
         // Swap tyres.ini
@@ -716,7 +721,7 @@ async function generateSwap() {
     }
 }
 
-function swapCarIni(originalContent, donorContent) {
+function swapCarIni(originalContent, donorContent, adj) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
@@ -735,16 +740,20 @@ function swapCarIni(originalContent, donorContent) {
     if (original.BASIC) {
         if (original.BASIC.INERTIA) result.BASIC.INERTIA = original.BASIC.INERTIA;
         if (original.BASIC.GRAPHICS_OFFSET) {
-            // Keep original X,Z but donor Y (height)
+            // Keep original X,Z but donor Y (height) + height adjustment
             const origParts = original.BASIC.GRAPHICS_OFFSET.split(',').map(s => s.trim());
             const donorParts = (result.BASIC.GRAPHICS_OFFSET || '0,0,0').split(',').map(s => s.trim());
             if (origParts.length >= 3 && donorParts.length >= 3) {
-                result.BASIC.GRAPHICS_OFFSET = `${origParts[0]}, ${donorParts[1]}, ${origParts[2]}`;
+                const finalY = (parseFloat(donorParts[1]) + (adj.height || 0)).toFixed(3);
+                result.BASIC.GRAPHICS_OFFSET = `${origParts[0]}, ${finalY}, ${origParts[2]}`;
             } else {
                 result.BASIC.GRAPHICS_OFFSET = original.BASIC.GRAPHICS_OFFSET;
             }
         }
-        if (original.BASIC.GRAPHICS_PITCH_ROTATION) result.BASIC.GRAPHICS_PITCH_ROTATION = original.BASIC.GRAPHICS_PITCH_ROTATION;
+        // Apply pitch adjustment
+        const basePitch = parseFloat(original.BASIC.GRAPHICS_PITCH_ROTATION || '0');
+        const finalPitch = (basePitch + (adj.pitch || 0)).toFixed(2);
+        result.BASIC.GRAPHICS_PITCH_ROTATION = finalPitch;
     }
     
     // Keep original GRAPHICS and RIDE (visual/geometry dependent)
@@ -761,7 +770,7 @@ function swapCarIni(originalContent, donorContent) {
     return INIParser.serialize(result);
 }
 
-function swapSuspensionsIni(originalContent, donorContent) {
+function swapSuspensionsIni(originalContent, donorContent, adj) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
@@ -775,18 +784,16 @@ function swapSuspensionsIni(originalContent, donorContent) {
         if (original.BASIC.CG_LOCATION) result.BASIC.CG_LOCATION = original.BASIC.CG_LOCATION;
     }
     
-    // ONLY keep original TRACK — all geometry comes from donor pack
-    const keepKeys = ['TRACK'];
-    
-    for (const section of ['FRONT', 'REAR']) {
-        if (original[section]) {
-            if (!result[section]) result[section] = {};
-            for (const key of keepKeys) {
-                if (original[section][key] !== undefined) {
-                    result[section][key] = original[section][key];
-                }
-            }
-        }
+    // Keep original TRACK values + apply width adjustments
+    if (original.FRONT) {
+        if (!result.FRONT) result.FRONT = {};
+        const origFrontTrack = parseFloat(original.FRONT.TRACK || '1.5');
+        result.FRONT.TRACK = (origFrontTrack + (adj.frontWidth || 0)).toFixed(4);
+    }
+    if (original.REAR) {
+        if (!result.REAR) result.REAR = {};
+        const origRearTrack = parseFloat(original.REAR.TRACK || '1.5');
+        result.REAR.TRACK = (origRearTrack + (adj.rearWidth || 0)).toFixed(4);
     }
     
     // Keep original GRAPHICS_OFFSETS section entirely
@@ -894,5 +901,120 @@ function closeDownloadModal() {
     }
 }
 
+// ─── Visual Adjustments ───
+let _adjHeight = 0;
+let _adjFrontWidth = 0;
+let _adjRearWidth = 0;
+let _pitchDegrees = 0;
+const ADJ_LIMIT = 0.750;
+
+function toInches(val) {
+    var inches = val / 0.02500;
+    var neg = inches < 0;
+    var abs = Math.abs(inches);
+    var whole = Math.floor(abs);
+    var eighths = Math.round((abs - whole) * 8);
+    if (eighths === 8) { whole++; eighths = 0; }
+    var num = eighths, den = 8;
+    if (num > 0) {
+        if (num % 4 === 0) { num /= 4; den /= 4; }
+        else if (num % 2 === 0) { num /= 2; den /= 2; }
+    }
+    var sign = neg ? '-' : '';
+    if (whole === 0 && num === 0) return '0"';
+    if (num === 0) return sign + whole + '"';
+    if (whole === 0) return sign + num + '/' + den + '"';
+    return sign + whole + ' ' + num + '/' + den + '"';
+}
+
+function adjHeight(delta) {
+    _adjHeight = Math.round((_adjHeight + delta) * 1e6) / 1e6;
+    _adjHeight = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjHeight));
+    document.getElementById('adj-height-val').textContent = toInches(_adjHeight);
+}
+function resetHeight() { _adjHeight = 0; document.getElementById('adj-height-val').textContent = '0"'; }
+
+function adjFrontWidth(delta) {
+    _adjFrontWidth = Math.round((_adjFrontWidth + delta) * 1e6) / 1e6;
+    _adjFrontWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjFrontWidth));
+    document.getElementById('adj-fwidth-val').textContent = toInches(_adjFrontWidth);
+}
+function resetFrontWidth() { _adjFrontWidth = 0; document.getElementById('adj-fwidth-val').textContent = '0"'; }
+
+function adjRearWidth(delta) {
+    _adjRearWidth = Math.round((_adjRearWidth + delta) * 1e6) / 1e6;
+    _adjRearWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjRearWidth));
+    document.getElementById('adj-rwidth-val').textContent = toInches(_adjRearWidth);
+}
+function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
+
+function updatePitchUI() {
+    var sign = _pitchDegrees > 0 ? '+' : '';
+    document.getElementById('adj-pitch-val').textContent = sign + _pitchDegrees + '°';
+    var angle = _pitchDegrees;
+    document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
+}
+
+function adjPitch(delta) {
+    _pitchDegrees = Math.round(_pitchDegrees + delta);
+    _pitchDegrees = Math.max(-20, Math.min(20, _pitchDegrees));
+    updatePitchUI();
+}
+
+function resetPitch() {
+    _pitchDegrees = 0;
+    updatePitchUI();
+}
+
+var _pitchDragging = false;
+function startPitchDrag(e) {
+    e.preventDefault();
+    _pitchDragging = true;
+    var knob = document.getElementById('pitch-knob');
+    var rect = knob.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+
+    function onMove(ev) {
+        if (!_pitchDragging) return;
+        var pt = ev.touches ? ev.touches[0] : ev;
+        var dx = pt.clientX - cx;
+        var dy = pt.clientY - cy;
+        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        _pitchDegrees = Math.round(Math.max(-20, Math.min(20, angle)));
+        updatePitchUI();
+    }
+    function onUp() {
+        _pitchDragging = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onUp);
+}
+
+function getVisualAdjustments() {
+    return {
+        height: _adjHeight,
+        pitch: _pitchDegrees * -0.10,
+        frontWidth: _adjFrontWidth,
+        rearWidth: _adjRearWidth
+    };
+}
+
+function initVisualToggle() {
+    var toggle = document.getElementById('visual-toggle');
+    if (toggle) {
+        toggle.addEventListener('click', function() {
+            document.getElementById('visual-body').classList.toggle('hidden');
+            document.getElementById('visual-arrow').classList.toggle('open');
+        });
+    }
+}
+
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => { init(); initPatreonGate(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initPatreonGate(); initVisualToggle(); });

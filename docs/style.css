@@ -941,6 +941,47 @@ header h1 {
     }
 }
 
+/* ── Advanced Visual Settings Dropdown ── */
+.adjust-dropdown {
+    background: var(--bg-card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.adjust-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.adjust-dropdown-header:hover {
+    background: rgba(0, 217, 255, 0.05);
+}
+
+.adjust-dropdown-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.adjust-dropdown-arrow {
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    transition: transform 0.3s ease;
+}
+
+.adjust-dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.adjust-dropdown-body {
+    padding: 0 20px 20px;
+}
+
 /* Patreon Gate */
 .patreon-gate { margin-bottom: 24px; }
 .gate-card {
