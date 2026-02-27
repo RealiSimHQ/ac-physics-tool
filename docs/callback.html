@@ -62,7 +62,10 @@
                     sessionStorage.setItem('patreon_authorized', 'true');
                     sessionStorage.setItem('patreon_name', data.name || 'Patron');
                     sessionStorage.setItem('patreon_until', Date.now() + (4 * 60 * 60 * 1000)); // 4hr session
-                    window.location.href = './';
+                    // Redirect back to the originating app (passed via OAuth state param)
+                    const stateParam = params.get('state');
+                    const returnUrl = stateParam ? decodeURIComponent(stateParam) : './';
+                    window.location.href = returnUrl;
                 } else {
                     showError(data.message || 'You need an active Patreon subscription to use this tool.');
                 }

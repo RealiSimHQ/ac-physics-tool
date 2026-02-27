@@ -6,7 +6,8 @@ const PATREON_CLIENT_ID = 'vq1EOHIoQ_2p_R0SVEcW3FRYvbMkcwMX1utj5hcvipJ3_1sSPethC
 const PATREON_REDIRECT = 'https://realisimhq.github.io/ac-physics-tool/callback.html';
 
 function patreonLogin() {
-    const url = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(PATREON_REDIRECT)}&scope=identity%20identity%5Bemail%5D%20identity.memberships`;
+    const returnUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+    const url = `https://www.patreon.com/oauth2/authorize?response_type=code&client_id=${PATREON_CLIENT_ID}&redirect_uri=${encodeURIComponent(PATREON_REDIRECT)}&scope=identity%20identity%5Bemail%5D%20identity.memberships&state=${returnUrl}`;
     window.location.href = url;
 }
 
