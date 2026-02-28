@@ -258,7 +258,12 @@
 
                 <!-- Top-Down SVG -->
                 <svg id="tuner-top-svg" viewBox="0 0 400 420" style="width:100%;max-width:340px;display:block;margin:0 auto 12px;">
-                    <!-- Car body (white, wide enough that tires are flush at 0) -->
+                    <!-- Tires (dark grey, tucked under body at 0) -->
+                    <g id="t-lf"><rect x="118" y="90" width="34" height="60" rx="5" fill="#3a3a3a" stroke="#555" stroke-width="1"/></g>
+                    <g id="t-rf"><rect x="248" y="90" width="34" height="60" rx="5" fill="#3a3a3a" stroke="#555" stroke-width="1"/></g>
+                    <g id="t-lr"><rect x="118" y="280" width="34" height="60" rx="5" fill="#3a3a3a" stroke="#555" stroke-width="1"/></g>
+                    <g id="t-rr"><rect x="248" y="280" width="34" height="60" rx="5" fill="#3a3a3a" stroke="#555" stroke-width="1"/></g>
+                    <!-- Car body (white, drawn on top so tires are hidden at 0) -->
                     <rect x="134" y="40" width="132" height="340" rx="20" fill="#e8e8e8" stroke="#bbb" stroke-width="1.5"/>
                     <!-- Windshield -->
                     <path d="M150,140 L250,140 L246,112 L154,112 Z" fill="#3a5570" opacity="0.5"/>
@@ -266,15 +271,6 @@
                     <path d="M154,300 L246,300 L250,328 L150,328 Z" fill="#3a5570" opacity="0.4"/>
                     <!-- Center line -->
                     <line x1="200" y1="55" x2="200" y2="365" stroke="#ccc" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.3"/>
-                    <!-- Front axle -->
-                    <line x1="60" y1="120" x2="340" y2="120" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
-                    <!-- Rear axle -->
-                    <line x1="60" y1="310" x2="340" y2="310" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
-                    <!-- Tires (black, flush with body edges at 0) -->
-                    <g id="t-lf"><rect x="100" y="90" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
-                    <g id="t-rf"><rect x="266" y="90" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
-                    <g id="t-lr"><rect x="100" y="280" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
-                    <g id="t-rr"><rect x="266" y="280" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
                 </svg>
 
                 <!-- Front Track Width controls (bottom) -->
