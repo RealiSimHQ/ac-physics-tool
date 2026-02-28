@@ -255,23 +255,23 @@
 
                 <!-- Top-Down SVG -->
                 <svg id="tuner-top-svg" viewBox="0 0 400 420" style="width:100%;max-width:340px;display:block;margin:0 auto 12px;">
-                    <!-- Car body -->
-                    <rect x="155" y="40" width="90" height="340" rx="18" fill="#1e2530" stroke="#3a4555" stroke-width="1.5"/>
+                    <!-- Car body (white, wide enough that tires are flush at 0) -->
+                    <rect x="134" y="40" width="132" height="340" rx="20" fill="#e8e8e8" stroke="#bbb" stroke-width="1.5"/>
                     <!-- Windshield -->
-                    <path d="M168,140 L232,140 L228,112 L172,112 Z" fill="#0d1117" opacity="0.5"/>
+                    <path d="M150,140 L250,140 L246,112 L154,112 Z" fill="#3a5570" opacity="0.5"/>
                     <!-- Rear window -->
-                    <path d="M172,300 L228,300 L232,328 L168,328 Z" fill="#0d1117" opacity="0.4"/>
+                    <path d="M154,300 L246,300 L250,328 L150,328 Z" fill="#3a5570" opacity="0.4"/>
                     <!-- Center line -->
-                    <line x1="200" y1="55" x2="200" y2="365" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.4"/>
+                    <line x1="200" y1="55" x2="200" y2="365" stroke="#ccc" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.3"/>
                     <!-- Front axle -->
                     <line x1="60" y1="120" x2="340" y2="120" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
                     <!-- Rear axle -->
                     <line x1="60" y1="310" x2="340" y2="310" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
-                    <!-- Tires -->
-                    <g id="t-lf"><rect x="105" y="90" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
-                    <g id="t-rf"><rect x="265" y="90" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
-                    <g id="t-lr"><rect x="105" y="280" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
-                    <g id="t-rr"><rect x="265" y="280" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
+                    <!-- Tires (black, flush with body edges at 0) -->
+                    <g id="t-lf"><rect x="100" y="90" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
+                    <g id="t-rf"><rect x="266" y="90" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
+                    <g id="t-lr"><rect x="100" y="280" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
+                    <g id="t-rr"><rect x="266" y="280" width="34" height="60" rx="5" fill="#111" stroke="#333" stroke-width="1"/></g>
                 </svg>
 
                 <!-- Front Track Width controls (bottom) -->
@@ -293,25 +293,25 @@
                 <svg id="tuner-side-svg" viewBox="0 0 500 220" style="width:100%;max-width:480px;display:block;margin:0 auto 16px;">
                     <!-- Ground -->
                     <line x1="20" y1="195" x2="480" y2="195" stroke="#2d3748" stroke-width="1"/>
-                    <!-- Wheels (fixed on ground, don't move) -->
+                    <!-- Wheels (fixed on ground, black) -->
                     <g id="t-wheels">
-                        <circle cx="145" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
-                        <circle cx="145" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
-                        <circle cx="145" cy="172" r="3" fill="#555"/>
-                        <circle cx="375" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
-                        <circle cx="375" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
-                        <circle cx="375" cy="172" r="3" fill="#555"/>
+                        <circle cx="145" cy="172" r="24" fill="#111" stroke="#333" stroke-width="1.5"/>
+                        <circle cx="145" cy="172" r="14" fill="#1a1a1a" stroke="#444" stroke-width="1"/>
+                        <circle cx="145" cy="172" r="3" fill="#666"/>
+                        <circle cx="375" cy="172" r="24" fill="#111" stroke="#333" stroke-width="1.5"/>
+                        <circle cx="375" cy="172" r="14" fill="#1a1a1a" stroke="#444" stroke-width="1"/>
+                        <circle cx="375" cy="172" r="3" fill="#666"/>
                     </g>
-                    <!-- Car body (moves with height + pitch) -->
+                    <!-- Car body (white, moves with height + pitch) -->
                     <g id="t-body">
                         <path d="M95,165 L95,152 L115,145 L155,142 L190,110 L220,102 L340,102 L370,110 L405,142 L420,150 L420,165 Z"
-                              fill="#1e2530" stroke="#3a4555" stroke-width="1.5" stroke-linejoin="round"/>
+                              fill="#e8e8e8" stroke="#bbb" stroke-width="1.5" stroke-linejoin="round"/>
                         <!-- Windows -->
-                        <path d="M193,140 L195,112 L365,112 L367,140 Z" fill="#0d1117" opacity="0.4"/>
+                        <path d="M193,140 L195,112 L365,112 L367,140 Z" fill="#3a5570" opacity="0.5"/>
                         <!-- Pillars -->
-                        <line x1="195" y1="140" x2="195" y2="112" stroke="#3a4555" stroke-width="1"/>
-                        <line x1="275" y1="106" x2="275" y2="140" stroke="#3a4555" stroke-width="0.5"/>
-                        <line x1="365" y1="140" x2="365" y2="112" stroke="#3a4555" stroke-width="1"/>
+                        <line x1="195" y1="140" x2="195" y2="112" stroke="#bbb" stroke-width="1"/>
+                        <line x1="275" y1="106" x2="275" y2="140" stroke="#bbb" stroke-width="0.5"/>
+                        <line x1="365" y1="140" x2="365" y2="112" stroke="#bbb" stroke-width="1"/>
                         <!-- Wheel wells -->
                         <path d="M112,165 A32,32 0 0,1 178,165" fill="#0d1117"/>
                         <path d="M342,165 A32,32 0 0,1 408,165" fill="#0d1117"/>
