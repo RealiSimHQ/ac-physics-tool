@@ -758,7 +758,7 @@ function swapCarIni(originalContent, donorContent) {
     
     // Everything else (CONTROLS, FUEL, PIT_STOP, etc) stays from donor
     
-    return INIParser.serialize(result);
+    return INIParser.serialize(result) + '\n; Generated using "OG Physics Swapper" by RealiSimHQ : https://www.patreon.com/RealiSimHQ\n';
 }
 
 function swapSuspensionsIni(originalContent, donorContent) {
