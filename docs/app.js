@@ -433,7 +433,6 @@ function collapseUploadShowPacks() {
     document.getElementById('pack-dropdown').classList.add('hidden');
     deactivateStep('generate-section');
     deactivateStep('advanced-section');
-    deactivateStep('visual-section');
 }
 
 function setupMiniDropZone() {
@@ -471,7 +470,6 @@ function collapsePacksShowGenerate() {
 
     // Show advanced
     activateStep('advanced-section');
-    activateStep('visual-section');
 }
 
 function renderPackGridInto(container) {
@@ -658,15 +656,12 @@ async function generateSwap() {
             engineSource = { carId: engineSelectVal, ...State.selectedPack.cars[engineSelectVal] };
         }
         
-        // Get visual adjustments
-        const adj = getVisualAdjustments();
-        
         // Swap car.ini
-        const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini'], adj);
+        const carIni = swapCarIni(original.files['car.ini'], donor.files['car.ini']);
         zip.file('data/car.ini', carIni);
         
         // Swap suspensions.ini
-        const suspIni = swapSuspensionsIni(original.files['suspensions.ini'], donor.files['suspensions.ini'], adj);
+        const suspIni = swapSuspensionsIni(original.files['suspensions.ini'], donor.files['suspensions.ini']);
         zip.file('data/suspensions.ini', suspIni);
         
         // Swap tyres.ini
@@ -703,25 +698,6 @@ async function generateSwap() {
             }
         }
         
-        // Store generated files for tuner correction
-        State.lastGenFiles = {};
-        zip.forEach(function(relativePath, file) {
-            // We'll re-read them from the zip
-        });
-        // Simpler: store the string content directly
-        State.lastGenFiles = { 'car.ini': carIni, 'suspensions.ini': suspIni, 'tyres.ini': tyresIni };
-        // Store other files too
-        for (const [fn, content] of Object.entries(donor.files)) {
-            if (!State.lastGenFiles[fn]) State.lastGenFiles[fn] = content;
-        }
-        if (engineSource !== donor) {
-            for (const [fn, content] of Object.entries(engineSource.files)) {
-                if (fn === 'engine.ini' || fn === 'drivetrain.ini' || (fn.endsWith('.lut') && (fn.startsWith('power') || fn.startsWith('engine') || fn.startsWith('throttle')))) {
-                    State.lastGenFiles[fn] = content;
-                }
-            }
-        }
-
         // Generate and download
         const blob = await zip.generateAsync({ type: 'blob' });
         const packName = State.selectedPack.packName.replace(/ /g, '_');
@@ -740,7 +716,7 @@ async function generateSwap() {
     }
 }
 
-function swapCarIni(originalContent, donorContent, adj) {
+function swapCarIni(originalContent, donorContent) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
@@ -759,20 +735,16 @@ function swapCarIni(originalContent, donorContent, adj) {
     if (original.BASIC) {
         if (original.BASIC.INERTIA) result.BASIC.INERTIA = original.BASIC.INERTIA;
         if (original.BASIC.GRAPHICS_OFFSET) {
-            // Keep original X,Z but donor Y (height) + height adjustment
+            // Keep original X,Z but donor Y (height)
             const origParts = original.BASIC.GRAPHICS_OFFSET.split(',').map(s => s.trim());
             const donorParts = (result.BASIC.GRAPHICS_OFFSET || '0,0,0').split(',').map(s => s.trim());
             if (origParts.length >= 3 && donorParts.length >= 3) {
-                const finalY = (parseFloat(donorParts[1]) + (adj.height || 0)).toFixed(3);
-                result.BASIC.GRAPHICS_OFFSET = `${origParts[0]}, ${finalY}, ${origParts[2]}`;
+                result.BASIC.GRAPHICS_OFFSET = `${origParts[0]}, ${donorParts[1]}, ${origParts[2]}`;
             } else {
                 result.BASIC.GRAPHICS_OFFSET = original.BASIC.GRAPHICS_OFFSET;
             }
         }
-        // Apply pitch adjustment
-        const basePitch = parseFloat(original.BASIC.GRAPHICS_PITCH_ROTATION || '0');
-        const finalPitch = (basePitch + (adj.pitch || 0)).toFixed(2);
-        result.BASIC.GRAPHICS_PITCH_ROTATION = finalPitch;
+        if (original.BASIC.GRAPHICS_PITCH_ROTATION) result.BASIC.GRAPHICS_PITCH_ROTATION = original.BASIC.GRAPHICS_PITCH_ROTATION;
     }
     
     // Keep original GRAPHICS and RIDE (visual/geometry dependent)
@@ -789,7 +761,7 @@ function swapCarIni(originalContent, donorContent, adj) {
     return INIParser.serialize(result);
 }
 
-function swapSuspensionsIni(originalContent, donorContent, adj) {
+function swapSuspensionsIni(originalContent, donorContent) {
     const original = INIParser.parse(originalContent);
     const donor = INIParser.parse(donorContent);
     
@@ -803,16 +775,18 @@ function swapSuspensionsIni(originalContent, donorContent, adj) {
         if (original.BASIC.CG_LOCATION) result.BASIC.CG_LOCATION = original.BASIC.CG_LOCATION;
     }
     
-    // Keep original TRACK values + apply width adjustments
-    if (original.FRONT) {
-        if (!result.FRONT) result.FRONT = {};
-        const origFrontTrack = parseFloat(original.FRONT.TRACK || '1.5');
-        result.FRONT.TRACK = (origFrontTrack + (adj.frontWidth || 0)).toFixed(4);
-    }
-    if (original.REAR) {
-        if (!result.REAR) result.REAR = {};
-        const origRearTrack = parseFloat(original.REAR.TRACK || '1.5');
-        result.REAR.TRACK = (origRearTrack + (adj.rearWidth || 0)).toFixed(4);
+    // ONLY keep original TRACK — all geometry comes from donor pack
+    const keepKeys = ['TRACK'];
+    
+    for (const section of ['FRONT', 'REAR']) {
+        if (original[section]) {
+            if (!result[section]) result[section] = {};
+            for (const key of keepKeys) {
+                if (original[section][key] !== undefined) {
+                    result[section][key] = original[section][key];
+                }
+            }
+        }
     }
     
     // Keep original GRAPHICS_OFFSETS section entirely
@@ -908,15 +882,6 @@ function showDownloadModal(blob, filename) {
         // Small delay so they see the green ring before the file picker covers it
         setTimeout(() => {
             downloadBlob(blob, filename);
-            // After download, add a close button that opens the tuner
-            setTimeout(() => {
-                modal.querySelector('.dm-title').textContent = 'Download started!';
-                const closeDiv = document.createElement('div');
-                closeDiv.style.marginTop = '20px';
-                closeDiv.innerHTML = '<button class="dm-close" onclick="closeDownloadModal(); showTuner();">🔧 Open Visual Tuner</button>' +
-                    '<br><button class="dm-close" style="margin-top:8px;opacity:0.5;" onclick="closeDownloadModal();">Close</button>';
-                modal.querySelector('.dm-card').appendChild(closeDiv);
-            }, 1000);
         }, 600);
     }, 5000);
 }
@@ -929,321 +894,5 @@ function closeDownloadModal() {
     }
 }
 
-// ─── Visual Tuner ───
-const Tuner = { h: 0, fw: 0, rw: 0, pitch: 0, locked: false, baseline: null };
-// Store last generated files for correction
-State.lastGenFiles = null;
-
-const T_LIMIT = 0.750;
-const T_PX_TRACK = 2.5;  // px per inch for track width
-const T_PX_HEIGHT = 2.5; // px per inch for height
-
-function tunerInches(val) {
-    // reuse the toInches function
-    return toInches(val);
-}
-
-function tunerAdj(key, delta) {
-    if (key === 'pitch') {
-        Tuner.pitch = Math.round(Tuner.pitch + delta);
-        Tuner.pitch = Math.max(-20, Math.min(20, Tuner.pitch));
-    } else {
-        Tuner[key] = Math.round((Tuner[key] + delta) * 1e6) / 1e6;
-        Tuner[key] = Math.max(-T_LIMIT, Math.min(T_LIMIT, Tuner[key]));
-    }
-    updateTunerUI();
-}
-
-function tunerReset(key) {
-    Tuner[key] = 0;
-    updateTunerUI();
-}
-
-function updateTunerUI() {
-    // Value displays
-    document.getElementById('tuner-fw-val').textContent = toInches(Tuner.fw);
-    document.getElementById('tuner-rw-val').textContent = toInches(Tuner.rw);
-    document.getElementById('tuner-h-val').textContent = toInches(Tuner.h);
-    var psign = Tuner.pitch > 0 ? '+' : '';
-    document.getElementById('tuner-pitch-val').textContent = psign + Tuner.pitch + '°';
-
-    // Pitch knob rotation
-    document.getElementById('tuner-pitch-line').setAttribute('transform', 'rotate(' + Tuner.pitch + ', 60, 60)');
-
-    // Top-down: move tires (top of SVG = rear of car, bottom = front)
-    var fPx = (Tuner.fw / 0.025) * T_PX_TRACK;
-    var rPx = (Tuner.rw / 0.025) * T_PX_TRACK;
-    document.getElementById('t-lr').setAttribute('transform', 'translate(' + (-fPx) + ',0)');
-    document.getElementById('t-rr').setAttribute('transform', 'translate(' + fPx + ',0)');
-    document.getElementById('t-lf').setAttribute('transform', 'translate(' + (-rPx) + ',0)');
-    document.getElementById('t-rf').setAttribute('transform', 'translate(' + rPx + ',0)');
-
-    // Side: height + pitch move body only, wheels stay on ground
-    var hPx = (Tuner.h / 0.025) * T_PX_HEIGHT;
-    document.getElementById('t-body').setAttribute('transform',
-        'translate(0,' + (-hPx) + ') rotate(' + Tuner.pitch + ',260,145)');
-    // Wheels stay at fixed position (no transform)
-}
-
-function tunerToggleLock() {
-    var btn = document.getElementById('tuner-lock-btn');
-    var help = document.getElementById('tuner-help');
-    if (!Tuner.locked) {
-        // Lock: store baseline, reset to 0
-        Tuner.baseline = { h: Tuner.h, fw: Tuner.fw, rw: Tuner.rw, pitch: Tuner.pitch };
-        Tuner.h = 0; Tuner.fw = 0; Tuner.rw = 0; Tuner.pitch = 0;
-        Tuner.locked = true;
-        btn.textContent = '🔒 LOCKED — Click to Unlock';
-        btn.style.borderColor = '#10b981';
-        btn.style.color = '#10b981';
-        btn.style.background = 'rgba(16,185,129,0.08)';
-        help.innerHTML = 'Now adjust to where you <strong style="color:#4ade80;">WANT</strong> the car to be.';
-        document.getElementById('tuner-gen-wrap').classList.remove('hidden');
-        updateTunerUI();
-    } else {
-        // Unlock: restore baseline values
-        Tuner.h = Tuner.baseline.h;
-        Tuner.fw = Tuner.baseline.fw;
-        Tuner.rw = Tuner.baseline.rw;
-        Tuner.pitch = Tuner.baseline.pitch;
-        Tuner.baseline = null;
-        Tuner.locked = false;
-        btn.textContent = '🔓 LOCK ZERO POINT';
-        btn.style.borderColor = '#fbbf24';
-        btn.style.color = '#fbbf24';
-        btn.style.background = 'rgba(251,191,36,0.08)';
-        help.innerHTML = 'Adjust to match how your car looks in-game, then <strong style="color:#fbbf24;">LOCK</strong> your zero point.';
-        document.getElementById('tuner-gen-wrap').classList.add('hidden');
-        updateTunerUI();
-    }
-}
-
-var _tunerPitchDragging = false;
-function tunerPitchDrag(e) {
-    e.preventDefault();
-    _tunerPitchDragging = true;
-    var knob = document.getElementById('tuner-pitch-knob');
-    var rect = knob.getBoundingClientRect();
-    var cx = rect.left + rect.width / 2;
-    var cy = rect.top + rect.height / 2;
-    function onMove(ev) {
-        if (!_tunerPitchDragging) return;
-        var pt = ev.touches ? ev.touches[0] : ev;
-        var dx = pt.clientX - cx;
-        var dy = pt.clientY - cy;
-        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        Tuner.pitch = Math.round(Math.max(-20, Math.min(20, angle)));
-        updateTunerUI();
-    }
-    function onUp() {
-        _tunerPitchDragging = false;
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        document.removeEventListener('touchmove', onMove);
-        document.removeEventListener('touchend', onUp);
-    }
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('touchend', onUp);
-}
-
-function showTuner() {
-    // Reset tuner state
-    Tuner.h = 0; Tuner.fw = 0; Tuner.rw = 0; Tuner.pitch = 0;
-    Tuner.locked = false; Tuner.baseline = null;
-    var btn = document.getElementById('tuner-lock-btn');
-    btn.textContent = '🔓 LOCK ZERO POINT';
-    btn.style.borderColor = '#fbbf24';
-    btn.style.color = '#fbbf24';
-    btn.style.background = 'rgba(251,191,36,0.08)';
-    document.getElementById('tuner-help').innerHTML = 'Adjust to match how your car looks in-game, then <strong style="color:#fbbf24;">LOCK</strong> your zero point.';
-    document.getElementById('tuner-gen-wrap').classList.add('hidden');
-    updateTunerUI();
-
-    var section = document.getElementById('tuner-section');
-    section.classList.remove('hidden');
-    section.classList.add('active');
-    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-async function generateCorrection() {
-    if (!State.lastGenFiles || !Tuner.locked) return;
-
-    var genBtn = document.getElementById('tuner-gen-btn');
-    genBtn.disabled = true;
-    genBtn.textContent = 'Generating...';
-
-    try {
-        var zip = new JSZip();
-        // The correction = post-lock adjustment values
-        var corrHeight = Tuner.h;
-        var corrFrontWidth = Tuner.fw;
-        var corrRearWidth = Tuner.rw;
-        var corrPitch = Tuner.pitch * -0.10; // degrees to raw
-
-        // Fix car.ini
-        var carData = INIParser.parse(State.lastGenFiles['car.ini']);
-        if (carData.BASIC) {
-            // Adjust GRAPHICS_OFFSET Y
-            var parts = (carData.BASIC.GRAPHICS_OFFSET || '0,0,0').split(',').map(function(s) { return s.trim(); });
-            if (parts.length >= 3) {
-                parts[1] = (parseFloat(parts[1]) + corrHeight).toFixed(3);
-                carData.BASIC.GRAPHICS_OFFSET = parts.join(', ');
-            }
-            // Adjust pitch
-            var currentPitch = parseFloat(carData.BASIC.GRAPHICS_PITCH_ROTATION || '0');
-            carData.BASIC.GRAPHICS_PITCH_ROTATION = (currentPitch + corrPitch).toFixed(2);
-        }
-        zip.file('data/car.ini', INIParser.serialize(carData));
-
-        // Fix suspensions.ini
-        var suspData = INIParser.parse(State.lastGenFiles['suspensions.ini']);
-        if (suspData.FRONT) {
-            var ft = parseFloat(suspData.FRONT.TRACK || '1.5');
-            suspData.FRONT.TRACK = (ft + corrFrontWidth).toFixed(4);
-        }
-        if (suspData.REAR) {
-            var rt = parseFloat(suspData.REAR.TRACK || '1.5');
-            suspData.REAR.TRACK = (rt + corrRearWidth).toFixed(4);
-        }
-        zip.file('data/suspensions.ini', INIParser.serialize(suspData));
-
-        // Copy all other files as-is
-        for (var fname in State.lastGenFiles) {
-            if (fname !== 'car.ini' && fname !== 'suspensions.ini') {
-                zip.file('data/' + fname, State.lastGenFiles[fname]);
-            }
-        }
-
-        var blob = await zip.generateAsync({ type: 'blob' });
-        var packName = State.selectedPack ? State.selectedPack.packName.replace(/ /g, '_') : 'corrected';
-        downloadBlob(blob, 'data_' + packName + '_corrected.zip');
-
-        if (!checkPatreonSession()) markTrialUsed();
-    } catch (err) {
-        console.error('Correction generation error:', err);
-        alert('Error generating correction: ' + err.message);
-    } finally {
-        genBtn.disabled = false;
-        genBtn.innerHTML = '<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Generate Corrected Physics';
-    }
-}
-
-// ─── Visual Adjustments ───
-let _adjHeight = 0;
-let _adjFrontWidth = 0;
-let _adjRearWidth = 0;
-let _pitchDegrees = 0;
-const ADJ_LIMIT = 0.750;
-
-function toInches(val) {
-    var inches = val / 0.02500;
-    var neg = inches < 0;
-    var abs = Math.abs(inches);
-    var whole = Math.floor(abs);
-    var eighths = Math.round((abs - whole) * 8);
-    if (eighths === 8) { whole++; eighths = 0; }
-    var num = eighths, den = 8;
-    if (num > 0) {
-        if (num % 4 === 0) { num /= 4; den /= 4; }
-        else if (num % 2 === 0) { num /= 2; den /= 2; }
-    }
-    var sign = neg ? '-' : '';
-    if (whole === 0 && num === 0) return '0"';
-    if (num === 0) return sign + whole + '"';
-    if (whole === 0) return sign + num + '/' + den + '"';
-    return sign + whole + ' ' + num + '/' + den + '"';
-}
-
-function adjHeight(delta) {
-    _adjHeight = Math.round((_adjHeight + delta) * 1e6) / 1e6;
-    _adjHeight = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjHeight));
-    document.getElementById('adj-height-val').textContent = toInches(_adjHeight);
-}
-function resetHeight() { _adjHeight = 0; document.getElementById('adj-height-val').textContent = '0"'; }
-
-function adjFrontWidth(delta) {
-    _adjFrontWidth = Math.round((_adjFrontWidth + delta) * 1e6) / 1e6;
-    _adjFrontWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjFrontWidth));
-    document.getElementById('adj-fwidth-val').textContent = toInches(_adjFrontWidth);
-}
-function resetFrontWidth() { _adjFrontWidth = 0; document.getElementById('adj-fwidth-val').textContent = '0"'; }
-
-function adjRearWidth(delta) {
-    _adjRearWidth = Math.round((_adjRearWidth + delta) * 1e6) / 1e6;
-    _adjRearWidth = Math.max(-ADJ_LIMIT, Math.min(ADJ_LIMIT, _adjRearWidth));
-    document.getElementById('adj-rwidth-val').textContent = toInches(_adjRearWidth);
-}
-function resetRearWidth() { _adjRearWidth = 0; document.getElementById('adj-rwidth-val').textContent = '0"'; }
-
-function updatePitchUI() {
-    var sign = _pitchDegrees > 0 ? '+' : '';
-    document.getElementById('adj-pitch-val').textContent = sign + _pitchDegrees + '°';
-    var angle = _pitchDegrees;
-    document.getElementById('pitch-line').setAttribute('transform', 'rotate(' + angle + ', 60, 60)');
-}
-
-function adjPitch(delta) {
-    _pitchDegrees = Math.round(_pitchDegrees + delta);
-    _pitchDegrees = Math.max(-20, Math.min(20, _pitchDegrees));
-    updatePitchUI();
-}
-
-function resetPitch() {
-    _pitchDegrees = 0;
-    updatePitchUI();
-}
-
-var _pitchDragging = false;
-function startPitchDrag(e) {
-    e.preventDefault();
-    _pitchDragging = true;
-    var knob = document.getElementById('pitch-knob');
-    var rect = knob.getBoundingClientRect();
-    var cx = rect.left + rect.width / 2;
-    var cy = rect.top + rect.height / 2;
-
-    function onMove(ev) {
-        if (!_pitchDragging) return;
-        var pt = ev.touches ? ev.touches[0] : ev;
-        var dx = pt.clientX - cx;
-        var dy = pt.clientY - cy;
-        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
-        _pitchDegrees = Math.round(Math.max(-20, Math.min(20, angle)));
-        updatePitchUI();
-    }
-    function onUp() {
-        _pitchDragging = false;
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        document.removeEventListener('touchmove', onMove);
-        document.removeEventListener('touchend', onUp);
-    }
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('touchend', onUp);
-}
-
-function getVisualAdjustments() {
-    return {
-        height: _adjHeight,
-        pitch: _pitchDegrees * -0.10,
-        frontWidth: _adjFrontWidth,
-        rearWidth: _adjRearWidth
-    };
-}
-
-function initVisualToggle() {
-    var toggle = document.getElementById('visual-toggle');
-    if (toggle) {
-        toggle.addEventListener('click', function() {
-            document.getElementById('visual-body').classList.toggle('hidden');
-            document.getElementById('visual-arrow').classList.toggle('open');
-        });
-    }
-}
-
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => { init(); initPatreonGate(); initVisualToggle(); });
+document.addEventListener('DOMContentLoaded', () => { init(); initPatreonGate(); });
