@@ -703,6 +703,25 @@ async function generateSwap() {
             }
         }
         
+        // Store generated files for tuner correction
+        State.lastGenFiles = {};
+        zip.forEach(function(relativePath, file) {
+            // We'll re-read them from the zip
+        });
+        // Simpler: store the string content directly
+        State.lastGenFiles = { 'car.ini': carIni, 'suspensions.ini': suspIni, 'tyres.ini': tyresIni };
+        // Store other files too
+        for (const [fn, content] of Object.entries(donor.files)) {
+            if (!State.lastGenFiles[fn]) State.lastGenFiles[fn] = content;
+        }
+        if (engineSource !== donor) {
+            for (const [fn, content] of Object.entries(engineSource.files)) {
+                if (fn === 'engine.ini' || fn === 'drivetrain.ini' || (fn.endsWith('.lut') && (fn.startsWith('power') || fn.startsWith('engine') || fn.startsWith('throttle')))) {
+                    State.lastGenFiles[fn] = content;
+                }
+            }
+        }
+
         // Generate and download
         const blob = await zip.generateAsync({ type: 'blob' });
         const packName = State.selectedPack.packName.replace(/ /g, '_');
@@ -889,6 +908,15 @@ function showDownloadModal(blob, filename) {
         // Small delay so they see the green ring before the file picker covers it
         setTimeout(() => {
             downloadBlob(blob, filename);
+            // After download, add a close button that opens the tuner
+            setTimeout(() => {
+                modal.querySelector('.dm-title').textContent = 'Download started!';
+                const closeDiv = document.createElement('div');
+                closeDiv.style.marginTop = '20px';
+                closeDiv.innerHTML = '<button class="dm-close" onclick="closeDownloadModal(); showTuner();">🔧 Open Visual Tuner</button>' +
+                    '<br><button class="dm-close" style="margin-top:8px;opacity:0.5;" onclick="closeDownloadModal();">Close</button>';
+                modal.querySelector('.dm-card').appendChild(closeDiv);
+            }, 1000);
         }, 600);
     }, 5000);
 }
@@ -898,6 +926,206 @@ function closeDownloadModal() {
     if (modal) {
         modal.classList.add('dm-fade-out');
         setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// ─── Visual Tuner ───
+const Tuner = { h: 0, fw: 0, rw: 0, pitch: 0, locked: false, baseline: null };
+// Store last generated files for correction
+State.lastGenFiles = null;
+
+const T_LIMIT = 0.750;
+const T_PX_TRACK = 2.5;  // px per inch for track width
+const T_PX_HEIGHT = 2.5; // px per inch for height
+
+function tunerInches(val) {
+    // reuse the toInches function
+    return toInches(val);
+}
+
+function tunerAdj(key, delta) {
+    if (key === 'pitch') {
+        Tuner.pitch = Math.round(Tuner.pitch + delta);
+        Tuner.pitch = Math.max(-20, Math.min(20, Tuner.pitch));
+    } else {
+        Tuner[key] = Math.round((Tuner[key] + delta) * 1e6) / 1e6;
+        Tuner[key] = Math.max(-T_LIMIT, Math.min(T_LIMIT, Tuner[key]));
+    }
+    updateTunerUI();
+}
+
+function tunerReset(key) {
+    Tuner[key] = 0;
+    updateTunerUI();
+}
+
+function updateTunerUI() {
+    // Value displays
+    document.getElementById('tuner-fw-val').textContent = toInches(Tuner.fw);
+    document.getElementById('tuner-rw-val').textContent = toInches(Tuner.rw);
+    document.getElementById('tuner-h-val').textContent = toInches(Tuner.h);
+    var psign = Tuner.pitch > 0 ? '+' : '';
+    document.getElementById('tuner-pitch-val').textContent = psign + Tuner.pitch + '°';
+
+    // Pitch knob rotation
+    document.getElementById('tuner-pitch-line').setAttribute('transform', 'rotate(' + Tuner.pitch + ', 60, 60)');
+
+    // Top-down: move tires
+    var fPx = (Tuner.fw / 0.025) * T_PX_TRACK;
+    var rPx = (Tuner.rw / 0.025) * T_PX_TRACK;
+    document.getElementById('t-lf').setAttribute('transform', 'translate(' + (-fPx) + ',0)');
+    document.getElementById('t-rf').setAttribute('transform', 'translate(' + fPx + ',0)');
+    document.getElementById('t-lr').setAttribute('transform', 'translate(' + (-rPx) + ',0)');
+    document.getElementById('t-rr').setAttribute('transform', 'translate(' + rPx + ',0)');
+
+    // Side: height + pitch
+    var hPx = (Tuner.h / 0.025) * T_PX_HEIGHT;
+    document.getElementById('t-car-group').setAttribute('transform',
+        'translate(0,' + (-hPx) + ') rotate(' + Tuner.pitch + ',260,170)');
+}
+
+function tunerToggleLock() {
+    var btn = document.getElementById('tuner-lock-btn');
+    var help = document.getElementById('tuner-help');
+    if (!Tuner.locked) {
+        // Lock: store baseline, reset to 0
+        Tuner.baseline = { h: Tuner.h, fw: Tuner.fw, rw: Tuner.rw, pitch: Tuner.pitch };
+        Tuner.h = 0; Tuner.fw = 0; Tuner.rw = 0; Tuner.pitch = 0;
+        Tuner.locked = true;
+        btn.textContent = '🔒 LOCKED — Click to Unlock';
+        btn.style.borderColor = '#10b981';
+        btn.style.color = '#10b981';
+        btn.style.background = 'rgba(16,185,129,0.08)';
+        help.innerHTML = 'Now adjust to where you <strong style="color:#4ade80;">WANT</strong> the car to be.';
+        document.getElementById('tuner-gen-wrap').classList.remove('hidden');
+        updateTunerUI();
+    } else {
+        // Unlock: restore baseline values
+        Tuner.h = Tuner.baseline.h;
+        Tuner.fw = Tuner.baseline.fw;
+        Tuner.rw = Tuner.baseline.rw;
+        Tuner.pitch = Tuner.baseline.pitch;
+        Tuner.baseline = null;
+        Tuner.locked = false;
+        btn.textContent = '🔓 LOCK ZERO POINT';
+        btn.style.borderColor = '#fbbf24';
+        btn.style.color = '#fbbf24';
+        btn.style.background = 'rgba(251,191,36,0.08)';
+        help.innerHTML = 'Adjust to match how your car looks in-game, then <strong style="color:#fbbf24;">LOCK</strong> your zero point.';
+        document.getElementById('tuner-gen-wrap').classList.add('hidden');
+        updateTunerUI();
+    }
+}
+
+var _tunerPitchDragging = false;
+function tunerPitchDrag(e) {
+    e.preventDefault();
+    _tunerPitchDragging = true;
+    var knob = document.getElementById('tuner-pitch-knob');
+    var rect = knob.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+    function onMove(ev) {
+        if (!_tunerPitchDragging) return;
+        var pt = ev.touches ? ev.touches[0] : ev;
+        var dx = pt.clientX - cx;
+        var dy = pt.clientY - cy;
+        var angle = Math.atan2(dy, dx) * (180 / Math.PI);
+        Tuner.pitch = Math.round(Math.max(-20, Math.min(20, angle)));
+        updateTunerUI();
+    }
+    function onUp() {
+        _tunerPitchDragging = false;
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('touchend', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onUp);
+}
+
+function showTuner() {
+    // Reset tuner state
+    Tuner.h = 0; Tuner.fw = 0; Tuner.rw = 0; Tuner.pitch = 0;
+    Tuner.locked = false; Tuner.baseline = null;
+    var btn = document.getElementById('tuner-lock-btn');
+    btn.textContent = '🔓 LOCK ZERO POINT';
+    btn.style.borderColor = '#fbbf24';
+    btn.style.color = '#fbbf24';
+    btn.style.background = 'rgba(251,191,36,0.08)';
+    document.getElementById('tuner-help').innerHTML = 'Adjust to match how your car looks in-game, then <strong style="color:#fbbf24;">LOCK</strong> your zero point.';
+    document.getElementById('tuner-gen-wrap').classList.add('hidden');
+    updateTunerUI();
+
+    var section = document.getElementById('tuner-section');
+    section.classList.remove('hidden');
+    section.classList.add('active');
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function generateCorrection() {
+    if (!State.lastGenFiles || !Tuner.locked) return;
+
+    var genBtn = document.getElementById('tuner-gen-btn');
+    genBtn.disabled = true;
+    genBtn.textContent = 'Generating...';
+
+    try {
+        var zip = new JSZip();
+        // The correction = post-lock adjustment values
+        var corrHeight = Tuner.h;
+        var corrFrontWidth = Tuner.fw;
+        var corrRearWidth = Tuner.rw;
+        var corrPitch = Tuner.pitch * -0.10; // degrees to raw
+
+        // Fix car.ini
+        var carData = INIParser.parse(State.lastGenFiles['car.ini']);
+        if (carData.BASIC) {
+            // Adjust GRAPHICS_OFFSET Y
+            var parts = (carData.BASIC.GRAPHICS_OFFSET || '0,0,0').split(',').map(function(s) { return s.trim(); });
+            if (parts.length >= 3) {
+                parts[1] = (parseFloat(parts[1]) + corrHeight).toFixed(3);
+                carData.BASIC.GRAPHICS_OFFSET = parts.join(', ');
+            }
+            // Adjust pitch
+            var currentPitch = parseFloat(carData.BASIC.GRAPHICS_PITCH_ROTATION || '0');
+            carData.BASIC.GRAPHICS_PITCH_ROTATION = (currentPitch + corrPitch).toFixed(2);
+        }
+        zip.file('data/car.ini', INIParser.serialize(carData));
+
+        // Fix suspensions.ini
+        var suspData = INIParser.parse(State.lastGenFiles['suspensions.ini']);
+        if (suspData.FRONT) {
+            var ft = parseFloat(suspData.FRONT.TRACK || '1.5');
+            suspData.FRONT.TRACK = (ft + corrFrontWidth).toFixed(4);
+        }
+        if (suspData.REAR) {
+            var rt = parseFloat(suspData.REAR.TRACK || '1.5');
+            suspData.REAR.TRACK = (rt + corrRearWidth).toFixed(4);
+        }
+        zip.file('data/suspensions.ini', INIParser.serialize(suspData));
+
+        // Copy all other files as-is
+        for (var fname in State.lastGenFiles) {
+            if (fname !== 'car.ini' && fname !== 'suspensions.ini') {
+                zip.file('data/' + fname, State.lastGenFiles[fname]);
+            }
+        }
+
+        var blob = await zip.generateAsync({ type: 'blob' });
+        var packName = State.selectedPack ? State.selectedPack.packName.replace(/ /g, '_') : 'corrected';
+        downloadBlob(blob, 'data_' + packName + '_corrected.zip');
+
+        if (!checkPatreonSession()) markTrialUsed();
+    } catch (err) {
+        console.error('Correction generation error:', err);
+        alert('Error generating correction: ' + err.message);
+    } finally {
+        genBtn.disabled = false;
+        genBtn.innerHTML = '<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Generate Corrected Physics';
     }
 }
 

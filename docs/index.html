@@ -230,6 +230,150 @@
             </div>
         </section>
 
+        <!-- Visual Tuner (appears after generation) -->
+        <section id="tuner-section" class="step hidden">
+            <div style="text-align:center;margin-bottom:20px;">
+                <h3 style="color:var(--accent-cyan);font-size:1.3rem;margin-bottom:8px;">🔧 Visual Tuner</h3>
+                <p id="tuner-help" style="color:var(--text-secondary);font-size:0.95rem;">
+                    Adjust to match how your car looks in-game, then <strong style="color:#fbbf24;">LOCK</strong> your zero point.
+                </p>
+            </div>
+
+            <!-- Top-Down View + Track Width Controls -->
+            <div style="background:#0f1419;border-radius:16px;padding:20px;margin-bottom:16px;">
+                <!-- Rear Track Width controls (top) -->
+                <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.8rem;margin:0 0 10px;">Rear Track Width</h4>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:12px;">
+                    <button onclick="tunerAdj('rw',-0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                    <button onclick="tunerAdj('rw',-0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <div onclick="tunerReset('rw')" style="width:120px;height:50px;background:#0a0e14;border:2px solid #2d3748;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <span id="tuner-rw-val" style="font-family:monospace;font-size:1.2rem;font-weight:700;color:#a78bfa;">0"</span>
+                    </div>
+                    <button onclick="tunerAdj('rw',0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <button onclick="tunerAdj('rw',0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                </div>
+
+                <!-- Top-Down SVG -->
+                <svg id="tuner-top-svg" viewBox="0 0 400 420" style="width:100%;max-width:340px;display:block;margin:0 auto 12px;">
+                    <!-- Car body -->
+                    <rect x="155" y="40" width="90" height="340" rx="18" fill="#1e2530" stroke="#3a4555" stroke-width="1.5"/>
+                    <!-- Windshield -->
+                    <path d="M168,140 L232,140 L228,112 L172,112 Z" fill="#0d1117" opacity="0.5"/>
+                    <!-- Rear window -->
+                    <path d="M172,300 L228,300 L232,328 L168,328 Z" fill="#0d1117" opacity="0.4"/>
+                    <!-- Center line -->
+                    <line x1="200" y1="55" x2="200" y2="365" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="6,4" opacity="0.4"/>
+                    <!-- Front axle -->
+                    <line x1="60" y1="120" x2="340" y2="120" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
+                    <!-- Rear axle -->
+                    <line x1="60" y1="310" x2="340" y2="310" stroke="#2d3748" stroke-width="0.5" stroke-dasharray="3,3" opacity="0.3"/>
+                    <!-- Tires -->
+                    <g id="t-lf"><rect x="105" y="90" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
+                    <g id="t-rf"><rect x="265" y="90" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
+                    <g id="t-lr"><rect x="105" y="280" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
+                    <g id="t-rr"><rect x="265" y="280" width="30" height="60" rx="5" fill="#2a2a2a" stroke="#484848" stroke-width="1"/></g>
+                </svg>
+
+                <!-- Front Track Width controls (bottom) -->
+                <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.8rem;margin:0 0 10px;">Front Track Width</h4>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="tunerAdj('fw',-0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                    <button onclick="tunerAdj('fw',-0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <div onclick="tunerReset('fw')" style="width:120px;height:50px;background:#0a0e14;border:2px solid #2d3748;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <span id="tuner-fw-val" style="font-family:monospace;font-size:1.2rem;font-weight:700;color:#a78bfa;">0"</span>
+                    </div>
+                    <button onclick="tunerAdj('fw',0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <button onclick="tunerAdj('fw',0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                </div>
+            </div>
+
+            <!-- Side View + Pitch + Height -->
+            <div style="background:#0f1419;border-radius:16px;padding:20px;margin-bottom:16px;">
+                <!-- Side SVG -->
+                <svg id="tuner-side-svg" viewBox="0 0 500 220" style="width:100%;max-width:480px;display:block;margin:0 auto 16px;">
+                    <!-- Ground -->
+                    <line x1="20" y1="195" x2="480" y2="195" stroke="#2d3748" stroke-width="1"/>
+                    <!-- Car group (transforms for height + pitch) -->
+                    <g id="t-car-group">
+                        <!-- Car body -->
+                        <path d="M95,165 L95,152 L115,145 L155,142 L190,110 L220,102 L340,102 L370,110 L405,142 L420,150 L420,165 Z"
+                              fill="#1e2530" stroke="#3a4555" stroke-width="1.5" stroke-linejoin="round"/>
+                        <!-- Windows -->
+                        <path d="M193,140 L195,112 L365,112 L367,140 Z" fill="#0d1117" opacity="0.4"/>
+                        <!-- Pillars -->
+                        <line x1="195" y1="140" x2="195" y2="112" stroke="#3a4555" stroke-width="1"/>
+                        <line x1="275" y1="106" x2="275" y2="140" stroke="#3a4555" stroke-width="0.5"/>
+                        <line x1="365" y1="140" x2="365" y2="112" stroke="#3a4555" stroke-width="1"/>
+                        <!-- Wheel wells -->
+                        <path d="M112,165 A32,32 0 0,1 178,165" fill="#0d1117"/>
+                        <path d="M342,165 A32,32 0 0,1 408,165" fill="#0d1117"/>
+                        <!-- Front wheel -->
+                        <circle cx="145" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
+                        <circle cx="145" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
+                        <circle cx="145" cy="172" r="3" fill="#555"/>
+                        <!-- Rear wheel -->
+                        <circle cx="375" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
+                        <circle cx="375" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
+                        <circle cx="375" cy="172" r="3" fill="#555"/>
+                    </g>
+                </svg>
+
+                <!-- Body Pitch Rotation -->
+                <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.8rem;margin:0 0 6px;">Body Pitch Rotation</h4>
+                <div style="display:flex;justify-content:space-between;padding:0 60px;margin-bottom:6px;">
+                    <span style="font-size:0.7rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Front</span>
+                    <span style="font-size:0.7rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Rear</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;">
+                    <button onclick="tunerAdj('pitch',-5)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">5°</button>
+                    <button onclick="tunerAdj('pitch',-1)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1°</button>
+                    <div id="tuner-pitch-knob" onclick="tunerReset('pitch')" style="width:100px;height:100px;cursor:pointer;flex-shrink:0;" onmousedown="tunerPitchDrag(event)" ontouchstart="tunerPitchDrag(event)">
+                        <svg width="100" height="100" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="#0a0e14" stroke="#2d3748" stroke-width="2"/>
+                            <line x1="60" y1="6" x2="60" y2="16" stroke="#2d3748" stroke-width="1"/>
+                            <line x1="60" y1="104" x2="60" y2="114" stroke="#2d3748" stroke-width="1"/>
+                            <line id="tuner-pitch-line" x1="8" y1="60" x2="112" y2="60" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" transform="rotate(0, 60, 60)"/>
+                            <circle cx="60" cy="60" r="5" fill="#a78bfa" opacity="0.9"/>
+                        </svg>
+                    </div>
+                    <button onclick="tunerAdj('pitch',1)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1°</button>
+                    <button onclick="tunerAdj('pitch',5)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">5°</button>
+                </div>
+                <div style="text-align:center;margin-bottom:16px;">
+                    <span id="tuner-pitch-val" style="font-family:monospace;font-size:1.1rem;font-weight:700;color:#a78bfa;">0°</span>
+                </div>
+
+                <!-- Car Body Height -->
+                <h4 style="text-align:center;text-transform:uppercase;font-style:italic;letter-spacing:0.15em;color:#00d9ff;font-size:0.8rem;margin:0 0 10px;">Car Body Height</h4>
+                <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <button onclick="tunerAdj('h',-0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#fbbf24;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                    <button onclick="tunerAdj('h',-0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#fbbf24;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <div onclick="tunerReset('h')" style="width:120px;height:50px;background:#0a0e14;border:2px solid #2d3748;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <span id="tuner-h-val" style="font-family:monospace;font-size:1.2rem;font-weight:700;color:#a78bfa;">0"</span>
+                    </div>
+                    <button onclick="tunerAdj('h',0.003125)" style="width:42px;height:42px;border:1px solid #2d3748;border-radius:10px;background:#151b23;color:#4ade80;font-size:0.75rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">⅛"</button>
+                    <button onclick="tunerAdj('h',0.025)" style="width:50px;height:50px;border:1px solid #2d3748;border-radius:12px;background:#151b23;color:#4ade80;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;">1"</button>
+                </div>
+            </div>
+
+            <!-- Lock / Unlock Button -->
+            <div style="text-align:center;margin:24px 0 16px;">
+                <button id="tuner-lock-btn" onclick="tunerToggleLock()" style="padding:16px 48px;font-size:1.1rem;font-weight:700;border:2px solid #fbbf24;border-radius:14px;background:rgba(251,191,36,0.08);color:#fbbf24;cursor:pointer;transition:all 0.3s;letter-spacing:0.05em;">
+                    🔓 LOCK ZERO POINT
+                </button>
+            </div>
+
+            <!-- Generate Correction (hidden until locked) -->
+            <div id="tuner-gen-wrap" class="hidden" style="text-align:center;">
+                <button id="tuner-gen-btn" onclick="generateCorrection()" class="btn-download" style="max-width:400px;margin:0 auto;">
+                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Generate Corrected Physics
+                </button>
+            </div>
+        </section>
+
         <!-- Post-download support section (fallback) -->
         <section id="support-section" class="support-section hidden">
             <div class="support-content">
