@@ -125,10 +125,13 @@
 
         <!-- Advanced Settings -->
         <section id="advanced-section" class="step">
-            <div class="advanced-toggle" id="advanced-toggle">
-                <h3>
-                    <span class="toggle-arrow">▶</span> Advanced Settings
-                </h3>
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div class="advanced-toggle" id="advanced-toggle" style="flex:1;">
+                    <h3>
+                        <span class="toggle-arrow">▶</span> Advanced Settings
+                    </h3>
+                </div>
+                <button onclick="showTuner()" style="padding:8px 20px;border:2px solid var(--accent-gold);border-radius:8px;background:rgba(251,191,36,0.08);color:var(--accent-gold);font-weight:700;font-size:0.85rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;" onmouseover="this.style.background='rgba(251,191,36,0.15)'" onmouseout="this.style.background='rgba(251,191,36,0.08)'">🔧 Visual Tuner</button>
             </div>
             <div id="advanced-panel" class="advanced-panel hidden">
                 <div class="advanced-row">
