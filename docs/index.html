@@ -293,9 +293,17 @@
                 <svg id="tuner-side-svg" viewBox="0 0 500 220" style="width:100%;max-width:480px;display:block;margin:0 auto 16px;">
                     <!-- Ground -->
                     <line x1="20" y1="195" x2="480" y2="195" stroke="#2d3748" stroke-width="1"/>
-                    <!-- Car group (transforms for height + pitch) -->
-                    <g id="t-car-group">
-                        <!-- Car body -->
+                    <!-- Wheels (fixed on ground, don't move) -->
+                    <g id="t-wheels">
+                        <circle cx="145" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
+                        <circle cx="145" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
+                        <circle cx="145" cy="172" r="3" fill="#555"/>
+                        <circle cx="375" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
+                        <circle cx="375" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
+                        <circle cx="375" cy="172" r="3" fill="#555"/>
+                    </g>
+                    <!-- Car body (moves with height + pitch) -->
+                    <g id="t-body">
                         <path d="M95,165 L95,152 L115,145 L155,142 L190,110 L220,102 L340,102 L370,110 L405,142 L420,150 L420,165 Z"
                               fill="#1e2530" stroke="#3a4555" stroke-width="1.5" stroke-linejoin="round"/>
                         <!-- Windows -->
@@ -307,14 +315,6 @@
                         <!-- Wheel wells -->
                         <path d="M112,165 A32,32 0 0,1 178,165" fill="#0d1117"/>
                         <path d="M342,165 A32,32 0 0,1 408,165" fill="#0d1117"/>
-                        <!-- Front wheel -->
-                        <circle cx="145" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
-                        <circle cx="145" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
-                        <circle cx="145" cy="172" r="3" fill="#555"/>
-                        <!-- Rear wheel -->
-                        <circle cx="375" cy="172" r="24" fill="#2a2a2a" stroke="#484848" stroke-width="1.5"/>
-                        <circle cx="375" cy="172" r="14" fill="#1a1a1a" stroke="#4a4a4a" stroke-width="1"/>
-                        <circle cx="375" cy="172" r="3" fill="#555"/>
                     </g>
                 </svg>
 

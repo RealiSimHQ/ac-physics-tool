@@ -970,18 +970,19 @@ function updateTunerUI() {
     // Pitch knob rotation
     document.getElementById('tuner-pitch-line').setAttribute('transform', 'rotate(' + Tuner.pitch + ', 60, 60)');
 
-    // Top-down: move tires
+    // Top-down: move tires (top of SVG = rear of car, bottom = front)
     var fPx = (Tuner.fw / 0.025) * T_PX_TRACK;
     var rPx = (Tuner.rw / 0.025) * T_PX_TRACK;
-    document.getElementById('t-lf').setAttribute('transform', 'translate(' + (-fPx) + ',0)');
-    document.getElementById('t-rf').setAttribute('transform', 'translate(' + fPx + ',0)');
-    document.getElementById('t-lr').setAttribute('transform', 'translate(' + (-rPx) + ',0)');
-    document.getElementById('t-rr').setAttribute('transform', 'translate(' + rPx + ',0)');
+    document.getElementById('t-lr').setAttribute('transform', 'translate(' + (-fPx) + ',0)');
+    document.getElementById('t-rr').setAttribute('transform', 'translate(' + fPx + ',0)');
+    document.getElementById('t-lf').setAttribute('transform', 'translate(' + (-rPx) + ',0)');
+    document.getElementById('t-rf').setAttribute('transform', 'translate(' + rPx + ',0)');
 
-    // Side: height + pitch
+    // Side: height + pitch move body only, wheels stay on ground
     var hPx = (Tuner.h / 0.025) * T_PX_HEIGHT;
-    document.getElementById('t-car-group').setAttribute('transform',
-        'translate(0,' + (-hPx) + ') rotate(' + Tuner.pitch + ',260,170)');
+    document.getElementById('t-body').setAttribute('transform',
+        'translate(0,' + (-hPx) + ') rotate(' + Tuner.pitch + ',260,145)');
+    // Wheels stay at fixed position (no transform)
 }
 
 function tunerToggleLock() {
